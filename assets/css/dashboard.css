@@ -1,0 +1,139 @@
+.upload-section {
+  margin: 30px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 650px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.upload-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.upload-section h2 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.upload-section input[type="file"] {
+  display: block;
+  margin: 20px 0;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 2px solid #ddd;
+  background-color: #f9f9f9;
+  width: 100%;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.upload-section input[type="file"]:hover {
+  border-color: #4caf50;
+}
+
+.upload-section button {
+  background-color: #4caf50;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.upload-section button:hover {
+  background-color: #45a049;
+}
+
+#resultSection {
+  margin-top: 30px;
+}
+
+.result-section {
+  background-color: #e7f9f4;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.result-section h3 {
+  color: #00796b;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.result-section img {
+  max-height: 120px;
+  max-width: 120px;
+  border-radius: 8px;
+  margin-left: 20px;
+}
+
+#historySection {
+  margin-top: 40px;
+  text-align: center;
+  color: #00796b;
+}
+
+#historyList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#historyList li {
+  background-color: #f5f5f5;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#historyList li:hover {
+  background-color: #f0f0f0;
+}
+
+.history-item h4 {
+  font-size: 18px;
+  color: #00796b;
+}
+
+.history-item .date {
+  font-size: 14px;
+  color: #555;
+}
+
+.history-item .result {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+}
+
+.welcome-text {
+  text-align: center;
+  margin-top: 50px;
+  font-family: Arial, sans-serif;
+}
+
+.welcome-text h1 {
+  color: #00796b;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.welcome-text p {
+  color: #333;
+  font-size: 18px;
+}
