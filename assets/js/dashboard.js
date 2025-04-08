@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const historyList = document.getElementById("historyList");
 
   if (!uploadForm || !fileInput || !uploadButton) {
-    console.error("Not all items found!");
+    console.error("Required form elements not found.");
     return;
   }
 
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const formData = new FormData();
     formData.append("formFile", fileInput.files[0]);
 
-    uploadStatus.innerHTML = "Uploading";
+    uploadStatus.textContent = "Uploading...";
     uploadButton.disabled = true;
 
     try {
@@ -45,29 +45,31 @@ document.addEventListener("DOMContentLoaded", function () {
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload image.");
-      }
-
       const data = await response.json();
 
-      resultImage.src = data.imagePath;
-      predictedLabel.innerText = data.recognizedAnimal;
-      dateRecognized.innerText = new Date(data.dateRecognized).toLocaleString();
+      if (!response.ok) {
+        throw new Error(data.message || "Upload failed.");
+      }
+
+      const fullImageUrl = `https://localhost:44378${data.imagePath}`;
+
+      resultImage.src = fullImageUrl;
+      predictedLabel.textContent = data.recognizedAnimal;
+      dateRecognized.textContent = new Date(
+        data.dateRecognized
+      ).toLocaleString();
       resultSection.style.display = "block";
 
       const historyItem = document.createElement("li");
-      historyItem.innerHTML = `<img src="${
-        data.imagePath
-      }" alt="Image" width="100"> ${data.recognizedAnimal} - ${new Date(
-        data.dateRecognized
-      ).toLocaleString()}`;
-      historyList.appendChild(historyItem);
+      historyItem.innerHTML = `<img src="${fullImageUrl}" alt="Image" width="100"> ${
+        data.recognizedAnimal
+      } - ${new Date(data.dateRecognized).toLocaleString()}`;
+      historyList.prepend(historyItem);
 
-      uploadStatus.innerHTML = "Upload successful!";
+      uploadStatus.textContent = "Upload successful!";
     } catch (error) {
       console.error("Error:", error);
-      uploadStatus.innerHTML = "Error uploading file.";
+      uploadStatus.textContent = "Error uploading file.";
     } finally {
       uploadButton.disabled = false;
     }
