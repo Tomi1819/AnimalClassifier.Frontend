@@ -1,24 +1,22 @@
 :root {
-  --primary-color: #005f99; /* тъмно синьо за основен цвят */
-  --secondary-color: #2c3e50; /* тъмно сиво-син */
-  --accent-color: #3498db; /* син акцент (бутон, линкове) */
-  --accent-hover: #2d89c6; /* по-тъмен син за hover */
-  --light-bg: #ffffff; /* бял фон */
-  --muted-bg: #ecf0f1; /* светло сиво-синьо */
-  --highlight-bg: #e3f2fd; /* синьо за резултати */
-  --text-light: #7f8c8d; /* светло сиво за дати и пояснения */
-  --border-color: #d0dce5; /* синкаво-сив бордер */
-  --hover-bg-light: #dfefff; /* много светъл син за hover */
+  --primary-color: #005f99;
+  --secondary-color: #2c3e50;
+  --accent-color: #3498db;
+  --accent-hover: #2d89c6;
+  --light-bg: #ffffff;
+  --muted-bg: #ecf0f1;
+  --highlight-bg: #e3f2fd;
+  --text-light: #7f8c8d;
+  --border-color: #d0dce5;
+  --hover-bg-light: #dfefff;
 }
 
-/* === Global Reset === */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* === Body Layout === */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #f7f7f7;
@@ -32,7 +30,6 @@ body {
   padding-top: 80px;
 }
 
-/* === Navigation === */
 nav {
   width: 100%;
   background: var(--light-bg);
@@ -97,7 +94,6 @@ nav ul li a.active {
   color: white;
 }
 
-/* === Welcome Text === */
 .welcome-text {
   text-align: center;
   margin-top: 50px;
@@ -116,7 +112,6 @@ nav ul li a.active {
   font-size: 18px;
 }
 
-/* === Upload Section === */
 .upload-section {
   margin: 30px auto;
   padding: 30px;
@@ -188,7 +183,6 @@ input:focus {
   background-color: var(--accent-hover);
 }
 
-/* === Results Section === */
 #resultSection {
   margin-top: 30px;
 }
@@ -216,7 +210,6 @@ input:focus {
   margin-left: 20px;
 }
 
-/* === History Section === */
 #historySection {
   margin-top: 40px;
   text-align: center;
