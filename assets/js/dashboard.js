@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const predictedLabel = document.getElementById("predictedLabel");
   const dateRecognized = document.getElementById("dateRecognized");
   const predictionScore = document.getElementById("predictionScore");
+  const lowConfidenceMessage = document.getElementById("lowConfidenceMessage");
   const historyList = document.getElementById("historyList");
 
   if (!uploadForm || !fileInput || !uploadButton) {
@@ -61,6 +62,13 @@ document.addEventListener("DOMContentLoaded", function () {
       ).toLocaleString();
       predictionScore.textContent =
         (data.predictionScore * 100).toFixed(2) + "%";
+
+      if (data.predictionScore < 0.5) {
+        lowConfidenceMessage.style.display = "block";
+      } else {
+        lowConfidenceMessage.style.display = "none";
+      }
+
       resultSection.style.display = "block";
 
       const historyItem = document.createElement("li");
