@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const resultImage = document.getElementById("resultImage");
   const predictedLabel = document.getElementById("predictedLabel");
   const dateRecognized = document.getElementById("dateRecognized");
+  const predictionScore = document.getElementById("predictionScore");
   const historyList = document.getElementById("historyList");
 
   if (!uploadForm || !fileInput || !uploadButton) {
@@ -58,6 +59,8 @@ document.addEventListener("DOMContentLoaded", function () {
       dateRecognized.textContent = new Date(
         data.dateRecognized
       ).toLocaleString();
+      predictionScore.textContent =
+        (data.predictionScore * 100).toFixed(2) + "%";
       resultSection.style.display = "block";
 
       const historyItem = document.createElement("li");
