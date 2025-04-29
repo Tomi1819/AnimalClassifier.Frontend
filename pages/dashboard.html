@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - Upload an image</title>
+    <title>Dashboard - Upload Media</title>
     <link rel="stylesheet" href="../assets/css/styles.css" />
   </head>
   <body>
@@ -18,34 +18,67 @@
       </nav>
       <div class="welcome-text">
         <h1>Welcome to Dashboard</h1>
-        <p>Here you can upload images of animals and then recognize them.</p>
+        <p>
+          Here you can upload images or videos of animals and then recognize
+          them.
+        </p>
       </div>
     </header>
 
     <div class="upload-section">
-      <form id="uploadForm" enctype="multipart/form-data">
-        <label for="fileUpload">Choose an image:</label>
-        <input
-          type="file"
-          id="fileUpload"
-          name="fileUpload"
-          accept="image/jpeg, image/png"
-          required
-        />
-        <button id="uploadButton" type="submit">Upload image</button>
-      </form>
+      <div class="upload-tabs">
+        <button id="imageTabBtn" class="tab-btn active">Image Upload</button>
+        <button id="videoTabBtn" class="tab-btn">Video Upload</button>
+      </div>
+
+      <div id="imageUploadTab" class="upload-tab-content">
+        <form id="imageUploadForm" enctype="multipart/form-data">
+          <label for="imageFileUpload">Choose an image:</label>
+          <input
+            type="file"
+            id="imageFileUpload"
+            name="fileUpload"
+            accept="image/jpeg, image/png"
+            required
+          />
+          <button id="imageUploadButton" type="submit">Upload image</button>
+        </form>
+      </div>
+
+      <div id="videoUploadTab" class="upload-tab-content" style="display: none">
+        <form id="videoUploadForm" enctype="multipart/form-data">
+          <label for="videoFileUpload">Choose a video:</label>
+          <input
+            type="file"
+            id="videoFileUpload"
+            name="fileUpload"
+            accept="video/mp4, video/quicktime, video/x-msvideo"
+            required
+          />
+          <button id="videoUploadButton" type="submit">Upload video</button>
+        </form>
+      </div>
 
       <div id="uploadStatus"></div>
     </div>
 
     <div id="resultSection" class="result-section" style="display: none">
       <h3>Recognition result:</h3>
-      <img
-        id="resultImage"
-        src=""
-        alt="Uploaded Image"
-        style="max-width: 100%; height: auto"
-      />
+      <div id="mediaContainer">
+        <img
+          id="resultImage"
+          src=""
+          alt="Uploaded Image"
+          style="max-width: 100%; height: auto; display: none"
+        />
+        <video
+          id="resultVideo"
+          controls
+          style="max-width: 100%; height: auto; display: none"
+        >
+          Your browser does not support the video tag.
+        </video>
+      </div>
       <p>
         <strong>Recognized animal: </strong><span id="predictedLabel"></span>
       </p>
@@ -58,13 +91,13 @@
       <p id="lowConfidenceMessage" style="color: red; display: none">
         <strong
           >The model is not confident in this classification. Please try another
-          image.</strong
+          file.</strong
         >
       </p>
     </div>
 
     <div id="historySection">
-      <h3>Uploaded image history:</h3>
+      <h3>Upload history:</h3>
       <ul id="historyList"></ul>
     </div>
 
