@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistics - Animal Classifier</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="logo">
+          <img src="../assets/images/logo.png" alt="Logo" />
+        </div>
+        <ul id="navLinks">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="statistics.html" class="active">Statistics</a></li>
+          <li><a href="#" id="logoutBtn">Logout</a></li>
+        </ul>
+      </nav>
+      <div class="welcome-text">
+        <h1>System Statistics</h1>
+        <p>Overview of system usage and animal recognition trends.</p>
+      </div>
+    </header>
+
+    <div class="statistics-container">
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <div class="stat-details">
+            <h3>Total Recognitions</h3>
+            <div class="stat-number" id="totalRecognitions">...</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-details">
+            <h3>Registered Users</h3>
+            <div class="stat-number" id="totalUsers">...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h2>Top 3 Recognized Animals</h2>
+        <div class="animal-chart" id="topAnimalsChart"></div>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 Animal Classifier. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="../assets/js/logout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="../assets/js/statistics.js"></script>
+  </body>
+</html>

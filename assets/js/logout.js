@@ -22,6 +22,7 @@ function updateNavigation() {
   if (getToken()) {
     document.getElementById("navLinks").innerHTML = `    
           <li><a href="../index.html">Home</a></li>
+          <li><a href="../pages/statistics.html">Statistics</a></li>
           <li><a href="#" id="logout">Logout</a></li>
         `;
   } else {
