@@ -11,4 +11,4 @@ This is a lightweight, intuitive frontend built with HTML, CSS, and JavaScript. 
 - 🌐 HTML
 - 🎨 CSS
 - ⚙️ JavaScript (Vanilla)
-- 📦 No external libraries or frameworks
+- 📦 No external frameworks
