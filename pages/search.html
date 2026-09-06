@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Search Animals - Animal Classifier</title>
-    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap"
       rel="stylesheet"
@@ -18,23 +18,16 @@
     <header>
       <nav>
         <div class="logo">
-          <img src="../assets/images/logo.png" alt="Logo" />
+          <img src="/logo.png" alt="Logo" />
         </div>
-        <ul id="navLinks">
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="dashboard.html">Dashboard</a></li>
-          <li><a href="search.html" class="active">Search</a></li>
-          <li><a href="statistics.html">Statistics</a></li>
-          <li><a href="#" id="logout">Logout</a></li>
-        </ul>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
       </nav>
     </header>
-
     <main class="search-main">
       <div class="search-container">
         <h1>Search Animals</h1>
         <p>Find and explore your uploaded animal images</p>
-
         <div class="search-section">
           <div class="search-input-container">
             <input
@@ -47,13 +40,11 @@
               <i class="fas fa-search"></i>
             </button>
           </div>
-
           <div class="search-suggestions">
             <h3>Popular searches:</h3>
             <div class="suggestions-container" id="suggestionsContainer"></div>
           </div>
         </div>
-
         <div id="searchResults" class="search-results" style="display: none">
           <div class="results-header">
             <h2 id="resultsTitle">Search Results</h2>
@@ -61,7 +52,6 @@
           </div>
           <div class="results-grid" id="resultsGrid"></div>
         </div>
-
         <div id="noResults" class="no-results" style="display: none">
           <div class="no-results-icon">
             <i class="fas fa-search"></i>
@@ -69,7 +59,6 @@
           <h2>No animals found</h2>
           <p>Try a different search term or check your spelling</p>
         </div>
-
         <div
           id="loadingIndicator"
           class="loading-indicator"
@@ -80,8 +69,7 @@
         </div>
       </div>
     </main>
-
-    <script src="../assets/js/logout.js"></script>
-    <script src="../assets/js/search.js"></script>
+    
+    <script type="module" src="/src/pages/search.js"></script>
   </body>
 </html>

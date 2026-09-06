@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Statistics - Animal Classifier</title>
-    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap"
       rel="stylesheet"
@@ -18,21 +18,16 @@
     <header>
       <nav>
         <div class="logo">
-          <img src="../assets/images/logo.png" alt="Logo" />
+          <img src="/logo.png" alt="Logo" />
         </div>
-        <ul id="navLinks">
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="dashboard.html">Dashboard</a></li>
-          <li><a href="statistics.html" class="active">Statistics</a></li>
-          <li><a href="#" id="logoutBtn">Logout</a></li>
-        </ul>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
       </nav>
       <div class="welcome-text">
         <h1>System Statistics</h1>
         <p>Overview of system usage and animal recognition trends.</p>
       </div>
     </header>
-
     <div class="statistics-container">
       <div class="stats-cards">
         <div class="stat-card">
@@ -44,7 +39,6 @@
             <div class="stat-number" id="totalRecognitions">...</div>
           </div>
         </div>
-
         <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-users"></i>
@@ -55,20 +49,15 @@
           </div>
         </div>
       </div>
-
       <div class="chart-container">
         <h2>Top 3 Recognized Animals</h2>
         <div class="animal-chart" id="topAnimalsChart"></div>
       </div>
     </div>
-
     <footer>
       <p>&copy; 2025 Animal Classifier. All rights reserved.</p>
     </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="../assets/js/logout.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <script src="../assets/js/statistics.js"></script>
+    
+    <script type="module" src="/src/pages/statistics.js"></script>
   </body>
 </html>

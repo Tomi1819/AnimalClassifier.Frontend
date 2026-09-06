@@ -1,0 +1,14 @@
+node_modules/
+dist/
+
+# Local environment overrides
+.env.local
+.env.*.local
+
+# Editor / OS
+# The run configurations are shared; personal editor settings are not.
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+.DS_Store

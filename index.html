@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Animal Classifier</title>
-    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap"
       rel="stylesheet"
@@ -18,13 +18,10 @@
     <header>
       <nav>
         <div class="logo">
-          <img src="../assets/images/logo.png" alt="Logo" />
+          <img src="/logo.png" alt="Logo" />
         </div>
-        <ul id="navLinks">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="pages/register.html">Register</a></li>
-          <li><a href="pages/login.html">Login</a></li>
-        </ul>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
       </nav>
     </header>
 
@@ -32,7 +29,7 @@
       <section class="hero">
         <h1>Welcome to Animal Classifier</h1>
         <p>This is an animal recognition application using machine learning.</p>
-        <a href="pages/login.html" class="get-started-btn">Get Started</a>
+        <a href="/pages/login.html" class="get-started-btn">Get Started</a>
       </section>
     </main>
 
@@ -40,6 +37,6 @@
       <p>&copy; 2025 Animal Classifier. All rights reserved.</p>
     </footer>
 
-    <script src="assets/js/logout.js"></script>
+    <script type="module" src="/src/pages/home.js"></script>
   </body>
 </html>

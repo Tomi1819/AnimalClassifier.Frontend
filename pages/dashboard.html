@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - Upload Media</title>
-    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
     <header>
       <nav>
         <div class="logo">
-          <img src="../assets/images/logo.png" alt="Logo" />
+          <img src="/logo.png" alt="Logo" />
         </div>
-        <ul id="navLinks">
-          <li><a href="../index.html">Home</a></li>
-        </ul>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
       </nav>
       <div class="welcome-text">
         <h1>Welcome to Dashboard</h1>
@@ -24,13 +23,11 @@
         </p>
       </div>
     </header>
-
     <div class="upload-section">
       <div class="upload-tabs">
         <button id="imageTabBtn" class="tab-btn active">Image Upload</button>
         <button id="videoTabBtn" class="tab-btn">Video Upload</button>
       </div>
-
       <div id="imageUploadTab" class="upload-tab-content">
         <form id="imageUploadForm" enctype="multipart/form-data">
           <label for="imageFileUpload">Choose an image:</label>
@@ -44,7 +41,6 @@
           <button id="imageUploadButton" type="submit">Upload image</button>
         </form>
       </div>
-
       <div id="videoUploadTab" class="upload-tab-content" style="display: none">
         <form id="videoUploadForm" enctype="multipart/form-data">
           <label for="videoFileUpload">Choose a video:</label>
@@ -58,10 +54,8 @@
           <button id="videoUploadButton" type="submit">Upload video</button>
         </form>
       </div>
-
       <div id="uploadStatus"></div>
     </div>
-
     <div id="resultSection" class="result-section" style="display: none">
       <h3>Recognition result:</h3>
       <div id="mediaContainer">
@@ -95,13 +89,11 @@
         >
       </p>
     </div>
-
     <div id="historySection">
       <h3>Upload history:</h3>
       <ul id="historyList"></ul>
     </div>
-
-    <script src="../assets/js/logout.js"></script>
-    <script src="../assets/js/dashboard.js"></script>
+    
+    <script type="module" src="/src/pages/dashboard.js"></script>
   </body>
 </html>
