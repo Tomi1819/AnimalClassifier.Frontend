@@ -24,6 +24,8 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
     window.location.href = DASHBOARD_PAGE;
   } catch (error) {
     console.error("Login failed:", error);
-    alert("Invalid email or password.");
+    // The backend already answers 401 with "Invalid email or password.", so
+    // reporting its message keeps an offline server from looking like a typo.
+    alert(error.message);
   }
 });
