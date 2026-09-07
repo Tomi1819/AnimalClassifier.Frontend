@@ -6,7 +6,7 @@
     <title>Dashboard - Upload Media</title>
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
-  <body>
+  <body class="dashboard-page">
     <header>
       <nav>
         <div class="logo">
@@ -15,85 +15,154 @@
         <!-- Populated by src/shared/nav.js, which varies the links by session. -->
         <ul id="navLinks"></ul>
       </nav>
-      <div class="welcome-text">
-        <h1>Welcome to Dashboard</h1>
-        <p>
-          Here you can upload images or videos of animals and then recognize
-          them.
-        </p>
-      </div>
     </header>
-    <div class="upload-section">
-      <div class="upload-tabs">
-        <button id="imageTabBtn" class="tab-btn active">Image Upload</button>
-        <button id="videoTabBtn" class="tab-btn">Video Upload</button>
-      </div>
-      <div id="imageUploadTab" class="upload-tab-content">
-        <form id="imageUploadForm" enctype="multipart/form-data">
-          <label for="imageFileUpload">Choose an image:</label>
-          <input
-            type="file"
-            id="imageFileUpload"
-            name="fileUpload"
-            accept="image/jpeg, image/png"
-            required
-          />
-          <button id="imageUploadButton" type="submit">Upload image</button>
-        </form>
-      </div>
-      <div id="videoUploadTab" class="upload-tab-content" style="display: none">
-        <form id="videoUploadForm" enctype="multipart/form-data">
-          <label for="videoFileUpload">Choose a video:</label>
-          <input
-            type="file"
-            id="videoFileUpload"
-            name="fileUpload"
-            accept="video/mp4, video/quicktime, video/x-msvideo"
-            required
-          />
-          <button id="videoUploadButton" type="submit">Upload video</button>
-        </form>
-      </div>
-      <div id="uploadStatus"></div>
-    </div>
-    <div id="resultSection" class="result-section" style="display: none">
-      <h3>Recognition result:</h3>
-      <div id="mediaContainer">
-        <img
-          id="resultImage"
-          src=""
-          alt="Uploaded Image"
-          style="max-width: 100%; height: auto; display: none"
-        />
-        <video
-          id="resultVideo"
-          controls
-          style="max-width: 100%; height: auto; display: none"
-        >
-          Your browser does not support the video tag.
-        </video>
-      </div>
-      <p>
-        <strong>Recognized animal: </strong><span id="predictedLabel"></span>
-      </p>
-      <p>
-        <strong>Recognition date: </strong><span id="dateRecognized"></span>
-      </p>
-      <p>
-        <strong>Prediction accuracy: </strong><span id="predictionScore"></span>
-      </p>
-      <p id="lowConfidenceMessage" style="color: red; display: none">
-        <strong
-          >The model is not confident in this classification. Please try another
-          file.</strong
-        >
-      </p>
-    </div>
-    <div id="historySection">
-      <h3>Upload history:</h3>
-      <ul id="historyList"></ul>
-    </div>
-    
+
+    <main class="dashboard">
+      <section class="page-header">
+        <p class="eyebrow">Dashboard</p>
+        <h1>Recognise an animal</h1>
+        <p class="page-header__subtitle">
+          Upload an image or a video, and the model will tell you what it found.
+        </p>
+      </section>
+
+      <section class="card upload-card">
+        <div class="segmented">
+          <button id="imageTabBtn" class="segmented__btn is-active" type="button">
+            Image
+          </button>
+          <button id="videoTabBtn" class="segmented__btn" type="button">Video</button>
+        </div>
+
+        <div id="imageUploadTab" class="upload-tab">
+          <form id="imageUploadForm" enctype="multipart/form-data">
+            <!-- The label makes the whole dropzone open the file picker; the
+                 input stays reachable by keyboard rather than display:none. -->
+            <label class="dropzone" id="imageDropzone" for="imageFileUpload">
+              <input
+                type="file"
+                id="imageFileUpload"
+                name="fileUpload"
+                class="dropzone__input"
+                accept="image/jpeg, image/png"
+              />
+              <span class="dropzone__prompt">
+                <svg class="dropzone__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 16V4m0 0L8 8m4-4 4 4M4 15v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3"
+                  />
+                </svg>
+                <span class="dropzone__title">Drag and drop an image</span>
+                <span class="dropzone__hint">
+                  or <span class="dropzone__browse">browse</span> &middot; JPG or PNG
+                </span>
+              </span>
+              <span class="dropzone__file" id="imageFileSummary" hidden>
+                <img class="dropzone__thumb" id="imageThumb" alt="" />
+                <span class="dropzone__meta">
+                  <span class="dropzone__name" id="imageFileName"></span>
+                  <span class="dropzone__size" id="imageFileSize"></span>
+                </span>
+                <span class="dropzone__swap">Choose another</span>
+              </span>
+            </label>
+            <button id="imageUploadButton" class="btn" type="submit">
+              Upload image
+            </button>
+          </form>
+        </div>
+
+        <div id="videoUploadTab" class="upload-tab" hidden>
+          <form id="videoUploadForm" enctype="multipart/form-data">
+            <label class="dropzone" id="videoDropzone" for="videoFileUpload">
+              <input
+                type="file"
+                id="videoFileUpload"
+                name="fileUpload"
+                class="dropzone__input"
+                accept="video/mp4, video/quicktime, video/x-msvideo"
+              />
+              <span class="dropzone__prompt">
+                <svg class="dropzone__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 16V4m0 0L8 8m4-4 4 4M4 15v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3"
+                  />
+                </svg>
+                <span class="dropzone__title">Drag and drop a video</span>
+                <span class="dropzone__hint">
+                  or <span class="dropzone__browse">browse</span> &middot; MP4, MOV or AVI
+                </span>
+              </span>
+              <span class="dropzone__file" id="videoFileSummary" hidden>
+                <span class="dropzone__thumb dropzone__thumb--video" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                </span>
+                <span class="dropzone__meta">
+                  <span class="dropzone__name" id="videoFileName"></span>
+                  <span class="dropzone__size" id="videoFileSize"></span>
+                </span>
+                <span class="dropzone__swap">Choose another</span>
+              </span>
+            </label>
+            <button id="videoUploadButton" class="btn" type="submit">
+              Upload video
+            </button>
+          </form>
+        </div>
+
+        <p id="uploadStatus" class="message" hidden></p>
+      </section>
+
+      <section id="resultSection" class="card result-card" hidden>
+        <div class="result-card__media">
+          <img id="resultImage" src="" alt="Uploaded image" hidden />
+          <video id="resultVideo" controls hidden>
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <div class="result-card__details">
+          <p class="eyebrow">Recognition result</p>
+          <h2 class="result-card__animal" id="predictedLabel"></h2>
+
+          <div class="confidence" id="confidenceBlock">
+            <div class="confidence__head">
+              <span class="confidence__label">Prediction accuracy</span>
+              <span class="confidence__value" id="predictionScore"></span>
+            </div>
+            <div class="confidence__track">
+              <div class="confidence__fill" id="confidenceFill"></div>
+            </div>
+          </div>
+
+          <p class="result-card__date">
+            Recognised <time id="dateRecognized"></time>
+          </p>
+
+          <p id="lowConfidenceMessage" class="callout" hidden>
+            The model is not confident in this classification. Try another file.
+          </p>
+        </div>
+
+        <!-- Video results append their frame and animal breakdown here. -->
+        <div class="result-card__extras" id="videoStatsSlot"></div>
+      </section>
+
+      <section class="history">
+        <div class="history__head">
+          <h2>Upload history</h2>
+          <button id="clearHistory" class="btn-ghost" type="button" hidden>
+            Clear
+          </button>
+        </div>
+        <p class="history__empty" id="historyEmpty">
+          Nothing recognised yet. Your results will appear here and stay while you
+          browse.
+        </p>
+        <ul class="history__list" id="historyList"></ul>
+      </section>
+    </main>
+
     <script type="module" src="/src/pages/dashboard.js"></script>
   </body>
 </html>

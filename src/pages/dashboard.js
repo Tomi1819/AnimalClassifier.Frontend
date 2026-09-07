@@ -1,248 +1,524 @@
 import { apiFetch, resolveUrl } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
+import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
-const FRAME_COUNTER_INTERVAL_MS = 50;
-const SCORE_COUNTER_INTERVAL_MS = 20;
+const HIGH_CONFIDENCE_THRESHOLD = 0.75;
+// Counters run for a fixed span, so a long video does not take longer to
+// count than it did to analyse.
+const COUNTER_ANIMATION_MS = 1200;
 const SCORE_ANIMATION_DELAY_MS = 500;
 const SCORE_ANIMATION_STAGGER_MS = 200;
+const HISTORY_PATH = "/api/upload/history";
+const BYTES_PER_UNIT = 1024;
+const SIZE_UNITS = ["B", "KB", "MB", "GB"];
 
-initNavigation();
+// The two tabs are the same widget pointed at a different endpoint, so they
+// differ only by the ids they own and the wording they use.
+const IMAGE_UPLOAD = {
+  tab: "imageTabBtn",
+  panel: "imageUploadTab",
+  dropzone: "imageDropzone",
+  input: "imageFileUpload",
+  form: "imageUploadForm",
+  button: "imageUploadButton",
+  summary: "imageFileSummary",
+  fileName: "imageFileName",
+  fileSize: "imageFileSize",
+  thumbnail: "imageThumb",
+  path: "/api/upload/image",
+  field: "formFile",
+  missingFile: "Please select an image file.",
+  wrongType: "That file is not a JPG or PNG image.",
+  progress: "Uploading image...",
+  success: "Image upload successful!",
+  toRecognition: toImageRecognition,
+};
+
+const VIDEO_UPLOAD = {
+  tab: "videoTabBtn",
+  panel: "videoUploadTab",
+  dropzone: "videoDropzone",
+  input: "videoFileUpload",
+  form: "videoUploadForm",
+  button: "videoUploadButton",
+  summary: "videoFileSummary",
+  fileName: "videoFileName",
+  fileSize: "videoFileSize",
+  path: "/api/upload/video",
+  field: "videoFile",
+  missingFile: "Please select a video file.",
+  wrongType: "That file is not an MP4, MOV or AVI video.",
+  progress: "Uploading video...",
+  success: "Video upload successful!",
+  toRecognition: toVideoRecognition,
+};
 
 // Module scripts are deferred, so the document is already parsed here.
+// The guard runs first, so an expired session never paints the signed-in nav.
 if (requireAuthentication()) {
-  const elements = collectElements();
-  initTabs(elements);
-  initImageUpload(elements);
-  initVideoUpload(elements);
+  initNavigation();
+
+  const page = collectPageElements();
+  const tabs = [IMAGE_UPLOAD, VIDEO_UPLOAD].map((config) => initUpload(config, page));
+  initTabs(tabs);
+  initClearButton(page);
+  await showHistory(page);
 }
 
-function collectElements() {
+function collectPageElements() {
   return {
-    imageTabBtn: document.getElementById("imageTabBtn"),
-    videoTabBtn: document.getElementById("videoTabBtn"),
-    imageUploadTab: document.getElementById("imageUploadTab"),
-    videoUploadTab: document.getElementById("videoUploadTab"),
-    imageUploadForm: document.getElementById("imageUploadForm"),
-    imageFileInput: document.getElementById("imageFileUpload"),
-    imageUploadButton: document.getElementById("imageUploadButton"),
-    videoUploadForm: document.getElementById("videoUploadForm"),
-    videoFileInput: document.getElementById("videoFileUpload"),
-    videoUploadButton: document.getElementById("videoUploadButton"),
     uploadStatus: document.getElementById("uploadStatus"),
     resultSection: document.getElementById("resultSection"),
     resultImage: document.getElementById("resultImage"),
     resultVideo: document.getElementById("resultVideo"),
-    mediaContainer: document.getElementById("mediaContainer"),
     predictedLabel: document.getElementById("predictedLabel"),
     dateRecognized: document.getElementById("dateRecognized"),
     predictionScore: document.getElementById("predictionScore"),
+    confidenceBlock: document.getElementById("confidenceBlock"),
+    confidenceFill: document.getElementById("confidenceFill"),
     lowConfidenceMessage: document.getElementById("lowConfidenceMessage"),
+    videoStatsSlot: document.getElementById("videoStatsSlot"),
     historyList: document.getElementById("historyList"),
+    historyEmpty: document.getElementById("historyEmpty"),
+    clearHistory: document.getElementById("clearHistory"),
   };
 }
 
-function initTabs({ imageTabBtn, videoTabBtn, imageUploadTab, videoUploadTab }) {
-  imageTabBtn.addEventListener("click", () => {
-    imageTabBtn.classList.add("active");
-    videoTabBtn.classList.remove("active");
-    imageUploadTab.style.display = "block";
-    videoUploadTab.style.display = "none";
-  });
+/* -------------------------------------------------------------------------
+   Tabs
+   ------------------------------------------------------------------------- */
 
-  videoTabBtn.addEventListener("click", () => {
-    videoTabBtn.classList.add("active");
-    imageTabBtn.classList.remove("active");
-    videoUploadTab.style.display = "block";
-    imageUploadTab.style.display = "none";
+function initTabs(tabs) {
+  tabs.forEach((tab) => {
+    tab.button.addEventListener("click", () => {
+      tabs.forEach((other) => {
+        const isSelected = other === tab;
+        other.button.classList.toggle("is-active", isSelected);
+        other.panel.hidden = !isSelected;
+      });
+    });
   });
 }
 
-function initImageUpload(elements) {
-  const { imageUploadForm, imageFileInput, imageUploadButton, uploadStatus } = elements;
+/* -------------------------------------------------------------------------
+   Upload
+   ------------------------------------------------------------------------- */
 
-  imageUploadForm.addEventListener("submit", async (event) => {
+function initUpload(config, page) {
+  const elements = {
+    dropzone: document.getElementById(config.dropzone),
+    input: document.getElementById(config.input),
+    form: document.getElementById(config.form),
+    button: document.getElementById(config.button),
+    summary: document.getElementById(config.summary),
+    fileName: document.getElementById(config.fileName),
+    fileSize: document.getElementById(config.fileSize),
+    thumbnail: config.thumbnail ? document.getElementById(config.thumbnail) : null,
+  };
+
+  initDropzone(config, elements, page);
+  initSubmit(config, elements, page);
+
+  return {
+    button: document.getElementById(config.tab),
+    panel: document.getElementById(config.panel),
+  };
+}
+
+function initDropzone(config, elements, page) {
+  const { dropzone, input } = elements;
+
+  input.addEventListener("change", () => showSelectedFile(elements, input.files[0]));
+
+  dropzone.addEventListener("dragover", (event) => {
     event.preventDefault();
+    dropzone.classList.add("is-dragging");
+  });
 
-    const file = imageFileInput.files[0];
+  // `dragleave` also fires when the pointer crosses onto a child element, so
+  // the highlight is only dropped once the pointer has left the dropzone.
+  dropzone.addEventListener("dragleave", (event) => {
+    if (!dropzone.contains(event.relatedTarget)) {
+      dropzone.classList.remove("is-dragging");
+    }
+  });
+
+  dropzone.addEventListener("drop", (event) => {
+    event.preventDefault();
+    dropzone.classList.remove("is-dragging");
+
+    const [file] = event.dataTransfer.files;
     if (!file) {
-      alert("Please select an image file.");
       return;
     }
 
-    uploadStatus.textContent = "Uploading...";
-    imageUploadButton.disabled = true;
-
-    try {
-      const result = await uploadFile("/api/upload/image", "formFile", file);
-      showImageResult(elements, result);
-      uploadStatus.textContent = "Image upload successful!";
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      uploadStatus.textContent = "Error uploading image.";
-    } finally {
-      imageUploadButton.disabled = false;
-    }
-  });
-}
-
-function initVideoUpload(elements) {
-  const { videoUploadForm, videoFileInput, videoUploadButton, uploadStatus } = elements;
-
-  videoUploadForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const file = videoFileInput.files[0];
-    if (!file) {
-      alert("Please select a video file.");
+    if (!isAccepted(file, input.accept)) {
+      showError(page.uploadStatus, config.wrongType);
       return;
     }
 
-    uploadStatus.textContent = "Uploading video...";
-    videoUploadButton.disabled = true;
+    // A dropped file has to be handed to the input, which is what the form
+    // reads from; assigning `files` does not raise a change event.
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    input.files = transfer.files;
+    showSelectedFile(elements, file);
+  });
+}
+
+// Windows reports no type at all for some AVI files; the backend validates
+// the upload regardless, so only a positively wrong type is refused here.
+function isAccepted(file, accept) {
+  const types = accept.split(",").map((type) => type.trim());
+  return !file.type || types.includes(file.type);
+}
+
+function showSelectedFile({ dropzone, summary, fileName, fileSize, thumbnail }, file) {
+  if (!file) {
+    dropzone.classList.remove("has-file");
+    summary.hidden = true;
+    return;
+  }
+
+  fileName.textContent = file.name;
+  fileSize.textContent = formatFileSize(file.size);
+
+  if (thumbnail) {
+    // The previous preview is released before its URL is replaced, so choosing
+    // several files in a row does not retain every one of them.
+    URL.revokeObjectURL(thumbnail.src);
+    thumbnail.src = URL.createObjectURL(file);
+  }
+
+  dropzone.classList.add("has-file");
+  summary.hidden = false;
+}
+
+function formatFileSize(bytes) {
+  let size = bytes;
+  let unit = 0;
+
+  while (size >= BYTES_PER_UNIT && unit < SIZE_UNITS.length - 1) {
+    size /= BYTES_PER_UNIT;
+    unit += 1;
+  }
+
+  const rounded = unit === 0 || size >= 10 ? Math.round(size) : size.toFixed(1);
+  return `${rounded} ${SIZE_UNITS[unit]}`;
+}
+
+function initSubmit(config, elements, page) {
+  const { form, input, button } = elements;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const file = input.files[0];
+    if (!file) {
+      showError(page.uploadStatus, config.missingFile);
+      return;
+    }
+
+    showProgress(page.uploadStatus, config.progress);
+    button.disabled = true;
 
     try {
-      const result = await uploadFile("/api/upload/video", "videoFile", file);
-      showVideoResult(elements, result);
-      uploadStatus.textContent = "Video upload successful!";
+      const formData = new FormData();
+      formData.append(config.field, file);
+
+      const result = await apiFetch(config.path, { method: "POST", body: formData });
+      addRecognition(page, config.toRecognition(result));
+      showSuccess(page.uploadStatus, config.success);
     } catch (error) {
-      console.error("Video upload failed:", error);
-      uploadStatus.textContent = "Error uploading video.";
+      console.error(`${config.path} failed:`, error);
+      // The error explains itself, so an offline backend is not reported as a
+      // problem with the file the user chose.
+      showError(page.uploadStatus, error.message);
     } finally {
-      videoUploadButton.disabled = false;
+      button.disabled = false;
     }
   });
 }
 
-function uploadFile(path, fieldName, file) {
-  const formData = new FormData();
-  formData.append(fieldName, file);
 
-  return apiFetch(path, { method: "POST", body: formData });
-}
+/* -------------------------------------------------------------------------
+   Recognitions
 
-function showImageResult(elements, result) {
-  const { resultImage, resultVideo, resultSection } = elements;
-  const imageUrl = resolveUrl(result.imagePath);
-  const recognizedAt = new Date(result.dateRecognized).toLocaleString();
+   The history lives on the server, so it is the same in every tab and on every
+   device. An upload and a stored entry render through the same path, so the
+   page looks the same whether the result has just arrived or was loaded back.
+   Only the animations differ.
+   ------------------------------------------------------------------------- */
 
-  resultImage.src = imageUrl;
-  resultImage.style.display = "block";
-  resultVideo.style.display = "none";
-  removeVideoStats();
-  setSinglePredictionVisible(resultSection, true);
-
-  elements.predictedLabel.textContent = result.recognizedAnimal;
-  elements.dateRecognized.textContent = recognizedAt;
-  elements.predictionScore.textContent = `${(result.predictionScore * 100).toFixed(2)}%`;
-  elements.lowConfidenceMessage.style.display =
-    result.predictionScore < LOW_CONFIDENCE_THRESHOLD ? "block" : "none";
-
-  resultSection.style.display = "block";
-
-  prependHistoryItem(elements.historyList, {
+function toImageRecognition(result) {
+  return {
     type: "image",
-    url: imageUrl,
+    url: resolveUrl(result.imagePath),
     animal: result.recognizedAnimal,
-    date: recognizedAt,
-  });
+    date: result.dateRecognized,
+    score: result.predictionScore,
+  };
 }
 
-function showVideoResult(elements, result) {
-  const { resultImage, resultVideo, resultSection, mediaContainer } = elements;
-  const videoUrl = resolveUrl(result.videoPath);
-  const recognizedAt = new Date().toLocaleString();
-
-  resultVideo.src = videoUrl;
-  resultVideo.style.display = "block";
-  resultImage.style.display = "none";
-  removeVideoStats();
-  setSinglePredictionVisible(resultSection, false);
-
-  elements.dateRecognized.textContent = recognizedAt;
-  resultSection.style.display = "block";
-
-  const videoStats = createVideoStats(result);
-  mediaContainer.after(videoStats);
-
-  animateFrameCounter(videoStats, result.framesProcessed);
-  renderDetectedAnimals(videoStats, result.topAnimals);
-
-  const [topAnimal] = result.topAnimals;
-  prependHistoryItem(elements.historyList, {
+function toVideoRecognition(result) {
+  return {
     type: "video",
-    url: videoUrl,
-    animal: topAnimal?.animal ?? "Unknown",
-    date: recognizedAt,
+    url: resolveUrl(result.videoPath),
+    // A video has no single prediction, so its strongest match stands in for
+    // one in the history list.
+    animal: result.topAnimals[0]?.animal ?? "Unknown",
+    date: new Date().toISOString(),
     framesProcessed: result.framesProcessed,
-    allAnimals: result.topAnimals.map((entry) => entry.animal).join(", "),
+    topAnimals: result.topAnimals,
+  };
+}
+
+// The per-animal breakdown of a video is not stored, so a recognition loaded
+// back from the server carries everything except that.
+function fromHistoryItem(item) {
+  return {
+    type: item.isVideo ? "video" : "image",
+    url: resolveUrl(item.mediaPath),
+    animal: item.recognizedAnimal,
+    date: item.dateRecognized,
+    score: item.predictionScore,
+    framesProcessed: item.framesProcessed,
+  };
+}
+
+async function showHistory(page) {
+  let recognitions;
+
+  try {
+    const history = await apiFetch(HISTORY_PATH);
+    recognitions = history.map(fromHistoryItem);
+  } catch (error) {
+    console.error("Could not load the history:", error);
+    page.historyEmpty.textContent = error.message;
+    return;
+  }
+
+  if (recognitions.length === 0) {
+    return;
+  }
+
+  const [latest] = recognitions;
+  // A stored result is not new, so it appears settled rather than counting and
+  // filling as though it had just been recognised.
+  renderResult(page, latest, { animate: false });
+  page.historyList.replaceChildren(...recognitions.map(createHistoryCard));
+  showHistoryControls(page);
+}
+
+function addRecognition(page, recognition) {
+  renderResult(page, recognition, { animate: true });
+  page.historyList.prepend(createHistoryCard(recognition));
+  showHistoryControls(page);
+}
+
+function showHistoryControls(page) {
+  page.historyEmpty.hidden = true;
+  page.clearHistory.hidden = false;
+}
+
+function initClearButton(page) {
+  page.clearHistory.addEventListener("click", async () => {
+    page.clearHistory.disabled = true;
+
+    try {
+      // The recognitions are kept on the server, where the search and
+      // statistics pages still count them; only this history is cleared.
+      await apiFetch(HISTORY_PATH, { method: "DELETE" });
+    } catch (error) {
+      console.error("Could not clear the history:", error);
+      showError(page.uploadStatus, error.message);
+      return;
+    } finally {
+      page.clearHistory.disabled = false;
+    }
+
+    page.historyList.replaceChildren();
+    page.videoStatsSlot.replaceChildren();
+    page.historyEmpty.hidden = false;
+    page.resultSection.hidden = true;
+    page.clearHistory.hidden = true;
+    hideMessage(page.uploadStatus);
   });
 }
 
-function removeVideoStats() {
-  document.getElementById("videoStats")?.remove();
+/* -------------------------------------------------------------------------
+   Result card
+   ------------------------------------------------------------------------- */
+
+function renderResult(page, recognition, { animate }) {
+  const isVideo = recognition.type === "video";
+
+  page.resultImage.hidden = isVideo;
+  page.resultVideo.hidden = !isVideo;
+  (isVideo ? page.resultVideo : page.resultImage).src = recognition.url;
+
+  page.dateRecognized.textContent = formatDate(recognition.date);
+  page.videoStatsSlot.replaceChildren();
+
+  if (isVideo) {
+    renderVideoBreakdown(page, recognition, animate);
+  } else {
+    renderPrediction(page, recognition, animate);
+  }
+
+  page.resultSection.hidden = false;
 }
 
-// The recognised animal and accuracy paragraphs describe a single prediction,
-// which a video result does not have.
-function setSinglePredictionVisible(resultSection, visible) {
-  const paragraphs = resultSection.querySelectorAll("p");
-  const display = visible ? "block" : "none";
+function renderPrediction(page, recognition, animate) {
+  page.predictedLabel.textContent = recognition.animal;
+  page.predictedLabel.hidden = false;
 
-  if (paragraphs.length >= 3) {
-    paragraphs[0].style.display = display;
-    paragraphs[2].style.display = display;
+  // Recognitions stored before the score was recorded have none, so the meter
+  // is left out rather than reporting them as a confident failure.
+  const hasScore = recognition.score > 0;
+  page.confidenceBlock.hidden = !hasScore;
+  page.lowConfidenceMessage.hidden =
+    !hasScore || recognition.score >= LOW_CONFIDENCE_THRESHOLD;
+
+  if (!hasScore) {
+    return;
+  }
+
+  const percentage = recognition.score * 100;
+  page.confidenceBlock.className = `confidence ${confidenceVariant(recognition.score)}`;
+  page.predictionScore.textContent = `${percentage.toFixed(2)}%`;
+
+  if (!animate) {
+    page.confidenceFill.style.width = `${percentage}%`;
+    return;
+  }
+
+  // Restarting from zero on the next frame lets the width transition run,
+  // rather than the bar jumping straight to its new length.
+  page.confidenceFill.style.width = "0%";
+  requestAnimationFrame(() => {
+    page.confidenceFill.style.width = `${percentage}%`;
+  });
+}
+
+function confidenceVariant(score) {
+  if (score >= HIGH_CONFIDENCE_THRESHOLD) {
+    return "confidence--high";
+  }
+
+  return score >= LOW_CONFIDENCE_THRESHOLD ? "confidence--medium" : "confidence--low";
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleString();
+}
+
+/* -------------------------------------------------------------------------
+   Video breakdown
+   ------------------------------------------------------------------------- */
+
+function renderVideoBreakdown(page, recognition, animate) {
+  // A video has no single prediction, so the animal heading and the accuracy
+  // meter give way to the per-animal breakdown below.
+  page.predictedLabel.hidden = true;
+  page.confidenceBlock.hidden = true;
+  page.lowConfidenceMessage.hidden = true;
+
+  const videoStats = createVideoStats(recognition);
+  page.videoStatsSlot.replaceChildren(videoStats);
+
+  showFrameCount(videoStats, recognition.framesProcessed, animate);
+
+  if (recognition.topAnimals?.length) {
+    renderDetectedAnimals(videoStats, recognition.topAnimals, animate);
   }
 }
 
-function createVideoStats({ topAnimals }) {
+function createVideoStats({ topAnimals = [] }) {
   const container = document.createElement("div");
-  container.id = "videoStats";
   container.className = "video-stats";
   container.innerHTML = `
     <div class="frames-counter">
-      <div class="counter-label">Frames Processed</div>
-      <div class="counter-value" id="framesCount">0</div>
+      <div class="counter-label">Frames processed</div>
+      <div class="counter-value" data-frames-count>0</div>
       <div class="counter-progress">
-        <div class="progress-bar" id="framesProgressBar"></div>
+        <div class="progress-bar" data-frames-progress></div>
       </div>
     </div>
-    <div class="animals-detected">
-      <h3>Animals Detected (${topAnimals.length})</h3>
-      <div class="animals-grid" id="animalsGrid"></div>
-    </div>
   `;
+
+  if (topAnimals.length > 0) {
+    const detected = document.createElement("div");
+    detected.className = "animals-detected";
+    detected.innerHTML = `
+      <h3>Animals detected (${topAnimals.length})</h3>
+      <div class="animals-grid" data-animals-grid></div>
+    `;
+    container.append(detected);
+  }
 
   return container;
 }
 
-function animateFrameCounter(videoStats, targetFrames) {
-  const counter = videoStats.querySelector("#framesCount");
-  const progressBar = videoStats.querySelector("#framesProgressBar");
-  let frames = 0;
+function showFrameCount(videoStats, targetFrames, animate) {
+  const counter = videoStats.querySelector("[data-frames-count]");
+  const progressBar = videoStats.querySelector("[data-frames-progress]");
 
-  const interval = setInterval(() => {
-    frames += 1;
+  const paint = (frames, progress) => {
     counter.textContent = frames;
-    progressBar.style.width = `${(frames / targetFrames) * 100}%`;
+    progressBar.style.width = `${progress * 100}%`;
+  };
 
-    if (frames >= targetFrames) {
-      clearInterval(interval);
-    }
-  }, FRAME_COUNTER_INTERVAL_MS);
+  if (animate) {
+    animateCount(targetFrames, paint);
+  } else {
+    paint(targetFrames > 0 ? targetFrames : 0, 1);
+  }
 }
 
-function renderDetectedAnimals(videoStats, topAnimals) {
-  const grid = videoStats.querySelector("#animalsGrid");
+/**
+ * Counts up to `target` over a fixed duration, reporting the current value and
+ * how far along it is. A target the backend could not report, such as a video
+ * it failed to read, settles at zero instead of counting forever.
+ */
+function animateCount(target, onStep) {
+  if (!(target > 0)) {
+    onStep(0, 1);
+    return;
+  }
+
+  const start = performance.now();
+
+  const step = (now) => {
+    const progress = Math.min((now - start) / COUNTER_ANIMATION_MS, 1);
+    onStep(Math.round(target * progress), progress);
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  };
+
+  requestAnimationFrame(step);
+}
+
+function renderDetectedAnimals(videoStats, topAnimals, animate) {
+  const grid = videoStats.querySelector("[data-animals-grid]");
 
   topAnimals.forEach((entry, index) => {
     const card = createAnimalCard(entry, index);
     grid.append(card);
 
     const targetScore = Math.round(parseFloat(entry.averageScore) * 100);
+
+    if (!animate) {
+      showScore(card, Number.isFinite(targetScore) ? targetScore : 0);
+      return;
+    }
+
     setTimeout(
-      () => animateScore(card, targetScore),
+      () => animateCount(targetScore, (score) => showScore(card, score)),
       SCORE_ANIMATION_DELAY_MS + index * SCORE_ANIMATION_STAGGER_MS,
     );
   });
@@ -251,14 +527,15 @@ function renderDetectedAnimals(videoStats, topAnimals) {
 function createAnimalCard({ animal }, index) {
   const card = document.createElement("div");
   card.className = "animal-card";
-  card.style.animationDelay = `${index * 0.2}s`;
+  card.style.animationDelay = `${index * 0.08}s`;
 
   const icon = document.createElement("div");
   icon.className = `animal-icon ${animal.toLowerCase()}`;
   icon.innerHTML = `
     <svg viewBox="0 0 24 24" class="animal-svg">
-      <circle cx="12" cy="12" r="10" fill="#f0f0f0"></circle>
-      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="8px"></text>
+      <circle cx="12" cy="12" r="11" fill="#eaf4fd"></circle>
+      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+            font-size="10px" font-weight="700" fill="#005f99"></text>
     </svg>
   `;
   icon.querySelector("text").textContent = animal.charAt(0).toUpperCase();
@@ -280,71 +557,52 @@ function createAnimalCard({ animal }, index) {
   return card;
 }
 
-function animateScore(card, targetScore) {
-  const fill = card.querySelector(".animal-score-fill");
-  const percentage = card.querySelector(".animal-score-percentage");
-  let score = 0;
-
-  const interval = setInterval(() => {
-    score += 1;
-    fill.style.width = `${score}%`;
-    percentage.textContent = `${score}%`;
-
-    if (score >= targetScore) {
-      clearInterval(interval);
-    }
-  }, SCORE_COUNTER_INTERVAL_MS);
+function showScore(card, score) {
+  card.querySelector(".animal-score-fill").style.width = `${score}%`;
+  card.querySelector(".animal-score-percentage").textContent = `${score}%`;
 }
 
-function prependHistoryItem(historyList, item) {
-  const container = document.createElement("li");
-  container.className = "history-item-container";
-  container.append(item.type === "image" ? createImageHistory(item) : createVideoHistory(item));
-  historyList.prepend(container);
-}
+/* -------------------------------------------------------------------------
+   History
+   ------------------------------------------------------------------------- */
 
-function createImageHistory({ url, animal, date }) {
-  const preview = document.createElement("img");
-  preview.src = url;
-  preview.alt = "Image";
-  preview.width = 100;
+function createHistoryCard({ type, url, animal, date, framesProcessed, topAnimals }) {
+  const isVideo = type === "video";
 
-  return createHistoryItem(preview, animal, [
-    { className: "date", text: date },
-    { className: "result", text: "Type: Image" },
-  ]);
-}
+  const media = document.createElement(isVideo ? "video" : "img");
+  media.className = "history-card__media";
+  media.src = url;
+  if (!isVideo) {
+    media.alt = animal;
+  }
 
-function createVideoHistory({ url, animal, date, framesProcessed, allAnimals }) {
-  const preview = document.createElement("video");
-  preview.width = 100;
-  preview.height = 100;
-  preview.src = url;
+  const badge = document.createElement("span");
+  badge.className = isVideo ? "badge badge--video" : "badge";
+  badge.textContent = isVideo ? "Video" : "Image";
 
-  return createHistoryItem(preview, animal, [
-    { className: "date", text: date },
-    { className: "result", text: `Video: ${framesProcessed} frames analyzed` },
-    { className: "animals-found", text: allAnimals },
-  ]);
-}
+  const title = document.createElement("h4");
+  title.className = "history-card__title";
+  title.textContent = animal;
 
-function createHistoryItem(preview, animal, rows) {
-  const heading = document.createElement("h4");
-  heading.textContent = animal;
+  const meta = document.createElement("p");
+  meta.className = "history-card__meta";
+  meta.textContent = isVideo
+    ? `${formatDate(date)} · ${framesProcessed} frames`
+    : formatDate(date);
 
-  const details = document.createElement("div");
-  details.className = "history-details";
-  details.append(heading, ...rows.map(createDetailRow));
+  const body = document.createElement("div");
+  body.className = "history-card__body";
+  body.append(badge, title, meta);
 
-  const item = document.createElement("div");
-  item.className = "history-item";
-  item.append(preview, details);
-  return item;
-}
+  if (isVideo && topAnimals?.length > 1) {
+    const extra = document.createElement("p");
+    extra.className = "history-card__extra";
+    extra.textContent = topAnimals.map((entry) => entry.animal).join(", ");
+    body.append(extra);
+  }
 
-function createDetailRow({ className, text }) {
-  const row = document.createElement("div");
-  row.className = className;
-  row.textContent = text;
-  return row;
+  const card = document.createElement("li");
+  card.className = "history-card";
+  card.append(media, body);
+  return card;
 }

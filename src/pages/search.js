@@ -2,6 +2,7 @@ import { apiFetch, resolveUrl } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
 import { initNavigation } from "../shared/nav.js";
 
+const NOT_FOUND_STATUS = 404;
 const SEARCH_DEBOUNCE_MS = 500;
 const MIN_QUERY_LENGTH = 2;
 const MAX_IMAGES_PER_CARD = 6;
@@ -22,10 +23,11 @@ const FALLBACK_IMAGE =
 let elements;
 let debounceTimeout;
 
-initNavigation();
-
 // Module scripts are deferred, so the document is already parsed here.
+// The guard runs first, so an expired session never paints the signed-in nav.
 if (requireAuthentication()) {
+  initNavigation();
+
   elements = collectElements();
   initSearchControls();
   renderSuggestions(POPULAR_ANIMALS);
@@ -80,13 +82,16 @@ async function search(query) {
     displayResults(results, query);
   } catch (error) {
     console.error("Search failed:", error);
+
     // The backend answers 404 when nothing matches, which is not an error here.
-    showEmptyState(
-      error.status === 404 ? "No animals found" : "Search Error",
-      error.status === 404
-        ? "Try a different search term or check your spelling"
-        : "Something went wrong. Please try again.",
-    );
+    if (error.status === NOT_FOUND_STATUS) {
+      showEmptyState("No animals found", "Try a different search term or check your spelling");
+      return;
+    }
+
+    // Anything else reports itself, so an unreachable backend says so rather
+    // than implying the search term was at fault.
+    showEmptyState("Search Error", error.message);
   }
 }
 
