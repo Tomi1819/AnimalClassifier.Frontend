@@ -1,6 +1,6 @@
 import { apiFetch, resolveUrl } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
-import { showError, showProgress, showSuccess } from "../shared/feedback.js";
+import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
@@ -10,6 +10,7 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
 const COUNTER_ANIMATION_MS = 1200;
 const SCORE_ANIMATION_DELAY_MS = 500;
 const SCORE_ANIMATION_STAGGER_MS = 200;
+const HISTORY_PATH = "/api/upload/history";
 const BYTES_PER_UNIT = 1024;
 const SIZE_UNITS = ["B", "KB", "MB", "GB"];
 
@@ -32,7 +33,7 @@ const IMAGE_UPLOAD = {
   wrongType: "That file is not a JPG or PNG image.",
   progress: "Uploading image...",
   success: "Image upload successful!",
-  showResult: showImageResult,
+  toRecognition: toImageRecognition,
 };
 
 const VIDEO_UPLOAD = {
@@ -51,7 +52,7 @@ const VIDEO_UPLOAD = {
   wrongType: "That file is not an MP4, MOV or AVI video.",
   progress: "Uploading video...",
   success: "Video upload successful!",
-  showResult: showVideoResult,
+  toRecognition: toVideoRecognition,
 };
 
 // Module scripts are deferred, so the document is already parsed here.
@@ -62,6 +63,8 @@ if (requireAuthentication()) {
   const page = collectPageElements();
   const tabs = [IMAGE_UPLOAD, VIDEO_UPLOAD].map((config) => initUpload(config, page));
   initTabs(tabs);
+  initClearButton(page);
+  await showHistory(page);
 }
 
 function collectPageElements() {
@@ -79,6 +82,7 @@ function collectPageElements() {
     videoStatsSlot: document.getElementById("videoStatsSlot"),
     historyList: document.getElementById("historyList"),
     historyEmpty: document.getElementById("historyEmpty"),
+    clearHistory: document.getElementById("clearHistory"),
   };
 }
 
@@ -225,7 +229,7 @@ function initSubmit(config, elements, page) {
       formData.append(config.field, file);
 
       const result = await apiFetch(config.path, { method: "POST", body: formData });
-      config.showResult(page, result);
+      addRecognition(page, config.toRecognition(result));
       showSuccess(page.uploadStatus, config.success);
     } catch (error) {
       console.error(`${config.path} failed:`, error);
@@ -238,74 +242,158 @@ function initSubmit(config, elements, page) {
   });
 }
 
+
 /* -------------------------------------------------------------------------
-   Results
+   Recognitions
+
+   The history lives on the server, so it is the same in every tab and on every
+   device. An upload and a stored entry render through the same path, so the
+   page looks the same whether the result has just arrived or was loaded back.
+   Only the animations differ.
    ------------------------------------------------------------------------- */
 
-function showImageResult(page, result) {
-  const imageUrl = resolveUrl(result.imagePath);
-  const recognisedAt = new Date(result.dateRecognized).toLocaleString();
+function toImageRecognition(result) {
+  return {
+    type: "image",
+    url: resolveUrl(result.imagePath),
+    animal: result.recognizedAnimal,
+    date: result.dateRecognized,
+    score: result.predictionScore,
+  };
+}
 
-  page.resultImage.src = imageUrl;
-  page.resultImage.hidden = false;
-  page.resultVideo.hidden = true;
+function toVideoRecognition(result) {
+  return {
+    type: "video",
+    url: resolveUrl(result.videoPath),
+    // A video has no single prediction, so its strongest match stands in for
+    // one in the history list.
+    animal: result.topAnimals[0]?.animal ?? "Unknown",
+    date: new Date().toISOString(),
+    framesProcessed: result.framesProcessed,
+    topAnimals: result.topAnimals,
+  };
+}
+
+// The per-animal breakdown of a video is not stored, so a recognition loaded
+// back from the server carries everything except that.
+function fromHistoryItem(item) {
+  return {
+    type: item.isVideo ? "video" : "image",
+    url: resolveUrl(item.mediaPath),
+    animal: item.recognizedAnimal,
+    date: item.dateRecognized,
+    score: item.predictionScore,
+    framesProcessed: item.framesProcessed,
+  };
+}
+
+async function showHistory(page) {
+  let recognitions;
+
+  try {
+    const history = await apiFetch(HISTORY_PATH);
+    recognitions = history.map(fromHistoryItem);
+  } catch (error) {
+    console.error("Could not load the history:", error);
+    page.historyEmpty.textContent = error.message;
+    return;
+  }
+
+  if (recognitions.length === 0) {
+    return;
+  }
+
+  const [latest] = recognitions;
+  // A stored result is not new, so it appears settled rather than counting and
+  // filling as though it had just been recognised.
+  renderResult(page, latest, { animate: false });
+  page.historyList.replaceChildren(...recognitions.map(createHistoryCard));
+  showHistoryControls(page);
+}
+
+function addRecognition(page, recognition) {
+  renderResult(page, recognition, { animate: true });
+  page.historyList.prepend(createHistoryCard(recognition));
+  showHistoryControls(page);
+}
+
+function showHistoryControls(page) {
+  page.historyEmpty.hidden = true;
+  page.clearHistory.hidden = false;
+}
+
+function initClearButton(page) {
+  page.clearHistory.addEventListener("click", async () => {
+    page.clearHistory.disabled = true;
+
+    try {
+      // The recognitions are kept on the server, where the search and
+      // statistics pages still count them; only this history is cleared.
+      await apiFetch(HISTORY_PATH, { method: "DELETE" });
+    } catch (error) {
+      console.error("Could not clear the history:", error);
+      showError(page.uploadStatus, error.message);
+      return;
+    } finally {
+      page.clearHistory.disabled = false;
+    }
+
+    page.historyList.replaceChildren();
+    page.videoStatsSlot.replaceChildren();
+    page.historyEmpty.hidden = false;
+    page.resultSection.hidden = true;
+    page.clearHistory.hidden = true;
+    hideMessage(page.uploadStatus);
+  });
+}
+
+/* -------------------------------------------------------------------------
+   Result card
+   ------------------------------------------------------------------------- */
+
+function renderResult(page, recognition, { animate }) {
+  const isVideo = recognition.type === "video";
+
+  page.resultImage.hidden = isVideo;
+  page.resultVideo.hidden = !isVideo;
+  (isVideo ? page.resultVideo : page.resultImage).src = recognition.url;
+
+  page.dateRecognized.textContent = formatDate(recognition.date);
   page.videoStatsSlot.replaceChildren();
 
-  page.predictedLabel.textContent = result.recognizedAnimal;
+  if (isVideo) {
+    renderVideoBreakdown(page, recognition, animate);
+  } else {
+    renderPrediction(page, recognition, animate);
+  }
+
+  page.resultSection.hidden = false;
+}
+
+function renderPrediction(page, recognition, animate) {
+  page.predictedLabel.textContent = recognition.animal;
   page.predictedLabel.hidden = false;
-  page.dateRecognized.textContent = recognisedAt;
-  showConfidence(page, result.predictionScore);
 
-  page.resultSection.hidden = false;
+  // Recognitions stored before the score was recorded have none, so the meter
+  // is left out rather than reporting them as a confident failure.
+  const hasScore = recognition.score > 0;
+  page.confidenceBlock.hidden = !hasScore;
+  page.lowConfidenceMessage.hidden =
+    !hasScore || recognition.score >= LOW_CONFIDENCE_THRESHOLD;
 
-  prependHistoryCard(page, {
-    type: "image",
-    url: imageUrl,
-    animal: result.recognizedAnimal,
-    date: recognisedAt,
-  });
-}
+  if (!hasScore) {
+    return;
+  }
 
-function showVideoResult(page, result) {
-  const videoUrl = resolveUrl(result.videoPath);
-  const recognisedAt = new Date().toLocaleString();
-
-  page.resultVideo.src = videoUrl;
-  page.resultVideo.hidden = false;
-  page.resultImage.hidden = true;
-
-  // A video has no single prediction, so the animal heading and the accuracy
-  // meter are replaced by the per-animal breakdown below.
-  page.predictedLabel.hidden = true;
-  page.confidenceBlock.hidden = true;
-  page.lowConfidenceMessage.hidden = true;
-  page.dateRecognized.textContent = recognisedAt;
-
-  const videoStats = createVideoStats(result);
-  page.videoStatsSlot.replaceChildren(videoStats);
-  page.resultSection.hidden = false;
-
-  animateFrameCounter(videoStats, result.framesProcessed);
-  renderDetectedAnimals(videoStats, result.topAnimals);
-
-  const [topAnimal] = result.topAnimals;
-  prependHistoryCard(page, {
-    type: "video",
-    url: videoUrl,
-    animal: topAnimal?.animal ?? "Unknown",
-    date: recognisedAt,
-    detail: `${result.framesProcessed} frames analysed`,
-    animals: result.topAnimals.map((entry) => entry.animal).join(", "),
-  });
-}
-
-function showConfidence(page, score) {
-  const percentage = score * 100;
-
-  page.confidenceBlock.className = `confidence ${confidenceVariant(score)}`;
-  page.confidenceBlock.hidden = false;
+  const percentage = recognition.score * 100;
+  page.confidenceBlock.className = `confidence ${confidenceVariant(recognition.score)}`;
   page.predictionScore.textContent = `${percentage.toFixed(2)}%`;
-  page.lowConfidenceMessage.hidden = score >= LOW_CONFIDENCE_THRESHOLD;
+
+  if (!animate) {
+    page.confidenceFill.style.width = `${percentage}%`;
+    return;
+  }
 
   // Restarting from zero on the next frame lets the width transition run,
   // rather than the bar jumping straight to its new length.
@@ -323,11 +411,32 @@ function confidenceVariant(score) {
   return score >= LOW_CONFIDENCE_THRESHOLD ? "confidence--medium" : "confidence--low";
 }
 
+function formatDate(date) {
+  return new Date(date).toLocaleString();
+}
+
 /* -------------------------------------------------------------------------
    Video breakdown
    ------------------------------------------------------------------------- */
 
-function createVideoStats({ topAnimals }) {
+function renderVideoBreakdown(page, recognition, animate) {
+  // A video has no single prediction, so the animal heading and the accuracy
+  // meter give way to the per-animal breakdown below.
+  page.predictedLabel.hidden = true;
+  page.confidenceBlock.hidden = true;
+  page.lowConfidenceMessage.hidden = true;
+
+  const videoStats = createVideoStats(recognition);
+  page.videoStatsSlot.replaceChildren(videoStats);
+
+  showFrameCount(videoStats, recognition.framesProcessed, animate);
+
+  if (recognition.topAnimals?.length) {
+    renderDetectedAnimals(videoStats, recognition.topAnimals, animate);
+  }
+}
+
+function createVideoStats({ topAnimals = [] }) {
   const container = document.createElement("div");
   container.className = "video-stats";
   container.innerHTML = `
@@ -338,23 +447,35 @@ function createVideoStats({ topAnimals }) {
         <div class="progress-bar" data-frames-progress></div>
       </div>
     </div>
-    <div class="animals-detected">
+  `;
+
+  if (topAnimals.length > 0) {
+    const detected = document.createElement("div");
+    detected.className = "animals-detected";
+    detected.innerHTML = `
       <h3>Animals detected (${topAnimals.length})</h3>
       <div class="animals-grid" data-animals-grid></div>
-    </div>
-  `;
+    `;
+    container.append(detected);
+  }
 
   return container;
 }
 
-function animateFrameCounter(videoStats, targetFrames) {
+function showFrameCount(videoStats, targetFrames, animate) {
   const counter = videoStats.querySelector("[data-frames-count]");
   const progressBar = videoStats.querySelector("[data-frames-progress]");
 
-  animateCount(targetFrames, (frames, progress) => {
+  const paint = (frames, progress) => {
     counter.textContent = frames;
     progressBar.style.width = `${progress * 100}%`;
-  });
+  };
+
+  if (animate) {
+    animateCount(targetFrames, paint);
+  } else {
+    paint(targetFrames > 0 ? targetFrames : 0, 1);
+  }
 }
 
 /**
@@ -382,7 +503,7 @@ function animateCount(target, onStep) {
   requestAnimationFrame(step);
 }
 
-function renderDetectedAnimals(videoStats, topAnimals) {
+function renderDetectedAnimals(videoStats, topAnimals, animate) {
   const grid = videoStats.querySelector("[data-animals-grid]");
 
   topAnimals.forEach((entry, index) => {
@@ -390,8 +511,14 @@ function renderDetectedAnimals(videoStats, topAnimals) {
     grid.append(card);
 
     const targetScore = Math.round(parseFloat(entry.averageScore) * 100);
+
+    if (!animate) {
+      showScore(card, Number.isFinite(targetScore) ? targetScore : 0);
+      return;
+    }
+
     setTimeout(
-      () => animateScore(card, targetScore),
+      () => animateCount(targetScore, (score) => showScore(card, score)),
       SCORE_ANIMATION_DELAY_MS + index * SCORE_ANIMATION_STAGGER_MS,
     );
   });
@@ -430,26 +557,16 @@ function createAnimalCard({ animal }, index) {
   return card;
 }
 
-function animateScore(card, targetScore) {
-  const fill = card.querySelector(".animal-score-fill");
-  const percentage = card.querySelector(".animal-score-percentage");
-
-  animateCount(targetScore, (score) => {
-    fill.style.width = `${score}%`;
-    percentage.textContent = `${score}%`;
-  });
+function showScore(card, score) {
+  card.querySelector(".animal-score-fill").style.width = `${score}%`;
+  card.querySelector(".animal-score-percentage").textContent = `${score}%`;
 }
 
 /* -------------------------------------------------------------------------
    History
    ------------------------------------------------------------------------- */
 
-function prependHistoryCard(page, entry) {
-  page.historyEmpty.hidden = true;
-  page.historyList.prepend(createHistoryCard(entry));
-}
-
-function createHistoryCard({ type, url, animal, date, detail, animals }) {
+function createHistoryCard({ type, url, animal, date, framesProcessed, topAnimals }) {
   const isVideo = type === "video";
 
   const media = document.createElement(isVideo ? "video" : "img");
@@ -469,16 +586,18 @@ function createHistoryCard({ type, url, animal, date, detail, animals }) {
 
   const meta = document.createElement("p");
   meta.className = "history-card__meta";
-  meta.textContent = detail ? `${date} · ${detail}` : date;
+  meta.textContent = isVideo
+    ? `${formatDate(date)} · ${framesProcessed} frames`
+    : formatDate(date);
 
   const body = document.createElement("div");
   body.className = "history-card__body";
   body.append(badge, title, meta);
 
-  if (animals) {
+  if (isVideo && topAnimals?.length > 1) {
     const extra = document.createElement("p");
     extra.className = "history-card__extra";
-    extra.textContent = animals;
+    extra.textContent = topAnimals.map((entry) => entry.animal).join(", ");
     body.append(extra);
   }
 
