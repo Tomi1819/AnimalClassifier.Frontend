@@ -1,13 +1,17 @@
 import { apiFetch } from "../api/client.js";
 import { setToken } from "../auth/session.js";
+import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 
 const DASHBOARD_PAGE = "/pages/dashboard.html";
 
 initNavigation();
 
+const formMessage = document.getElementById("formMessage");
+
 document.getElementById("loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  showProgress(formMessage, "Signing in...");
 
   const credentials = {
     email: document.getElementById("email").value,
@@ -21,11 +25,12 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
     });
 
     setToken(token);
+    hideMessage(formMessage);
     window.location.href = DASHBOARD_PAGE;
   } catch (error) {
     console.error("Login failed:", error);
     // The backend already answers 401 with "Invalid email or password.", so
     // reporting its message keeps an offline server from looking like a typo.
-    alert(error.message);
+    showError(formMessage, error.message);
   }
 });

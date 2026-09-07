@@ -7,10 +7,11 @@ import { initNavigation } from "../shared/nav.js";
 const ERROR_PLACEHOLDER = "Error";
 const CHART_COLORS = ["#ff6384", "#36a2eb", "#ffce56"];
 
-initNavigation();
-
 // Module scripts are deferred, so the document is already parsed here.
+// The guard runs first, so an expired session never paints the signed-in nav.
 if (requireAuthentication()) {
+  initNavigation();
+
   await Promise.all([
     showCount("/api/statistics/total", "totalRecognitions"),
     showCount("/api/statistics/users", "totalUsers"),
@@ -41,7 +42,9 @@ async function showTopAnimals() {
     );
   } catch (error) {
     console.error("Failed to load top animals:", error);
-    container.textContent = "Error loading chart.";
+    // The chart has room for the real explanation; the stat tiles above it
+    // only fit a placeholder.
+    container.textContent = error.message;
   }
 }
 

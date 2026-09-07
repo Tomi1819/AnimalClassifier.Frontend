@@ -9,6 +9,12 @@
   --text-light: #7f8c8d;
   --border-color: #d0dce5;
   --hover-bg-light: #dfefff;
+  --error-color: #a93226;
+  --error-bg: #fdecea;
+  --error-border: #f5c6c0;
+  --success-color: #1e8449;
+  --success-bg: #eafaf1;
+  --success-border: #c3ecd6;
 }
 
 * {
@@ -209,6 +215,40 @@ main {
   max-width: 500px;
   text-align: center;
   margin-top: 80px;
+}
+
+/* Inline status messages, shown in place of an alert box. */
+.message {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin: 20px 0 0;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+/* Keeps the element hidden even though `.message` outranks the [hidden]
+   rule the browser applies by default. */
+.message[hidden] {
+  display: none;
+}
+
+.message--error {
+  background-color: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--error-color);
+}
+
+.message--success {
+  background-color: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-color);
+}
+
+.message--progress {
+  background-color: var(--muted-bg);
+  border-color: var(--border-color);
+  color: var(--text-light);
 }
 
 footer {

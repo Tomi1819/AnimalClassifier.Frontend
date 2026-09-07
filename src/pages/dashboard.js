@@ -1,17 +1,20 @@
 import { apiFetch, resolveUrl } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
+import { showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
-const FRAME_COUNTER_INTERVAL_MS = 50;
-const SCORE_COUNTER_INTERVAL_MS = 20;
+// Counters run for a fixed span, so a long video does not take longer to
+// count than it did to analyse.
+const COUNTER_ANIMATION_MS = 1200;
 const SCORE_ANIMATION_DELAY_MS = 500;
 const SCORE_ANIMATION_STAGGER_MS = 200;
 
-initNavigation();
-
 // Module scripts are deferred, so the document is already parsed here.
+// The guard runs first, so an expired session never paints the signed-in nav.
 if (requireAuthentication()) {
+  initNavigation();
+
   const elements = collectElements();
   initTabs(elements);
   initImageUpload(elements);
@@ -67,20 +70,22 @@ function initImageUpload(elements) {
 
     const file = imageFileInput.files[0];
     if (!file) {
-      alert("Please select an image file.");
+      showError(uploadStatus, "Please select an image file.");
       return;
     }
 
-    uploadStatus.textContent = "Uploading...";
+    showProgress(uploadStatus, "Uploading image...");
     imageUploadButton.disabled = true;
 
     try {
       const result = await uploadFile("/api/upload/image", "formFile", file);
       showImageResult(elements, result);
-      uploadStatus.textContent = "Image upload successful!";
+      showSuccess(uploadStatus, "Image upload successful!");
     } catch (error) {
       console.error("Image upload failed:", error);
-      uploadStatus.textContent = "Error uploading image.";
+      // The error explains itself, so an offline backend is not reported as a
+      // problem with the file the user chose.
+      showError(uploadStatus, error.message);
     } finally {
       imageUploadButton.disabled = false;
     }
@@ -95,20 +100,20 @@ function initVideoUpload(elements) {
 
     const file = videoFileInput.files[0];
     if (!file) {
-      alert("Please select a video file.");
+      showError(uploadStatus, "Please select a video file.");
       return;
     }
 
-    uploadStatus.textContent = "Uploading video...";
+    showProgress(uploadStatus, "Uploading video...");
     videoUploadButton.disabled = true;
 
     try {
       const result = await uploadFile("/api/upload/video", "videoFile", file);
       showVideoResult(elements, result);
-      uploadStatus.textContent = "Video upload successful!";
+      showSuccess(uploadStatus, "Video upload successful!");
     } catch (error) {
       console.error("Video upload failed:", error);
-      uploadStatus.textContent = "Error uploading video.";
+      showError(uploadStatus, error.message);
     } finally {
       videoUploadButton.disabled = false;
     }
@@ -220,17 +225,36 @@ function createVideoStats({ topAnimals }) {
 function animateFrameCounter(videoStats, targetFrames) {
   const counter = videoStats.querySelector("#framesCount");
   const progressBar = videoStats.querySelector("#framesProgressBar");
-  let frames = 0;
 
-  const interval = setInterval(() => {
-    frames += 1;
+  animateCount(targetFrames, (frames, progress) => {
     counter.textContent = frames;
-    progressBar.style.width = `${(frames / targetFrames) * 100}%`;
+    progressBar.style.width = `${progress * 100}%`;
+  });
+}
 
-    if (frames >= targetFrames) {
-      clearInterval(interval);
+/**
+ * Counts up to `target` over a fixed duration, reporting the current value and
+ * how far along it is. A target of zero, which the backend reports for a video
+ * it could not read, simply settles there instead of counting forever.
+ */
+function animateCount(target, onStep) {
+  if (!(target > 0)) {
+    onStep(0, 1);
+    return;
+  }
+
+  const start = performance.now();
+
+  const step = (now) => {
+    const progress = Math.min((now - start) / COUNTER_ANIMATION_MS, 1);
+    onStep(Math.round(target * progress), progress);
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
     }
-  }, FRAME_COUNTER_INTERVAL_MS);
+  };
+
+  requestAnimationFrame(step);
 }
 
 function renderDetectedAnimals(videoStats, topAnimals) {
@@ -283,17 +307,11 @@ function createAnimalCard({ animal }, index) {
 function animateScore(card, targetScore) {
   const fill = card.querySelector(".animal-score-fill");
   const percentage = card.querySelector(".animal-score-percentage");
-  let score = 0;
 
-  const interval = setInterval(() => {
-    score += 1;
+  animateCount(targetScore, (score) => {
     fill.style.width = `${score}%`;
     percentage.textContent = `${score}%`;
-
-    if (score >= targetScore) {
-      clearInterval(interval);
-    }
-  }, SCORE_COUNTER_INTERVAL_MS);
+  });
 }
 
 function prependHistoryItem(historyList, item) {
