@@ -1,10 +1,13 @@
-import { getToken } from "../auth/session.js";
+import { endSession, getToken } from "../auth/session.js";
 
 // Empty during development so requests stay relative and the Vite dev proxy
 // forwards them to the backend. See vite.config.js and .env.development.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 const UNREACHABLE_MESSAGE = "Cannot reach the server. Please try again in a moment.";
+const SESSION_EXPIRED_MESSAGE = "Your session has ended. Please sign in again.";
+
+const UNAUTHORIZED_STATUS = 401;
 
 // A proxy in front of the backend reports it as unreachable with one of these,
 // and sends no body explaining them. The Vite dev proxy answers 502 this way
@@ -53,18 +56,31 @@ export function resolveUrl(path) {
  * Both error types carry a message meant for the user, so callers can report
  * `error.message` directly instead of guessing why the call failed.
  *
+ * A token the backend rejects ends the session, since there is nothing the
+ * caller can do about it.
+ *
  * @returns the parsed JSON response, or null when the response has no body.
  * @throws {ApiError} when the backend responds with a non-2xx status.
  * @throws {NetworkError} when the backend cannot be reached at all.
  */
 export async function apiFetch(path, { headers, ...options } = {}) {
+  const authorization = authorizationHeader();
+
   const response = await sendRequest(path, {
     ...options,
-    headers: { ...authorizationHeader(), ...contentTypeHeader(options.body), ...headers },
+    headers: { ...authorization, ...contentTypeHeader(options.body), ...headers },
   });
 
   if (GATEWAY_ERROR_STATUSES.has(response.status)) {
     throw new NetworkError(response.status);
+  }
+
+  // Only a token that was actually sent can have been rejected. Without one, a
+  // 401 is the endpoint's own answer -- a failed sign-in, say -- and belongs to
+  // the caller.
+  if (response.status === UNAUTHORIZED_STATUS && authorization.Authorization) {
+    endSession();
+    throw new ApiError(SESSION_EXPIRED_MESSAGE, response.status);
   }
 
   if (!response.ok) {
