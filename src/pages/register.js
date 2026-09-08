@@ -1,10 +1,12 @@
 import { apiFetch } from "../api/client.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
+import { initPasswordToggles } from "../shared/password-toggle.js";
 
 const LOGIN_PAGE = "/pages/login.html";
 
 initNavigation();
+initPasswordToggles();
 
 const formMessage = document.getElementById("formMessage");
 
