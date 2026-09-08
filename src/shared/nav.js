@@ -3,6 +3,12 @@ import { clearToken, isAuthenticated } from "../auth/session.js";
 const NAV_LINKS_ID = "navLinks";
 const HOME_PAGE = "/";
 
+// Matches the width at which the stylesheet drops the links out of the bar.
+const COMPACT_NAV_QUERY = "(max-width: 560px)";
+
+const MENU_LABEL = "Menu";
+const ICON_SELECTOR = "[data-icon]";
+
 const AUTHENTICATED_LINKS = [
   { href: HOME_PAGE, label: "Home" },
   { href: "/pages/dashboard.html", label: "Dashboard" },
@@ -15,6 +21,15 @@ const ANONYMOUS_LINKS = [
   { href: "/pages/register.html", label: "Register" },
   { href: "/pages/login.html", label: "Login" },
 ];
+
+const MENU_ICONS = `
+  <svg class="nav-toggle__icon" data-icon="open" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 7h16M4 12h16M4 17h16" />
+  </svg>
+  <svg class="nav-toggle__icon" data-icon="close" viewBox="0 0 24 24" aria-hidden="true" hidden>
+    <path d="m6 6 12 12M18 6 6 18" />
+  </svg>
+`;
 
 /**
  * Renders the navigation for the current session. Pages only need to provide
@@ -33,6 +48,8 @@ export function initNavigation() {
   if (isAuthenticated()) {
     navLinks.append(createLogoutItem());
   }
+
+  initMenu(navLinks);
 }
 
 function createNavItem({ href, label }) {
@@ -66,4 +83,77 @@ function createLogoutItem() {
 function logout() {
   clearToken();
   window.location.href = HOME_PAGE;
+}
+
+/**
+ * Adds the button that opens the links on a narrow screen, where the bar has
+ * no room to lay them out. It is built here rather than in the pages so that
+ * they carry on providing nothing but the empty list.
+ */
+function initMenu(navLinks) {
+  const nav = navLinks.closest("nav");
+  const toggle = createMenuToggle();
+  navLinks.before(toggle);
+
+  toggle.addEventListener("click", () => {
+    setMenuOpen(toggle, navLinks, !isMenuOpen(toggle));
+  });
+
+  // A link either leaves the page or, in the case of logout, redraws the bar.
+  // Either way the open menu has done its job.
+  navLinks.addEventListener("click", (event) => {
+    if (event.target.closest("a")) {
+      setMenuOpen(toggle, navLinks, false);
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (isMenuOpen(toggle) && !nav.contains(event.target)) {
+      setMenuOpen(toggle, navLinks, false);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isMenuOpen(toggle)) {
+      setMenuOpen(toggle, navLinks, false);
+      toggle.focus();
+    }
+  });
+
+  // The menu belongs to the compact bar alone, so a window grown past it must
+  // not leave the panel behind.
+  window.matchMedia(COMPACT_NAV_QUERY).addEventListener("change", (event) => {
+    if (!event.matches) {
+      setMenuOpen(toggle, navLinks, false);
+    }
+  });
+}
+
+function createMenuToggle() {
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "nav-toggle";
+  toggle.innerHTML = MENU_ICONS;
+  toggle.setAttribute("aria-controls", NAV_LINKS_ID);
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-label", MENU_LABEL);
+  return toggle;
+}
+
+// The button's own state is the only record of whether the menu is open.
+function isMenuOpen(toggle) {
+  return toggle.getAttribute("aria-expanded") === "true";
+}
+
+function setMenuOpen(toggle, navLinks, open) {
+  toggle.setAttribute("aria-expanded", String(open));
+  navLinks.classList.toggle("is-open", open);
+
+  // The icon offers the next action, so it is the opposite of the state. It is
+  // SVG, which carries no hidden property to assign to, only the attribute the
+  // stylesheet matches on.
+  const visibleIcon = open ? "close" : "open";
+  for (const icon of toggle.querySelectorAll(ICON_SELECTOR)) {
+    icon.toggleAttribute("hidden", icon.dataset.icon !== visibleIcon);
+  }
 }

@@ -195,7 +195,23 @@ nav ul li a.active {
   color: #fff;
 }
 
-/* The bar has no room for full-size pills on a phone. */
+/* The button src/shared/nav.js adds; it earns its place only once the links
+   no longer fit the bar. */
+.nav-toggle {
+  display: none;
+}
+
+.nav-toggle__icon {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.9;
+  width: 22px;
+}
+
+/* The bar has no room for a row of pills on a phone, so the links move into a
+   panel below it. */
 @media (max-width: 560px) {
   nav {
     padding: 12px 16px;
@@ -205,9 +221,80 @@ nav ul li a.active {
     height: 38px;
   }
 
+  .nav-toggle {
+    align-items: center;
+    background: none;
+    border-radius: 10px;
+    box-shadow: none;
+    color: var(--ink);
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    padding: 0;
+    width: 40px;
+  }
+
+  .nav-toggle:hover {
+    background: var(--brand-wash);
+    box-shadow: none;
+    color: var(--brand-strong);
+    transform: none;
+  }
+
+  .nav-toggle:focus {
+    box-shadow: none;
+  }
+
+  .nav-toggle:focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Anchored to the bar, which is fixed and so is the containing block. */
+  nav ul {
+    /* The bar centres its links; stacked, they read better as full rows. */
+    align-items: stretch;
+    animation: nav-drop 0.2s ease;
+    background: var(--surface);
+    border-bottom: 1px solid var(--hairline);
+    box-shadow: var(--shadow-md);
+    display: none;
+    flex-direction: column;
+    left: 0;
+    padding: 8px 16px 16px;
+    position: absolute;
+    right: 0;
+    top: 100%;
+  }
+
+  nav ul.is-open {
+    display: flex;
+  }
+
+  nav ul li {
+    margin: 0;
+  }
+
   nav ul li a {
-    font-size: 15px;
-    padding: 8px 12px;
+    display: block;
+    padding: 13px 16px;
+  }
+}
+
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  nav ul {
+    animation: none;
   }
 }
 
@@ -1671,9 +1758,11 @@ footer {
   left: -34px;
 }
 
+/* Kept inside the hero padding, so it cannot widen the page when the hero is
+   narrow enough to fill it. */
 .preview-chip--right {
   animation-delay: -2.5s;
-  right: -26px;
+  right: -20px;
   top: -18px;
 }
 
