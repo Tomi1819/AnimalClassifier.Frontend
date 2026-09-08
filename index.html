@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Animal Classifier</title>
-    <link rel="stylesheet" href="/src/styles/main.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap"
-      rel="stylesheet"
+    <meta
+      name="description"
+      content="Upload a photo or a video and let Animal Classifier recognise the animal, score its confidence and keep the result."
     />
+    <link rel="stylesheet" href="/src/styles/main.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
   </head>
-  <body>
+  <body class="home-page">
     <header>
       <nav>
         <div class="logo">
@@ -25,11 +25,154 @@
       </nav>
     </header>
 
-    <main class="main-content">
+    <main class="home">
       <section class="hero">
-        <h1>Welcome to Animal Classifier</h1>
-        <p>This is an animal recognition application using machine learning.</p>
-        <a href="/pages/login.html" class="get-started-btn">Get Started</a>
+        <div class="hero__intro">
+          <p class="eyebrow">Powered by machine learning</p>
+          <h1>
+            Identify the animal in
+            <span class="hero__accent">any photo or clip</span>
+          </h1>
+          <p class="hero__subtitle">
+            Upload an image or a video and Animal Classifier names what it sees,
+            shows how confident it is, and keeps every result on your account.
+          </p>
+
+          <div class="hero__actions">
+            <!-- src/pages/home.js points these at the dashboard once signed in. -->
+            <a class="action action--primary" href="/pages/register.html" data-sign-up-action>
+              <span class="action__label">Get started</span>
+              <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+            <a id="signInAction" class="action action--ghost" href="/pages/login.html">
+              I already have an account
+            </a>
+          </div>
+
+          <ul class="hero__facts">
+            <li><i class="fas fa-image" aria-hidden="true"></i> Images and video</li>
+            <li><i class="fas fa-percentage" aria-hidden="true"></i> Confidence scores</li>
+            <li><i class="fas fa-history" aria-hidden="true"></i> Saved history</li>
+          </ul>
+        </div>
+
+        <!-- A mock-up of a recognition result, so the hero shows the product
+             rather than a stock illustration. Decorative, hence aria-hidden. -->
+        <div class="hero__preview" aria-hidden="true">
+          <div class="preview-card">
+            <div class="preview-card__frame">
+              <i class="fas fa-hippo preview-card__glyph"></i>
+              <span class="preview-card__scan"></span>
+            </div>
+            <div class="preview-card__body">
+              <span class="badge">Image</span>
+              <h2 class="preview-card__animal">Elephant</h2>
+              <div class="confidence confidence--high">
+                <div class="confidence__head">
+                  <span class="confidence__label">Prediction accuracy</span>
+                  <span class="confidence__value">96.4%</span>
+                </div>
+                <div class="confidence__track">
+                  <div class="confidence__fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="preview-chip preview-chip--left">
+            <i class="fas fa-crow"></i> Crow &middot; 91%
+          </p>
+          <p class="preview-chip preview-chip--right">
+            <i class="fas fa-fish"></i> Salmon &middot; 88%
+          </p>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="section-head">
+          <p class="eyebrow">What you get</p>
+          <h2>Everything around a single upload</h2>
+        </div>
+
+        <ul class="feature-grid">
+          <li class="feature-card">
+            <span class="feature-card__icon">
+              <i class="fas fa-bolt" aria-hidden="true"></i>
+            </span>
+            <h3>Instant predictions</h3>
+            <p>
+              Drop in a JPG or PNG and get the recognised animal back, together
+              with the score behind the call.
+            </p>
+          </li>
+          <li class="feature-card">
+            <span class="feature-card__icon">
+              <i class="fas fa-film" aria-hidden="true"></i>
+            </span>
+            <h3>Video breakdown</h3>
+            <p>
+              Upload an MP4, MOV or AVI. Every sampled frame is scored, so you
+              see each animal that turns up in the clip.
+            </p>
+          </li>
+          <li class="feature-card">
+            <span class="feature-card__icon">
+              <i class="fas fa-search" aria-hidden="true"></i>
+            </span>
+            <h3>Searchable library</h3>
+            <p>
+              Look up a species by name and browse every image that has been
+              recognised as it.
+            </p>
+          </li>
+          <li class="feature-card">
+            <span class="feature-card__icon">
+              <i class="fas fa-chart-pie" aria-hidden="true"></i>
+            </span>
+            <h3>Statistics at a glance</h3>
+            <p>
+              See how many recognitions have been made and which animals come up
+              most often.
+            </p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="steps">
+        <div class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2>Three steps, no setup</h2>
+        </div>
+
+        <ol class="step-list">
+          <li class="step">
+            <span class="step__number">1</span>
+            <h3>Create an account</h3>
+            <p>Register with an email and a password. Nothing else is needed.</p>
+          </li>
+          <li class="step">
+            <span class="step__number">2</span>
+            <h3>Upload your media</h3>
+            <p>Drag a photo or a video onto the dashboard, or browse for it.</p>
+          </li>
+          <li class="step">
+            <span class="step__number">3</span>
+            <h3>Read the result</h3>
+            <p>
+              Get the animal, its confidence score and a result you can come
+              back to later.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="cta-band">
+        <h2>Ready to see what is in your photos?</h2>
+        <p>It takes one upload to find out.</p>
+        <a class="action action--light" href="/pages/register.html" data-sign-up-action>
+          <span class="action__label">Create your account</span>
+          <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
       </section>
     </main>
 
