@@ -1407,10 +1407,12 @@ footer {
    Home (landing page)
    ========================================================================== */
 
-.home-page {
+/* Shared with the auth pages, so signing in reads as the same page the
+   landing one led into. Two washes bleed across the full width, which the
+   constrained sections inside cannot do on their own. */
+.home-page,
+.auth-page {
   background-color: var(--surface);
-  /* Two washes bleed across the full width of the page behind the hero, which
-     the constrained sections below cannot do on their own. */
   background-image: radial-gradient(
       1000px 620px at 8% -180px,
       #d5ebfb,
@@ -1418,6 +1420,9 @@ footer {
     ),
     radial-gradient(820px 520px at 92% -80px, #ece2ff, transparent 70%);
   background-repeat: no-repeat;
+}
+
+.home-page {
   /* The hero spaces itself under the fixed navigation instead. */
   padding-top: 0;
 }
@@ -1881,5 +1886,197 @@ footer {
 
   .preview-card .confidence__fill {
     width: 96.4%;
+  }
+}
+
+/* ==========================================================================
+   Auth (sign in and register)
+   ========================================================================== */
+
+/* Overrides the card treatment `main` carries, which the auth card, rather
+   than the page, now provides. Centred in what the fixed navigation leaves. */
+.auth {
+  align-content: center;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: grid;
+  flex: 1;
+  justify-items: center;
+  margin: 0;
+  max-width: none;
+  padding: 30px 24px 60px;
+  text-align: left;
+  width: 100%;
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  max-width: 440px;
+  padding: 36px 34px 30px;
+  width: 100%;
+}
+
+.auth-card h1 {
+  color: var(--ink);
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.auth-card__subtitle {
+  color: var(--ink-muted);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin-bottom: 26px;
+}
+
+/* --- Fields --------------------------------------------------------------- */
+
+.auth-form {
+  display: grid;
+  gap: 18px;
+}
+
+.field__label {
+  color: var(--ink);
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.field__control {
+  position: relative;
+}
+
+.field__control input {
+  background: var(--surface-muted);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  margin: 0;
+  padding: 13px 14px 13px 44px;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.field__control input::placeholder {
+  color: var(--ink-muted);
+  opacity: 0.75;
+}
+
+.field__control input:focus {
+  background: var(--surface);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.16);
+  outline: none;
+}
+
+/* Leaves room for the reveal button. */
+.field__control:has(.field__toggle) input {
+  padding-right: 48px;
+}
+
+.field__icon,
+.field__toggle-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.field__icon {
+  color: var(--ink-muted);
+  height: 19px;
+  left: 15px;
+  /* The label already names the field, so the icon takes no clicks. */
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 19px;
+}
+
+/* The icon precedes the input, so a sibling combinator cannot reach it. */
+.field__control:has(input:focus) .field__icon {
+  color: var(--brand-strong);
+}
+
+/* --- Reveal button -------------------------------------------------------- */
+
+.field__toggle {
+  align-items: center;
+  background: none;
+  border-radius: 9px;
+  box-shadow: none;
+  color: var(--ink-muted);
+  display: flex;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  /* Keeps the button centred, which the shared button hover would undo. */
+  transform: translateY(-50%);
+  width: 34px;
+}
+
+.field__toggle:hover {
+  background: var(--brand-wash);
+  box-shadow: none;
+  color: var(--brand-strong);
+  transform: translateY(-50%);
+}
+
+.field__toggle:focus {
+  box-shadow: none;
+}
+
+.field__toggle:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.field__toggle-icon {
+  height: 19px;
+  width: 19px;
+}
+
+/* --- Switching between the two pages -------------------------------------- */
+
+.auth-card__switch {
+  border-top: 1px solid var(--hairline);
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  margin: 26px 0 0;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.auth-card__switch a {
+  border-radius: 4px;
+  color: var(--brand-strong);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-card__switch a:hover {
+  text-decoration: underline;
+}
+
+.auth-card__switch a:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 28px 22px 24px;
   }
 }
