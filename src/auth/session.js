@@ -1,5 +1,8 @@
 const TOKEN_KEY = "token";
+const ROLES_KEY = "roles";
+const ADMIN_ROLE = "Admin";
 const LOGIN_PAGE = "/pages/login.html";
+const DASHBOARD_PAGE = "/pages/dashboard.html";
 const MILLISECONDS_PER_SECOND = 1000;
 
 /**
@@ -14,23 +17,37 @@ export function getToken() {
   const token = readToken();
 
   if (token !== null && hasExpired(token)) {
-    clearToken();
+    clearSession();
     return null;
   }
 
   return token;
 }
 
-export function setToken(token) {
-  withStorage(() => localStorage.setItem(TOKEN_KEY, token));
+export function setSession(token, roles) {
+  withStorage(() => {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(ROLES_KEY, JSON.stringify(roles));
+  });
 }
 
-export function clearToken() {
-  withStorage(() => localStorage.removeItem(TOKEN_KEY));
+export function clearSession() {
+  withStorage(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(ROLES_KEY);
+  });
 }
 
 export function isAuthenticated() {
   return getToken() !== null;
+}
+
+/**
+ * Only decides what the page offers; the backend checks the role on every
+ * request regardless.
+ */
+export function isAdmin() {
+  return isAuthenticated() && readRoles().includes(ADMIN_ROLE);
 }
 
 /**
@@ -49,11 +66,30 @@ export function requireAuthentication() {
 }
 
 /**
+ * Guards a page that requires an administrator, sending anyone else who is
+ * signed in to the dashboard.
+ *
+ * @returns whether the page may continue initialising.
+ */
+export function requireAdmin() {
+  if (!requireAuthentication()) {
+    return false;
+  }
+
+  if (isAdmin()) {
+    return true;
+  }
+
+  window.location.href = DASHBOARD_PAGE;
+  return false;
+}
+
+/**
  * Ends the session once the backend has rejected the token, and returns the
  * user to the login page.
  */
 export function endSession() {
-  clearToken();
+  clearSession();
   redirectToLogin();
 }
 
@@ -67,6 +103,10 @@ function redirectToLogin() {
 
 function readToken() {
   return withStorage(() => localStorage.getItem(TOKEN_KEY)) ?? null;
+}
+
+function readRoles() {
+  return JSON.parse(withStorage(() => localStorage.getItem(ROLES_KEY)) ?? "[]");
 }
 
 // Storage throws rather than returning nothing when a browser blocks it, which

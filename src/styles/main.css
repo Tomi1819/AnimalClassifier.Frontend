@@ -370,7 +370,8 @@ footer {
    Dashboard
    ========================================================================== */
 
-.dashboard-page {
+.dashboard-page,
+.admin-page {
   background-color: #f4f7fb;
   background-image: radial-gradient(
     900px 420px at 50% -120px,
@@ -380,7 +381,8 @@ footer {
 }
 
 /* Overrides the card treatment `main` carries for the narrow auth pages. */
-.dashboard {
+.dashboard,
+.admin {
   background: none;
   border-radius: 0;
   box-shadow: none;
@@ -2168,4 +2170,146 @@ footer {
   .auth-card {
     padding: 28px 22px 24px;
   }
+}
+
+/* ==========================================================================
+   Admin
+   ========================================================================== */
+
+.admin-search {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.admin-search input {
+  background: var(--surface-muted);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  margin: 0;
+}
+
+/* A table keeps its columns on a narrow screen and scrolls sideways instead. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+.admin-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.admin-table th,
+.admin-table td {
+  border-bottom: 1px solid var(--hairline);
+  padding: 12px 10px;
+  text-align: left;
+}
+
+.admin-table th {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.admin-table .badge {
+  margin: 2px 4px 2px 0;
+}
+
+.admin-table__name,
+.admin-table__email {
+  display: block;
+}
+
+.admin-table__name {
+  font-weight: 600;
+}
+
+.admin-table__email {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+.admin-table__actions {
+  white-space: nowrap;
+}
+
+.admin-table__actions .btn-ghost + .btn-ghost {
+  margin-left: 6px;
+}
+
+.admin-table__empty {
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.badge--locked {
+  background: var(--error-bg);
+  color: var(--error-color);
+}
+
+.btn-ghost:disabled,
+.btn-ghost:disabled:hover {
+  background: transparent;
+  border-color: var(--hairline-strong);
+  color: var(--ink-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pager {
+  align-items: center;
+  color: var(--ink-muted);
+  display: flex;
+  font-size: 0.9rem;
+  gap: 14px;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+/* The reset at the top removes the margin that centres a modal dialog. */
+.confirm-dialog {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin: auto;
+  max-width: 420px;
+  padding: 26px;
+  width: calc(100% - 32px);
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(16, 32, 52, 0.45);
+}
+
+.confirm-dialog__question {
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.confirm-dialog__note {
+  font-size: 0.95rem;
+  margin: 0 0 22px;
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.confirm-dialog .btn {
+  margin-top: 0;
+  padding: 8px 20px;
+  width: auto;
 }
