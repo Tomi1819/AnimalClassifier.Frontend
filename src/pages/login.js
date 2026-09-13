@@ -1,5 +1,5 @@
 import { apiFetch } from "../api/client.js";
-import { setToken } from "../auth/session.js";
+import { setSession } from "../auth/session.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
@@ -21,12 +21,12 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
   };
 
   try {
-    const { token } = await apiFetch("/api/auth/login", {
+    const { token, roles } = await apiFetch("/api/auth/login", {
       method: "POST",
       body: JSON.stringify(credentials),
     });
 
-    setToken(token);
+    setSession(token, roles);
     hideMessage(formMessage);
     window.location.href = DASHBOARD_PAGE;
   } catch (error) {

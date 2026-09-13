@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Animal Classifier</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body class="admin-page">
+    <header>
+      <nav>
+        <div class="logo">
+          <img src="/logo.png" alt="Logo" />
+        </div>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
+      </nav>
+    </header>
+
+    <main class="admin">
+      <section class="page-header">
+        <p class="eyebrow">Admin</p>
+        <h1>Manage users</h1>
+        <p class="page-header__subtitle">
+          Lock accounts, choose who administers the application, and review every
+          change made.
+        </p>
+      </section>
+
+      <section class="card">
+        <div class="history__head">
+          <h2>Users</h2>
+        </div>
+
+        <form id="userSearchForm" class="admin-search">
+          <input
+            type="search"
+            id="userSearch"
+            placeholder="Search by name or email"
+            aria-label="Search users"
+          />
+          <button class="btn-ghost" type="submit">Search</button>
+        </form>
+
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Registered</th>
+                <th>Recognitions</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="usersPager"></div>
+
+        <p id="adminStatus" class="message" hidden></p>
+      </section>
+
+      <section id="historySection" class="card" hidden>
+        <div class="history__head">
+          <h2 id="historyTitle"></h2>
+          <button id="closeHistory" class="btn-ghost" type="button">Close</button>
+        </div>
+        <p class="history__empty" id="historyEmpty" hidden>
+          This user has nothing in their history.
+        </p>
+        <ul class="history__list" id="historyList"></ul>
+      </section>
+
+      <section class="card">
+        <div class="history__head">
+          <h2>Audit log</h2>
+        </div>
+
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Administrator</th>
+                <th>Change</th>
+                <th>User</th>
+              </tr>
+            </thead>
+            <tbody id="auditBody"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="auditPager"></div>
+      </section>
+
+      <!-- A form with method="dialog" closes the dialog and reports which
+           button was pressed as its returnValue. -->
+      <dialog id="confirmDialog" class="confirm-dialog">
+        <form method="dialog">
+          <p class="confirm-dialog__question" id="confirmQuestion"></p>
+          <p class="confirm-dialog__note">The user will be signed out.</p>
+          <div class="confirm-dialog__actions">
+            <button class="btn-ghost" value="cancel">Cancel</button>
+            <button class="btn" value="confirm">Confirm</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script type="module" src="/src/pages/admin.js"></script>
+  </body>
+</html>

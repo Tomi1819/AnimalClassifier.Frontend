@@ -1,4 +1,4 @@
-import { clearToken, isAuthenticated } from "../auth/session.js";
+import { clearSession, isAdmin, isAuthenticated } from "../auth/session.js";
 
 const NAV_LINKS_ID = "navLinks";
 const HOME_PAGE = "/";
@@ -15,6 +15,8 @@ const AUTHENTICATED_LINKS = [
   { href: "/pages/search.html", label: "Search" },
   { href: "/pages/statistics.html", label: "Statistics" },
 ];
+
+const ADMIN_LINK = { href: "/pages/admin.html", label: "Admin" };
 
 const ANONYMOUS_LINKS = [
   { href: HOME_PAGE, label: "Home" },
@@ -44,6 +46,10 @@ export function initNavigation() {
 
   const links = isAuthenticated() ? AUTHENTICATED_LINKS : ANONYMOUS_LINKS;
   navLinks.replaceChildren(...links.map(createNavItem));
+
+  if (isAdmin()) {
+    navLinks.append(createNavItem(ADMIN_LINK));
+  }
 
   if (isAuthenticated()) {
     navLinks.append(createLogoutItem());
@@ -81,7 +87,7 @@ function createLogoutItem() {
 }
 
 function logout() {
-  clearToken();
+  clearSession();
   window.location.href = HOME_PAGE;
 }
 

@@ -1,6 +1,7 @@
 import { apiFetch, resolveUrl } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
+import { createHistoryCard, formatDate, fromHistoryItem } from "../shared/history.js";
 import { initNavigation } from "../shared/nav.js";
 
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
@@ -275,19 +276,6 @@ function toVideoRecognition(result) {
   };
 }
 
-// The per-animal breakdown of a video is not stored, so a recognition loaded
-// back from the server carries everything except that.
-function fromHistoryItem(item) {
-  return {
-    type: item.isVideo ? "video" : "image",
-    url: resolveUrl(item.mediaPath),
-    animal: item.recognizedAnimal,
-    date: item.dateRecognized,
-    score: item.predictionScore,
-    framesProcessed: item.framesProcessed,
-  };
-}
-
 async function showHistory(page) {
   let recognitions;
 
@@ -409,10 +397,6 @@ function confidenceVariant(score) {
   }
 
   return score >= LOW_CONFIDENCE_THRESHOLD ? "confidence--medium" : "confidence--low";
-}
-
-function formatDate(date) {
-  return new Date(date).toLocaleString();
 }
 
 /* -------------------------------------------------------------------------
@@ -560,49 +544,4 @@ function createAnimalCard({ animal }, index) {
 function showScore(card, score) {
   card.querySelector(".animal-score-fill").style.width = `${score}%`;
   card.querySelector(".animal-score-percentage").textContent = `${score}%`;
-}
-
-/* -------------------------------------------------------------------------
-   History
-   ------------------------------------------------------------------------- */
-
-function createHistoryCard({ type, url, animal, date, framesProcessed, topAnimals }) {
-  const isVideo = type === "video";
-
-  const media = document.createElement(isVideo ? "video" : "img");
-  media.className = "history-card__media";
-  media.src = url;
-  if (!isVideo) {
-    media.alt = animal;
-  }
-
-  const badge = document.createElement("span");
-  badge.className = isVideo ? "badge badge--video" : "badge";
-  badge.textContent = isVideo ? "Video" : "Image";
-
-  const title = document.createElement("h4");
-  title.className = "history-card__title";
-  title.textContent = animal;
-
-  const meta = document.createElement("p");
-  meta.className = "history-card__meta";
-  meta.textContent = isVideo
-    ? `${formatDate(date)} · ${framesProcessed} frames`
-    : formatDate(date);
-
-  const body = document.createElement("div");
-  body.className = "history-card__body";
-  body.append(badge, title, meta);
-
-  if (isVideo && topAnimals?.length > 1) {
-    const extra = document.createElement("p");
-    extra.className = "history-card__extra";
-    extra.textContent = topAnimals.map((entry) => entry.animal).join(", ");
-    body.append(extra);
-  }
-
-  const card = document.createElement("li");
-  card.className = "history-card";
-  card.append(media, body);
-  return card;
 }
