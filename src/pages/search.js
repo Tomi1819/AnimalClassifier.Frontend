@@ -5,7 +5,8 @@ import { initNavigation } from "../shared/nav.js";
 const NOT_FOUND_STATUS = 404;
 const SEARCH_DEBOUNCE_MS = 500;
 const MIN_QUERY_LENGTH = 2;
-const MAX_IMAGES_PER_CARD = 6;
+// Two full rows at the widest gallery layout; "Show all" reveals the rest.
+const INITIAL_IMAGES_PER_ANIMAL = 8;
 const MAX_SUGGESTIONS = 8;
 
 const POPULAR_ANIMALS = [
@@ -17,8 +18,12 @@ const POPULAR_ANIMALS = [
   { name: "pig", icon: "🐷" },
 ];
 
-const FALLBACK_IMAGE =
-  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgdmlld0JveD0nMCAwIDEwMCAxMDAnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PHJlY3Qgd2lkdGg9JzEwMCUnIGhlaWdodD0nMTAwJScgc3R5bGU9J2ZpbGw6I2VlZTsnIC8+PHRleHQgeD0nNTAlJyB5PSc1MCUnIHN0eWxlPSdmaWxsOiM5OTk7Zm9udC1zaXplOjEycHg7dGV4dC1hbmNob3I6bWlkZGxlO2RvbWFpbi1iYXNlbGluZTpjZW50cmFsOycnPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==";
+const FALLBACK_IMAGE = `data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'>" +
+    "<rect width='100' height='100' fill='#eee'/>" +
+    "<text x='50' y='50' fill='#999' font-family='sans-serif' font-size='12' text-anchor='middle' dominant-baseline='central'>No Image</text>" +
+    "</svg>",
+)}`;
 
 let elements;
 let debounceTimeout;
@@ -41,7 +46,7 @@ function collectElements() {
     searchResults: document.getElementById("searchResults"),
     resultsTitle: document.getElementById("resultsTitle"),
     resultsCount: document.getElementById("resultsCount"),
-    resultsGrid: document.getElementById("resultsGrid"),
+    resultsList: document.getElementById("resultsList"),
     noResults: document.getElementById("noResults"),
     loadingIndicator: document.getElementById("loadingIndicator"),
   };
@@ -96,13 +101,13 @@ async function search(query) {
 }
 
 function displayResults(results, query) {
-  const { resultsTitle, resultsCount, resultsGrid, searchResults } = elements;
+  const { resultsTitle, resultsCount, resultsList, searchResults } = elements;
 
   hideAllSections();
 
   resultsTitle.textContent = `Results for "${query}"`;
   resultsCount.textContent = describeResults(results);
-  resultsGrid.replaceChildren(...results.map(createAnimalCard));
+  resultsList.replaceChildren(...results.map(createAnimalGallery));
   searchResults.style.display = "block";
 }
 
@@ -115,47 +120,79 @@ function pluralize(count, noun) {
   return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }
 
-function createAnimalCard({ animalName, count = 0, imagePaths = [] }) {
-  const name = document.createElement("h3");
-  name.className = "animal-name";
-  name.textContent = animalName;
+function createAnimalGallery({ animalName, count = 0, imagePaths = [] }) {
+  const title = document.createElement("h3");
+  title.className = "gallery__title";
+  title.textContent = animalName;
 
   const counter = document.createElement("span");
-  counter.className = "animal-count";
+  counter.className = "gallery__count";
   counter.textContent = pluralize(count, "image");
 
-  const header = document.createElement("div");
-  header.className = "animal-card-header";
-  header.append(name, counter);
+  const head = document.createElement("div");
+  head.className = "gallery__head";
+  head.append(title, counter);
 
-  const imagesGrid = document.createElement("div");
-  imagesGrid.className = "images-grid";
-  imagesGrid.append(
-    ...imagePaths
-      .slice(0, MAX_IMAGES_PER_CARD)
-      .map((path) => createAnimalImage(path, animalName)),
-  );
+  const grid = document.createElement("ul");
+  grid.className = "gallery__grid";
 
-  const card = document.createElement("div");
-  card.className = "animal-result-card";
-  card.append(header, imagesGrid);
-  return card;
+  const section = document.createElement("section");
+  section.className = "gallery";
+  section.append(head, grid);
+
+  // Tiles are built only when shown, so hidden images never start downloading.
+  const appendTiles = (start, end) => {
+    const tiles = imagePaths
+      .slice(start, end)
+      .map((path, offset) => createImageTile(path, animalName, start + offset, imagePaths.length));
+    grid.append(...tiles);
+    return tiles;
+  };
+
+  appendTiles(0, INITIAL_IMAGES_PER_ANIMAL);
+
+  if (imagePaths.length > INITIAL_IMAGES_PER_ANIMAL) {
+    const showAll = document.createElement("button");
+    showAll.type = "button";
+    showAll.className = "btn-ghost gallery__more";
+    showAll.textContent = `Show all ${pluralize(imagePaths.length, "image")}`;
+    showAll.addEventListener("click", () => {
+      const [firstRevealed] = appendTiles(INITIAL_IMAGES_PER_ANIMAL);
+      showAll.remove();
+      // The focused button is gone, so keyboard users continue from the first new image.
+      firstRevealed.querySelector("button").focus();
+    });
+    section.append(showAll);
+  }
+
+  return section;
 }
 
-function createAnimalImage(path, animalName) {
+function createImageTile(path, animalName, position, total) {
   const image = document.createElement("img");
-  image.className = "animal-image";
   image.src = buildImageUrl(path);
-  image.alt = animalName;
+  // The tile's label names the image, so the image itself stays silent.
+  image.alt = "";
   image.loading = "lazy";
+  // Once only, so a fallback that also failed could not retrigger it forever.
+  image.addEventListener(
+    "error",
+    () => {
+      image.src = FALLBACK_IMAGE;
+    },
+    { once: true },
+  );
 
-  image.addEventListener("error", () => {
-    image.src = FALLBACK_IMAGE;
-    image.alt = "Image not available";
-  });
-  image.addEventListener("click", () => openImageModal(image.src, animalName));
+  const tile = document.createElement("button");
+  tile.type = "button";
+  tile.className = "gallery__tile";
+  tile.setAttribute("aria-label", `Open ${animalName} image ${position + 1} of ${total}`);
+  tile.append(image);
+  tile.addEventListener("click", () => openImageModal(image.src, animalName));
 
-  return image;
+  const item = document.createElement("li");
+  item.append(tile);
+  return item;
 }
 
 function buildImageUrl(path) {
