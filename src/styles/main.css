@@ -1036,7 +1036,7 @@ footer {
   margin: 0;
 }
 
-.ranking__caption {
+.card__caption {
   color: var(--ink-muted);
   font-size: 0.92rem;
   margin: -8px 0 16px;
@@ -1175,6 +1175,145 @@ a.ranking__name:focus-visible {
   font-weight: 600;
 }
 
+/* --- Activity ------------------------------------------------------------- */
+
+/* The left padding is the gutter the gridline values sit in. */
+.activity {
+  padding-left: 40px;
+}
+
+.activity__placeholder {
+  height: 214px;
+}
+
+.activity__plot {
+  height: 180px;
+  margin-top: 8px;
+  position: relative;
+}
+
+.activity__grid {
+  inset: 0;
+  position: absolute;
+}
+
+.activity__gridline {
+  border-top: 1px solid var(--hairline);
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.activity__gridline:first-child {
+  border-top-color: var(--hairline-strong);
+}
+
+.activity__tick {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 0;
+  transform: translateY(-50%);
+}
+
+.activity__days {
+  display: flex;
+  gap: 2px;
+  inset: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+
+.activity__days:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid var(--ring);
+  outline-offset: 4px;
+}
+
+/* Each day's hover target is its whole slot, not just the bar in it. */
+.activity__day {
+  align-items: flex-end;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+}
+
+.activity__day.is-active {
+  background: rgba(16, 32, 52, 0.04);
+}
+
+/* Square at the baseline, rounded only at the data end. */
+.activity__bar {
+  animation: grow-column 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: var(--chart-bar);
+  border-radius: 4px 4px 0 0;
+  max-width: 24px;
+  transform-origin: bottom;
+  width: 100%;
+}
+
+.activity__day.is-active .activity__bar {
+  background: var(--brand-strong);
+}
+
+.activity__tooltip {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.activity__tooltip strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.activity__tooltip span {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+
+.activity__axis {
+  height: 18px;
+  margin-top: 8px;
+  position: relative;
+}
+
+.activity__label {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Read by screen readers, but takes no space on screen. */
+.visually-hidden {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 /* Holds a figure's place while it loads. */
 .skeleton {
   animation: shimmer 1.4s ease-in-out infinite;
@@ -1195,6 +1334,12 @@ a.ranking__name:focus-visible {
   }
 }
 
+@keyframes grow-column {
+  from {
+    transform: scaleY(0);
+  }
+}
+
 @keyframes shimmer {
   from {
     background-position: 200% 0;
@@ -1205,6 +1350,7 @@ a.ranking__name:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .activity__bar,
   .ranking__fill,
   .skeleton {
     animation: none;

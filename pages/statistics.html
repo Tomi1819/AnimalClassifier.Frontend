@@ -54,9 +54,27 @@
 
         <section class="card">
           <div class="history__head">
+            <h2>Activity</h2>
+          </div>
+          <p class="card__caption" id="activitySummary">
+            Recognitions per day over the last 30 days
+          </p>
+
+          <div class="activity" id="activityChart" aria-busy="true">
+            <span class="skeleton activity__placeholder"></span>
+          </div>
+
+          <p id="activityStatus" class="message" hidden></p>
+          <p class="history__empty" id="activityEmpty" hidden>
+            Nothing has been recognised in the last 30 days.
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="history__head">
             <h2>Most recognised animals</h2>
           </div>
-          <p class="ranking__caption" id="rankingCaption">
+          <p class="card__caption" id="rankingCaption">
             Each animal's share of all recognitions
           </p>
 
