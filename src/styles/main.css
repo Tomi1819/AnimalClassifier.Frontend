@@ -34,6 +34,11 @@
   --radius-lg: 18px;
   --shadow-sm: 0 1px 2px rgba(16, 32, 52, 0.06), 0 2px 8px rgba(16, 32, 52, 0.05);
   --shadow-md: 0 2px 4px rgba(16, 32, 52, 0.05), 0 12px 28px rgba(16, 32, 52, 0.08);
+
+  /* Chart marks, checked for contrast and colour-blind separation against
+     --surface. */
+  --chart-bar: #2d89c6;
+  --chart-bar-muted: #cbd5e1;
 }
 
 * {
@@ -298,13 +303,6 @@ nav ul li a.active {
   }
 }
 
-.welcome-text {
-  text-align: center;
-  margin-top: 50px;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
 main {
   background-color: var(--light-bg);
   border-radius: 12px;
@@ -312,12 +310,6 @@ main {
   margin: 30px auto;
   padding: 30px;
   width: 90%;
-}
-
-.stat-card:hover,
-.chart-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 main {
@@ -371,7 +363,8 @@ footer {
    ========================================================================== */
 
 .dashboard-page,
-.admin-page {
+.admin-page,
+.statistics-page {
   background-color: #f4f7fb;
   background-image: radial-gradient(
     900px 420px at 50% -120px,
@@ -382,7 +375,8 @@ footer {
 
 /* Overrides the card treatment `main` carries for the narrow auth pages. */
 .dashboard,
-.admin {
+.admin,
+.statistics {
   background: none;
   border-radius: 0;
   box-shadow: none;
@@ -998,93 +992,258 @@ footer {
   }
 }
 
-.statistics-container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 30px auto;
+/* ==========================================================================
+   Statistics
+   ========================================================================== */
+
+.kpi-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-bottom: 26px;
+}
+
+.kpi {
+  margin: 0;
+  min-width: 0;
+  padding: 20px 22px;
+}
+
+.kpi__label {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.kpi__value {
+  color: var(--ink);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 6px;
+}
+
+.kpi__value .skeleton {
+  height: 1.1em;
+  width: 4ch;
+}
+
+.kpi__note {
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.ranking__caption {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  margin: -8px 0 16px;
+}
+
+.ranking {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ranking__row {
+  align-items: center;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  padding: 12px 0;
+}
+
+.ranking__row + .ranking__row {
+  border-top: 1px solid var(--hairline);
+}
+
+.ranking__row--placeholder {
+  display: block;
+}
+
+.ranking__row--placeholder .skeleton {
+  height: 42px;
+}
+
+.ranking__rank {
+  align-items: center;
+  background: var(--surface-muted);
+  border-radius: 50%;
+  color: var(--ink-muted);
+  display: flex;
+  font-size: 0.85rem;
+  font-weight: 700;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.ranking__row:first-child .ranking__rank {
+  background: var(--brand-wash);
+  color: var(--brand-strong);
+}
+
+.ranking__row--rest .ranking__rank {
+  background: none;
+}
+
+.ranking__body {
+  min-width: 0;
+}
+
+.ranking__name {
+  color: var(--ink);
+  display: inline-block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-decoration: none;
+  text-transform: capitalize;
+}
+
+a.ranking__name:hover {
+  color: var(--brand-strong);
+  text-decoration: underline;
+}
+
+a.ranking__name:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.ranking__row--rest .ranking__name {
+  color: var(--ink-muted);
+  font-weight: 500;
+  text-transform: none;
+}
+
+/* The track is the whole of all recognitions, so each bar shows its share of
+   them. Square at the baseline, rounded only at the data end. */
+.ranking__track {
+  background: var(--brand-wash);
+  border-radius: 0 4px 4px 0;
+  display: block;
+  height: 10px;
+}
+
+.ranking__fill {
+  animation: grow-bar 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: var(--chart-bar);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  /* Keeps a sliver of a share visible rather than no bar at all. */
+  min-width: 2px;
+  transform-origin: left;
+}
+
+/* The remainder is context rather than a result, so it recedes to grey. */
+.ranking__row--rest .ranking__track {
+  background: var(--surface-muted);
+}
+
+.ranking__row--rest .ranking__fill {
+  background: var(--chart-bar-muted);
+}
+
+.ranking__figures {
+  align-items: flex-end;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
 }
 
-.stats-cards {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.stat-card {
-  background: var(--light-bg);
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  padding: 25px;
-  flex: 1;
-  min-width: 250px;
-  display: flex;
-  align-items: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.stat-icon {
-  background-color: var(--accent-color);
-  color: white;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 20px;
-}
-
-.stat-icon i {
-  font-size: 24px;
-}
-
-.stat-details h3 {
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
-.stat-number {
-  font-size: 36px;
+.ranking__count {
+  color: var(--ink);
+  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--primary-color);
 }
 
-.chart-container {
-  background: var(--light-bg);
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  padding: 25px;
+.ranking__share {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
 }
 
-.chart-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: var(--primary-color);
+.history__empty a {
+  color: var(--brand-strong);
+  font-weight: 600;
 }
 
-.animal-chart {
-  height: 400px;
-  position: relative;
-  padding: 20px;
-}
-
-.loading-gradient {
-  width: 100%;
-  height: 20px;
+/* Holds a figure's place while it loads. */
+.skeleton {
+  animation: shimmer 1.4s ease-in-out infinite;
   background: linear-gradient(
     90deg,
-    var(--muted-bg) 25%,
-    var(--highlight-bg) 50%,
-    var(--muted-bg) 75%
+    var(--surface-muted) 25%,
+    var(--hairline) 50%,
+    var(--surface-muted) 75%
   );
   background-size: 200% 100%;
-  animation: loadingAnimation 1.5s infinite;
-  border-radius: 5px;
-  margin: 10px 0;
+  border-radius: 8px;
+  display: block;
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ranking__fill,
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* Stacked full-size, the tiles would push the ranking below the fold, so each
+   becomes a single row with its figure at the end. */
+@media (max-width: 560px) {
+  .kpi-row {
+    gap: 12px;
+  }
+
+  .kpi {
+    align-items: center;
+    column-gap: 16px;
+    display: grid;
+    grid-template-areas:
+      "label value"
+      "note value";
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 16px 18px;
+  }
+
+  .kpi__label {
+    color: var(--ink);
+    grid-area: label;
+    margin-bottom: 2px;
+  }
+
+  .kpi__value {
+    font-size: 1.8rem;
+    grid-area: value;
+    margin: 0;
+  }
+
+  .kpi__note {
+    grid-area: note;
+  }
 }
 
 .search-main {
@@ -1467,15 +1626,6 @@ footer {
   }
 }
 
-@keyframes loadingAnimation {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1484,20 +1634,6 @@ footer {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .stats-cards {
-    flex-direction: column;
-  }
-
-  .stat-card {
-    width: 100%;
-  }
-
-  .animal-chart {
-    height: 300px;
   }
 }
 
