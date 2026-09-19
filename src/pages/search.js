@@ -8,6 +8,8 @@ const MIN_QUERY_LENGTH = 2;
 // Two full rows at the widest gallery layout; "Show all" reveals the rest.
 const INITIAL_IMAGES_PER_ANIMAL = 8;
 const MAX_SUGGESTIONS = 8;
+// Lets other pages link straight to an animal's images, as the statistics page does.
+const QUERY_PARAM = "q";
 
 const POPULAR_ANIMALS = [
   { name: "cat", icon: "🐱" },
@@ -36,6 +38,15 @@ if (requireAuthentication()) {
   elements = collectElements();
   initSearchControls();
   renderSuggestions(POPULAR_ANIMALS);
+  searchFromAddress();
+}
+
+function searchFromAddress() {
+  const query = new URLSearchParams(window.location.search).get(QUERY_PARAM)?.trim();
+  if (query) {
+    elements.searchInput.value = query;
+    search(query);
+  }
 }
 
 function collectElements() {

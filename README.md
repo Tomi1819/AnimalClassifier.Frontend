@@ -12,7 +12,6 @@ A lightweight, framework-free interface built with HTML, CSS, and vanilla JavaSc
 - 🎨 CSS
 - ⚙️ JavaScript (Vanilla, ES modules)
 - ⚡ Vite (dev server, API proxy, production build)
-- 📊 Chart.js (statistics page only)
 
 ## 🚀 Getting Started
 

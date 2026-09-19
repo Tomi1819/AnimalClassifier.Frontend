@@ -5,16 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Statistics - Animal Classifier</title>
     <link rel="stylesheet" href="/src/styles/main.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
   </head>
-  <body>
+  <body class="statistics-page">
     <header>
       <nav>
         <div class="logo">
@@ -23,41 +15,84 @@
         <!-- Populated by src/shared/nav.js, which varies the links by session. -->
         <ul id="navLinks"></ul>
       </nav>
-      <div class="welcome-text">
-        <h1>System Statistics</h1>
-        <p>Overview of system usage and animal recognition trends.</p>
-      </div>
     </header>
-    <div class="statistics-container">
-      <div class="stats-cards">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="fas fa-search"></i>
+
+    <main class="statistics">
+      <section class="page-header">
+        <p class="eyebrow">Statistics</p>
+        <h1>How the classifier is used</h1>
+        <p class="page-header__subtitle">
+          Every recognition made by every user, including the ones people have
+          since cleared from their history.
+        </p>
+      </section>
+
+      <p id="statsStatus" class="message" hidden></p>
+
+      <!-- Placeholders hold each figure's place until src/pages/statistics.js
+           fills it in, so the layout does not jump when the numbers arrive. -->
+      <div id="statsContent" aria-busy="true">
+        <section class="kpi-row" aria-label="Key figures">
+          <article class="card kpi">
+            <h2 class="kpi__label">Recognitions</h2>
+            <p class="kpi__value" id="totalRecognitions">
+              <span class="skeleton"></span>
+            </p>
+            <p class="kpi__note">Images and videos analysed</p>
+          </article>
+          <article class="card kpi">
+            <h2 class="kpi__label">Active users</h2>
+            <p class="kpi__value" id="activeUsers"><span class="skeleton"></span></p>
+            <p class="kpi__note">Have recognised at least one animal</p>
+          </article>
+          <article class="card kpi">
+            <h2 class="kpi__label">Per active user</h2>
+            <p class="kpi__value" id="perUser"><span class="skeleton"></span></p>
+            <p class="kpi__note">Recognitions on average</p>
+          </article>
+        </section>
+
+        <section class="card">
+          <div class="history__head">
+            <h2>Activity</h2>
           </div>
-          <div class="stat-details">
-            <h3>Total Recognitions</h3>
-            <div class="stat-number" id="totalRecognitions">...</div>
+          <p class="card__caption" id="activitySummary">
+            Recognitions per day over the last 30 days
+          </p>
+
+          <div class="activity" id="activityChart" aria-busy="true">
+            <span class="skeleton activity__placeholder"></span>
           </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="fas fa-users"></i>
+
+          <p id="activityStatus" class="message" hidden></p>
+          <p class="history__empty" id="activityEmpty" hidden>
+            Nothing has been recognised in the last 30 days.
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="history__head">
+            <h2>Most recognised animals</h2>
           </div>
-          <div class="stat-details">
-            <h3>Registered Users</h3>
-            <div class="stat-number" id="totalUsers">...</div>
-          </div>
-        </div>
+          <p class="card__caption" id="rankingCaption">
+            Each animal's share of all recognitions
+          </p>
+
+          <ol class="ranking" id="ranking">
+            <li class="ranking__row ranking__row--placeholder"><span class="skeleton"></span></li>
+            <li class="ranking__row ranking__row--placeholder"><span class="skeleton"></span></li>
+            <li class="ranking__row ranking__row--placeholder"><span class="skeleton"></span></li>
+          </ol>
+
+          <p class="history__empty" id="rankingEmpty" hidden>
+            Nothing has been recognised yet.
+            <a href="/pages/dashboard.html">Upload an image</a> and it will be
+            counted here.
+          </p>
+        </section>
       </div>
-      <div class="chart-container">
-        <h2>Top 3 Recognized Animals</h2>
-        <div class="animal-chart" id="topAnimalsChart"></div>
-      </div>
-    </div>
-    <footer>
-      <p>&copy; 2025 Animal Classifier. All rights reserved.</p>
-    </footer>
-    
+    </main>
+
     <script type="module" src="/src/pages/statistics.js"></script>
   </body>
 </html>
