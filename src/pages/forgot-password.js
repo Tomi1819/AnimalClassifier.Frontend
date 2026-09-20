@@ -22,11 +22,11 @@ form.addEventListener("submit", async (event) => {
     // The backend answers the same way whether or not the address has an
     // account, so that this page cannot be used to find out who is
     // registered. Its message is worded for that, so it is shown as it comes.
+    //
+    // The form stays where it is: someone who mistyped their address waits for
+    // an email that is never coming, and correcting it should not mean finding
+    // their way back to this page again.
     showSuccess(formMessage, message);
-
-    // Asking again from here would only send a second link, so the form steps
-    // aside once it has done its job.
-    form.hidden = true;
   } catch (error) {
     console.error("Requesting a password reset failed:", error);
     showError(formMessage, error.message);
