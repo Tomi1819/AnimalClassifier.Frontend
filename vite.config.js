@@ -17,6 +17,8 @@ export default defineConfig({
         home: resolve(import.meta.dirname, "index.html"),
         login: resolve(import.meta.dirname, "pages/login.html"),
         register: resolve(import.meta.dirname, "pages/register.html"),
+        forgotPassword: resolve(import.meta.dirname, "pages/forgot-password.html"),
+        resetPassword: resolve(import.meta.dirname, "pages/reset-password.html"),
         dashboard: resolve(import.meta.dirname, "pages/dashboard.html"),
         search: resolve(import.meta.dirname, "pages/search.html"),
         statistics: resolve(import.meta.dirname, "pages/statistics.html"),
