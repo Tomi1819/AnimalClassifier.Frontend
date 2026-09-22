@@ -2646,6 +2646,12 @@ a.ranking__name:focus-visible {
   margin: 0 0 22px;
 }
 
+/* Without a note the question is the last thing before the buttons, so it
+   takes over the space the note would have held. */
+.confirm-dialog:has(.confirm-dialog__note[hidden]) .confirm-dialog__question {
+  margin-bottom: 22px;
+}
+
 .confirm-dialog__actions {
   display: flex;
   gap: 10px;
