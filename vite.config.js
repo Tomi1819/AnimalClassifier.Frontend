@@ -23,6 +23,7 @@ export default defineConfig({
         search: resolve(import.meta.dirname, "pages/search.html"),
         statistics: resolve(import.meta.dirname, "pages/statistics.html"),
         admin: resolve(import.meta.dirname, "pages/admin.html"),
+        account: resolve(import.meta.dirname, "pages/account.html"),
       },
     },
   },

@@ -14,6 +14,7 @@ const AUTHENTICATED_LINKS = [
   { href: "/pages/dashboard.html", label: "Dashboard" },
   { href: "/pages/search.html", label: "Search" },
   { href: "/pages/statistics.html", label: "Statistics" },
+  { href: "/pages/account.html", label: "Account" },
 ];
 
 const ADMIN_LINK = { href: "/pages/admin.html", label: "Admin" };

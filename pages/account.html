@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account - Animal Classifier</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body class="dashboard-page">
+    <header>
+      <nav>
+        <div class="logo">
+          <img src="/logo.png" alt="Logo" />
+        </div>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
+      </nav>
+    </header>
+
+    <main class="dashboard">
+      <section class="page-header">
+        <p class="eyebrow">Account</p>
+        <h1>Your passkeys</h1>
+        <p class="page-header__subtitle">
+          A passkey signs you in with this device instead of your password. Your
+          password keeps working, so you can still get in from anywhere else.
+        </p>
+      </section>
+
+      <section class="card">
+        <div class="history__head">
+          <h2>Registered passkeys</h2>
+          <!-- Revealed by src/pages/account.js only where the browser can use
+               passkeys, so it never offers something that cannot work. -->
+          <button id="addPasskey" class="btn-ghost" type="button" hidden>
+            Add a passkey
+          </button>
+        </div>
+
+        <form id="addPasskeyForm" class="passkey-form" hidden>
+          <div class="field">
+            <label class="field__label" for="passkeyName">Name this passkey</label>
+            <div class="field__control">
+              <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 5h9l7 7-7 7H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
+                <circle cx="8.5" cy="12" r="1.2" />
+              </svg>
+              <input
+                type="text"
+                id="passkeyName"
+                maxlength="64"
+                placeholder="This device"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="passkey-form__actions">
+            <button id="cancelPasskey" class="btn-ghost" type="button">Cancel</button>
+            <button class="btn" type="submit">Register</button>
+          </div>
+        </form>
+
+        <p id="passkeyMessage" class="message" hidden></p>
+
+        <!-- Stands in for the list: for an account with no passkeys, and for a
+             browser that cannot use them. -->
+        <p class="history__empty" id="passkeyEmpty" hidden></p>
+
+        <ul class="passkey-list" id="passkeyList"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="/src/pages/account.js"></script>
+  </body>
+</html>
