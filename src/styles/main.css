@@ -755,6 +755,49 @@ footer {
   transform: none;
 }
 
+/* Fills its container rather than sitting at its natural width, for the
+   places a ghost button is the action rather than an aside to one. */
+.btn-ghost--block {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+  justify-content: center;
+  padding: 13px 18px;
+  width: 100%;
+}
+
+.btn-ghost__icon {
+  fill: none;
+  height: 19px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 19px;
+}
+
+/* --- Passkey sign in ------------------------------------------------------ */
+
+.passkey-signin__divider {
+  align-items: center;
+  color: var(--ink-muted);
+  display: flex;
+  font-size: 0.8rem;
+  gap: 12px;
+  margin: 18px 0 14px;
+  text-transform: uppercase;
+}
+
+/* The rules either side are drawn by the pseudo-elements, so the word sits in
+   a gap rather than on top of a line. */
+.passkey-signin__divider::before,
+.passkey-signin__divider::after {
+  background: var(--hairline-strong);
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
 .history__empty {
   background: rgba(255, 255, 255, 0.55);
   border: 1px dashed var(--hairline-strong);

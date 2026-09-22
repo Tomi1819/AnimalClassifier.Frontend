@@ -93,6 +93,19 @@
           <button class="btn" type="submit">Sign in</button>
         </form>
 
+        <!-- Revealed by src/pages/login.js only where the browser can use
+             passkeys, so it never offers something that cannot work. -->
+        <div id="passkeySignIn" class="passkey-signin" hidden>
+          <p class="passkey-signin__divider"><span>or</span></p>
+          <button id="passkeyButton" class="btn-ghost btn-ghost--block" type="button">
+            <svg class="btn-ghost__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10" cy="9" r="4" />
+              <path d="M13.5 11.5 21 19m-3 0 1.5 1.5M16 17l1.5 1.5M4 20a6 6 0 0 1 8-5.7" />
+            </svg>
+            Sign in with a passkey
+          </button>
+        </div>
+
         <p id="formMessage" class="message" hidden></p>
 
         <p class="auth-card__switch">
