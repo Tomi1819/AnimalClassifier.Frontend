@@ -47,6 +47,19 @@ For deployments where the frontend is served from a different origin than the AP
 
 > Only `VITE_`-prefixed variables are exposed to the browser, and they are baked into the bundle at build time. Never put secrets in them.
 
+## 🗝️ Passkeys
+
+The login page offers a passkey alongside the password, and the account page
+registers and removes them. Both are hidden where the browser cannot take part,
+which is decided by `isPasskeySupported` in `src/auth/passkeys.js`: it looks for
+the JSON helpers on `PublicKeyCredential`, which spare the module from
+converting every field to and from its binary form by hand.
+
+A passkey is bound to the domain in the address bar, so the backend's relying
+party id has to be this frontend's domain. In development that is `localhost`,
+which browsers accept without HTTPS; a deployment needs HTTPS and a domain
+shared with the API. See the backend README.
+
 ## 📁 Project Structure
 
 ```
@@ -56,6 +69,8 @@ public/               Static files served from the root, e.g. /logo.png
 src/
   api/client.js       fetch wrapper: base URL, bearer token, error handling
   auth/session.js     Token storage and the page guard
+  auth/passkeys.js    WebAuthn ceremonies, one function each
+  shared/confirm.js   The modal confirmation, built in script
   shared/nav.js       Session-aware navigation and logout
   pages/              One module per page
   styles/main.css     Application styles

@@ -1,4 +1,5 @@
 import { apiFetch } from "../api/client.js";
+import { isPasskeySupported, signInWithPasskey } from "../auth/passkeys.js";
 import { setSession } from "../auth/session.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
@@ -11,6 +12,8 @@ initPasswordToggles();
 
 const formMessage = document.getElementById("formMessage");
 
+initPasskeySignIn();
+
 document.getElementById("loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   showProgress(formMessage, "Signing in...");
@@ -20,19 +23,45 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
     password: document.getElementById("password").value,
   };
 
-  try {
-    const { token, roles } = await apiFetch("/api/auth/login", {
+  await signIn(() =>
+    apiFetch("/api/auth/login", {
       method: "POST",
       body: JSON.stringify(credentials),
-    });
+    }),
+  );
+});
+
+/**
+ * Offers the passkey button only where it can work, so that a browser without
+ * passkeys shows a password form and nothing else.
+ */
+function initPasskeySignIn() {
+  if (!isPasskeySupported()) {
+    return;
+  }
+
+  document.getElementById("passkeySignIn").hidden = false;
+
+  document.getElementById("passkeyButton").addEventListener("click", async () => {
+    showProgress(formMessage, "Waiting for your passkey...");
+
+    await signIn(signInWithPasskey);
+  });
+}
+
+/**
+ * Both ways in end the same way: a session is kept and the user carries on to
+ * the dashboard. Whichever failed, the error explains itself.
+ */
+async function signIn(attempt) {
+  try {
+    const { token, roles } = await attempt();
 
     setSession(token, roles);
     hideMessage(formMessage);
     window.location.href = DASHBOARD_PAGE;
   } catch (error) {
-    console.error("Login failed:", error);
-    // The backend already answers 401 with "Invalid email or password.", so
-    // reporting its message keeps an offline server from looking like a typo.
+    console.error("Sign in failed:", error);
     showError(formMessage, error.message);
   }
-});
+}

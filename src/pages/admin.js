@@ -1,12 +1,15 @@
 import { apiFetch } from "../api/client.js";
 import { requireAdmin } from "../auth/session.js";
+import { askToConfirm } from "../shared/confirm.js";
 import { showError, showSuccess } from "../shared/feedback.js";
 import { createHistoryCard, formatDate, fromHistoryItem } from "../shared/history.js";
 import { initNavigation } from "../shared/nav.js";
 
 const USERS_PATH = "/api/admin/users";
 const AUDIT_PATH = "/api/admin/audit";
-const CONFIRM = "confirm";
+
+// Every change on this page ends the user's sessions.
+const SIGNED_OUT_NOTE = "The user will be signed out.";
 
 // Keyed by the endpoint each change is posted to.
 const USER_CHANGES = {
@@ -70,8 +73,6 @@ function collectPageElements() {
     historyEmpty: document.getElementById("historyEmpty"),
     historyList: document.getElementById("historyList"),
     closeHistory: document.getElementById("closeHistory"),
-    confirmDialog: document.getElementById("confirmDialog"),
-    confirmQuestion: document.getElementById("confirmQuestion"),
   };
 }
 
@@ -147,7 +148,7 @@ function createChangeButton(page, user, change) {
 async function changeUser(page, user, change) {
   const { question, done } = USER_CHANGES[change];
 
-  if (!(await askToConfirm(page, question(user.email)))) {
+  if (!(await askToConfirm(question(user.email), SIGNED_OUT_NOTE))) {
     return;
   }
 
@@ -163,19 +164,6 @@ async function changeUser(page, user, change) {
   }
 }
 
-function askToConfirm(page, question) {
-  const dialog = page.confirmDialog;
-  page.confirmQuestion.textContent = question;
-  // Escape closes the dialog without a button, leaving the previous answer.
-  dialog.returnValue = "";
-  dialog.showModal();
-
-  return new Promise((resolve) => {
-    dialog.addEventListener("close", () => resolve(dialog.returnValue === CONFIRM), {
-      once: true,
-    });
-  });
-}
 
 async function showHistory(page, user) {
   try {
