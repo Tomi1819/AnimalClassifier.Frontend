@@ -1,4 +1,6 @@
-import { clearSession, isAdmin, isAuthenticated } from "../auth/session.js";
+import { isAuthenticated } from "../auth/session.js";
+import { createAccountMenu } from "./account-menu.js";
+import { initDisclosure } from "./disclosure.js";
 
 const NAV_LINKS_ID = "navLinks";
 const HOME_PAGE = "/";
@@ -14,10 +16,7 @@ const AUTHENTICATED_LINKS = [
   { href: "/pages/dashboard.html", label: "Dashboard" },
   { href: "/pages/search.html", label: "Search" },
   { href: "/pages/statistics.html", label: "Statistics" },
-  { href: "/pages/account.html", label: "Account" },
 ];
-
-const ADMIN_LINK = { href: "/pages/admin.html", label: "Admin" };
 
 const ANONYMOUS_LINKS = [
   { href: HOME_PAGE, label: "Home" },
@@ -45,15 +44,14 @@ export function initNavigation() {
     return;
   }
 
-  const links = isAuthenticated() ? AUTHENTICATED_LINKS : ANONYMOUS_LINKS;
+  const signedIn = isAuthenticated();
+  const links = signedIn ? AUTHENTICATED_LINKS : ANONYMOUS_LINKS;
   navLinks.replaceChildren(...links.map(createNavItem));
 
-  if (isAdmin()) {
-    navLinks.append(createNavItem(ADMIN_LINK));
-  }
-
-  if (isAuthenticated()) {
-    navLinks.append(createLogoutItem());
+  // The account pages and signing out sit behind a menu of their own, so the
+  // links stay the pages the user works in.
+  if (signedIn) {
+    navLinks.after(createAccountMenu());
   }
 
   initMenu(navLinks);
@@ -73,65 +71,22 @@ function createNavItem({ href, label }) {
   return item;
 }
 
-function createLogoutItem() {
-  const link = document.createElement("a");
-  link.href = "#";
-  link.textContent = "Logout";
-  link.addEventListener("click", (event) => {
-    event.preventDefault();
-    logout();
-  });
-
-  const item = document.createElement("li");
-  item.append(link);
-  return item;
-}
-
-function logout() {
-  clearSession();
-  window.location.href = HOME_PAGE;
-}
-
 /**
  * Adds the button that opens the links on a narrow screen, where the bar has
  * no room to lay them out. It is built here rather than in the pages so that
  * they carry on providing nothing but the empty list.
  */
 function initMenu(navLinks) {
-  const nav = navLinks.closest("nav");
   const toggle = createMenuToggle();
   navLinks.before(toggle);
 
-  toggle.addEventListener("click", () => {
-    setMenuOpen(toggle, navLinks, !isMenuOpen(toggle));
-  });
-
-  // A link either leaves the page or, in the case of logout, redraws the bar.
-  // Either way the open menu has done its job.
-  navLinks.addEventListener("click", (event) => {
-    if (event.target.closest("a")) {
-      setMenuOpen(toggle, navLinks, false);
-    }
-  });
-
-  document.addEventListener("click", (event) => {
-    if (isMenuOpen(toggle) && !nav.contains(event.target)) {
-      setMenuOpen(toggle, navLinks, false);
-    }
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && isMenuOpen(toggle)) {
-      setMenuOpen(toggle, navLinks, false);
-      toggle.focus();
-    }
-  });
+  const close = initDisclosure(toggle, navLinks, (open) => showMenuIcon(toggle, open));
 
   // The menu belongs to the compact bar alone, so a window grown past it must
   // not leave the panel behind.
   window.matchMedia(COMPACT_NAV_QUERY).addEventListener("change", (event) => {
     if (!event.matches) {
-      setMenuOpen(toggle, navLinks, false);
+      close();
     }
   });
 }
@@ -141,21 +96,11 @@ function createMenuToggle() {
   toggle.type = "button";
   toggle.className = "nav-toggle";
   toggle.innerHTML = MENU_ICONS;
-  toggle.setAttribute("aria-controls", NAV_LINKS_ID);
-  toggle.setAttribute("aria-expanded", "false");
   toggle.setAttribute("aria-label", MENU_LABEL);
   return toggle;
 }
 
-// The button's own state is the only record of whether the menu is open.
-function isMenuOpen(toggle) {
-  return toggle.getAttribute("aria-expanded") === "true";
-}
-
-function setMenuOpen(toggle, navLinks, open) {
-  toggle.setAttribute("aria-expanded", String(open));
-  navLinks.classList.toggle("is-open", open);
-
+function showMenuIcon(toggle, open) {
   // The icon offers the next action, so it is the opposite of the state. It is
   // SVG, which carries no hidden property to assign to, only the attribute the
   // stylesheet matches on.

@@ -5,6 +5,14 @@ const LOGIN_PAGE = "/pages/login.html";
 const DASHBOARD_PAGE = "/pages/dashboard.html";
 const MILLISECONDS_PER_SECOND = 1000;
 
+// The backend writes .NET's ClaimTypes.Email without mapping it to the short
+// JWT name, so the long form is the one it sends; the short one is the
+// standard, and is read first in case that changes.
+const EMAIL_CLAIMS = [
+  "email",
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+];
+
 /**
  * The token is kept in localStorage rather than sessionStorage so that every
  * tab and window shares one session.
@@ -48,6 +56,22 @@ export function isAuthenticated() {
  */
 export function isAdmin() {
   return isAuthenticated() && readRoles().includes(ADMIN_ROLE);
+}
+
+/**
+ * The email the signed-in user is known by, for showing who is signed in.
+ *
+ * @returns the email, or null when no one is signed in or the token has none.
+ */
+export function getUserEmail() {
+  const token = getToken();
+  if (token === null) {
+    return null;
+  }
+
+  const claims = readClaims(token);
+  const email = EMAIL_CLAIMS.map((claim) => claims?.[claim]).find(Boolean);
+  return email ?? null;
 }
 
 /**
