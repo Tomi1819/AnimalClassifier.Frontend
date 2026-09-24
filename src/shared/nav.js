@@ -1,4 +1,5 @@
 import { clearSession, isAdmin, isAuthenticated } from "../auth/session.js";
+import { initDisclosure } from "./disclosure.js";
 
 const NAV_LINKS_ID = "navLinks";
 const HOME_PAGE = "/";
@@ -98,40 +99,16 @@ function logout() {
  * they carry on providing nothing but the empty list.
  */
 function initMenu(navLinks) {
-  const nav = navLinks.closest("nav");
   const toggle = createMenuToggle();
   navLinks.before(toggle);
 
-  toggle.addEventListener("click", () => {
-    setMenuOpen(toggle, navLinks, !isMenuOpen(toggle));
-  });
-
-  // A link either leaves the page or, in the case of logout, redraws the bar.
-  // Either way the open menu has done its job.
-  navLinks.addEventListener("click", (event) => {
-    if (event.target.closest("a")) {
-      setMenuOpen(toggle, navLinks, false);
-    }
-  });
-
-  document.addEventListener("click", (event) => {
-    if (isMenuOpen(toggle) && !nav.contains(event.target)) {
-      setMenuOpen(toggle, navLinks, false);
-    }
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && isMenuOpen(toggle)) {
-      setMenuOpen(toggle, navLinks, false);
-      toggle.focus();
-    }
-  });
+  const close = initDisclosure(toggle, navLinks, (open) => showMenuIcon(toggle, open));
 
   // The menu belongs to the compact bar alone, so a window grown past it must
   // not leave the panel behind.
   window.matchMedia(COMPACT_NAV_QUERY).addEventListener("change", (event) => {
     if (!event.matches) {
-      setMenuOpen(toggle, navLinks, false);
+      close();
     }
   });
 }
@@ -141,21 +118,11 @@ function createMenuToggle() {
   toggle.type = "button";
   toggle.className = "nav-toggle";
   toggle.innerHTML = MENU_ICONS;
-  toggle.setAttribute("aria-controls", NAV_LINKS_ID);
-  toggle.setAttribute("aria-expanded", "false");
   toggle.setAttribute("aria-label", MENU_LABEL);
   return toggle;
 }
 
-// The button's own state is the only record of whether the menu is open.
-function isMenuOpen(toggle) {
-  return toggle.getAttribute("aria-expanded") === "true";
-}
-
-function setMenuOpen(toggle, navLinks, open) {
-  toggle.setAttribute("aria-expanded", String(open));
-  navLinks.classList.toggle("is-open", open);
-
+function showMenuIcon(toggle, open) {
   // The icon offers the next action, so it is the opposite of the state. It is
   // SVG, which carries no hidden property to assign to, only the attribute the
   // stylesheet matches on.
