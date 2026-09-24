@@ -63,15 +63,17 @@ shared with the API. See the backend README.
 ## 📁 Project Structure
 
 ```
-index.html            Home page
-pages/                One HTML file per page (each is a build entry point)
-public/               Static files served from the root, e.g. /logo.png
+index.html                Home page
+pages/                    One HTML file per page (each is a build entry point)
+public/                   Static files served from the root, e.g. /logo.png
 src/
-  api/client.js       fetch wrapper: base URL, bearer token, error handling
-  auth/session.js     Token storage and the page guard
-  auth/passkeys.js    WebAuthn ceremonies, one function each
-  shared/confirm.js   The modal confirmation, built in script
-  shared/nav.js       Session-aware navigation and logout
-  pages/              One module per page
-  styles/main.css     Application styles
+  api/client.js           fetch wrapper: base URL, bearer token, error handling
+  auth/session.js         Token storage and the page guard
+  auth/passkeys.js        WebAuthn ceremonies, one function each
+  shared/account-menu.js  The settings menu: account, admin and sign out
+  shared/confirm.js       The modal confirmation, built in script
+  shared/disclosure.js    Open and close handling shared by the bar's menus
+  shared/nav.js           Session-aware navigation
+  pages/                  One module per page
+  styles/main.css         Application styles
 ```
