@@ -60,20 +60,39 @@ party id has to be this frontend's domain. In development that is `localhost`,
 which browsers accept without HTTPS; a deployment needs HTTPS and a domain
 shared with the API. See the backend README.
 
+## 🌗 Themes
+
+The site has a light and a dark theme. It follows the system setting until the
+user picks one from the switch in the account menu, and the choice is kept in
+`localStorage` under `theme`.
+
+- `public/theme-init.js` runs in each page's `<head>` and sets
+  `<html data-theme="light|dark">` before the first paint, so a dark page never
+  flashes light. Every new page needs the same `<script>` tag.
+- `src/shared/theme.js` keeps the page in step afterwards: with the system as it
+  changes, and with a choice made in another tab.
+- `src/styles/main.css` defines every colour as a variable on `:root` and gives
+  the dark values under `:root[data-theme="dark"]`. New rules should use the
+  variables rather than fixed colours, so that they work in both themes.
+
 ## 📁 Project Structure
 
 ```
 index.html                Home page
 pages/                    One HTML file per page (each is a build entry point)
 public/                   Static files served from the root, e.g. /logo.png
+  theme-init.js           Sets the theme before the first paint
 src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
   auth/session.js         Token storage and the page guard
   auth/passkeys.js        WebAuthn ceremonies, one function each
-  shared/account-menu.js  The settings menu: account, admin and sign out
+  shared/account-menu.js  The settings menu: account, admin, theme and sign out
   shared/confirm.js       The modal confirmation, built in script
   shared/disclosure.js    Open and close handling shared by the bar's menus
+  shared/icons.js         The outline icons the menus draw
   shared/nav.js           Session-aware navigation
+  shared/theme.js         The theme choice, stored and applied
+  shared/theme-switch.js  The light, dark and system control
   pages/                  One module per page
   styles/main.css         Application styles
 ```
