@@ -1,6 +1,7 @@
 import { clearSession, getUserEmail, isAdmin } from "../auth/session.js";
 import { initDisclosure } from "./disclosure.js";
 import { svgIcon } from "./icons.js";
+import { createThemeSwitch } from "./theme-switch.js";
 
 const PANEL_ID = "accountMenu";
 const TOGGLE_LABEL = "Account and settings";
@@ -27,7 +28,7 @@ const ADMIN_ITEM = {
 /**
  * Builds the menu that gathers everything about the signed-in user behind one
  * button at the end of the bar: who they are, the pages that concern their
- * account, and the way out. It is only for a signed-in user.
+ * account, how the site looks to them, and the way out. It is only for a signed-in user.
  *
  * @returns the element to place in the bar.
  */
@@ -67,7 +68,7 @@ function createPanel(items, admin) {
   list.className = "account-menu__list";
   list.append(...items.map(createLinkItem));
 
-  panel.append(createIdentity(admin), list, createSignOut());
+  panel.append(createIdentity(admin), list, createThemeSwitch(), createSignOut());
   return panel;
 }
 

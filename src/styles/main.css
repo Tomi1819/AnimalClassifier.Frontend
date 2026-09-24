@@ -12,6 +12,8 @@
   /* Surfaces, ink and elevation. */
   --canvas: #f4f7fb;
   --surface: #ffffff;
+  /* What sits on a surface, such as the chosen option of a switch. */
+  --surface-raised: #ffffff;
   --surface-muted: #f1f5f9;
   --field: #f9f9f9;
   --hairline: #e5eaf0;
@@ -62,6 +64,7 @@
 
   --canvas: #0b111a;
   --surface: #131b27;
+  --surface-raised: #2a3649;
   --surface-muted: #1b2534;
   --field: #0f1620;
   --hairline: #243042;
@@ -815,10 +818,69 @@ footer {
 }
 
 .segmented__btn.is-active {
-  background: var(--surface);
+  background: var(--surface-raised);
   box-shadow: var(--shadow-sm);
   color: var(--brand-strong);
   transform: none;
+}
+
+/* Spans its container with equal options, for where it is the whole row. */
+.segmented--fill {
+  display: flex;
+  margin-bottom: 0;
+}
+
+.segmented--fill .segmented__btn {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* --- Theme switch --------------------------------------------------------- */
+
+.theme-switch {
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 12px 10px 8px;
+}
+
+.theme-switch__label {
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.theme-switch__option {
+  align-items: center;
+  display: flex;
+  font-size: 0.85rem;
+  gap: 6px;
+  justify-content: center;
+  padding: 7px 8px;
+}
+
+.theme-switch__option:focus {
+  box-shadow: none;
+}
+
+.theme-switch__option:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 0;
+}
+
+.theme-switch__icon {
+  fill: none;
+  flex-shrink: 0;
+  height: 15px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 15px;
 }
 
 /* --- Dropzone ------------------------------------------------------------- */
