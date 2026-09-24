@@ -3116,8 +3116,12 @@ a.ranking__name:focus-visible {
 }
 
 /* The reset at the top removes the margin that centres a modal dialog. */
+/* Given its colours outright, since a dialog otherwise takes the browser's own
+   for the colour scheme rather than the page's. */
 .confirm-dialog {
+  background: var(--surface);
   border: 1px solid var(--hairline);
+  color: var(--ink);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   margin: auto;
