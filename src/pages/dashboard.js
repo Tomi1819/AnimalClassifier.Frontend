@@ -517,9 +517,9 @@ function createAnimalCard({ animal }, index) {
   icon.className = `animal-icon ${animal.toLowerCase()}`;
   icon.innerHTML = `
     <svg viewBox="0 0 24 24" class="animal-svg">
-      <circle cx="12" cy="12" r="11" fill="#eaf4fd"></circle>
+      <circle cx="12" cy="12" r="11"></circle>
       <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
-            font-size="10px" font-weight="700" fill="#005f99"></text>
+            font-size="10px" font-weight="700"></text>
     </svg>
   `;
   icon.querySelector("text").textContent = animal.charAt(0).toUpperCase();
