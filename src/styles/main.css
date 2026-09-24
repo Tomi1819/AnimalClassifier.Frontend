@@ -303,6 +303,308 @@ nav > ul > li > a.active {
   }
 }
 
+/* --- Account menu --------------------------------------------------------- */
+
+/* Set apart from the page links, since it holds the user rather than a page.
+   Not positioned itself, so the panel hangs from the bar rather than from the
+   button, and lines up with the bar's edge. */
+.account-menu {
+  align-items: center;
+  border-left: 1px solid var(--hairline);
+  display: flex;
+  margin-left: 14px;
+  padding-left: 14px;
+}
+
+.account-menu__toggle {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 50%;
+  box-shadow: none;
+  color: var(--ink-muted);
+  display: flex;
+  flex-shrink: 0;
+  height: 42px;
+  justify-content: center;
+  padding: 0;
+  width: 42px;
+}
+
+.account-menu__toggle:hover,
+.account-menu__toggle[aria-expanded="true"] {
+  background: var(--brand-wash);
+  border-color: var(--brand);
+  box-shadow: none;
+  color: var(--brand-strong);
+  transform: none;
+}
+
+.account-menu__toggle:focus {
+  box-shadow: none;
+}
+
+.account-menu__toggle:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Filled like the active link, for when the page on screen is in the menu. */
+.account-menu__toggle.is-current {
+  background-image: linear-gradient(135deg, var(--brand), var(--brand-strong));
+  border-color: transparent;
+  color: #fff;
+}
+
+.account-menu__gear {
+  fill: none;
+  height: 20px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  transition: transform 0.4s ease;
+  width: 20px;
+}
+
+.account-menu__toggle:hover .account-menu__gear,
+.account-menu__toggle[aria-expanded="true"] .account-menu__gear {
+  transform: rotate(60deg);
+}
+
+.account-menu__panel {
+  animation: menu-pop 0.18s ease;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: none;
+  padding: 8px;
+  position: absolute;
+  right: 30px;
+  top: calc(100% + 8px);
+  transform-origin: top right;
+  width: 300px;
+}
+
+.account-menu__panel.is-open {
+  display: block;
+}
+
+.account-menu__identity {
+  align-items: center;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding: 10px 10px 14px;
+}
+
+.account-menu__avatar {
+  background-image: linear-gradient(135deg, var(--brand), var(--brand-strong));
+  border-radius: 50%;
+  color: #fff;
+  display: grid;
+  flex-shrink: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  height: 42px;
+  place-items: center;
+  width: 42px;
+}
+
+/* min-width lets a long email shrink to its ellipsis instead of widening the
+   panel. */
+.account-menu__who {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.account-menu__email {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-menu__role {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 9px;
+  text-transform: uppercase;
+}
+
+.account-menu__role--admin {
+  background: var(--brand-wash);
+  color: var(--brand-strong);
+}
+
+.account-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+}
+
+/* Shared by the links and the sign out button, so the button also has to shed
+   the global button styling. */
+.account-menu__item {
+  align-items: center;
+  background: transparent;
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  color: var(--ink);
+  display: flex;
+  font: inherit;
+  gap: 12px;
+  padding: 9px 10px;
+  text-align: left;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.account-menu__item:hover {
+  background: var(--surface-muted);
+  box-shadow: none;
+  transform: none;
+}
+
+.account-menu__item:focus {
+  box-shadow: none;
+}
+
+.account-menu__item:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 0;
+}
+
+.account-menu__item[aria-current="page"] {
+  background: var(--brand-wash);
+}
+
+.account-menu__badge {
+  background: var(--brand-wash);
+  border-radius: 10px;
+  color: var(--brand-strong);
+  display: grid;
+  flex-shrink: 0;
+  height: 36px;
+  place-items: center;
+  transition: background-color 0.15s ease;
+  width: 36px;
+}
+
+/* The row takes on the wash, so the badge turns white to stay visible on it. */
+.account-menu__item[aria-current="page"] .account-menu__badge {
+  background: var(--surface);
+}
+
+.account-menu__icon {
+  fill: none;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+  width: 18px;
+}
+
+.account-menu__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.account-menu__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.account-menu__item[aria-current="page"] .account-menu__label {
+  color: var(--brand-strong);
+}
+
+.account-menu__hint {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+
+.account-menu__footer {
+  border-top: 1px solid var(--hairline);
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+.account-menu__item--danger .account-menu__badge {
+  background: var(--error-bg);
+  color: var(--error-color);
+}
+
+.account-menu__item--danger:hover {
+  background: var(--error-bg);
+}
+
+.account-menu__item--danger:hover .account-menu__badge {
+  background: var(--surface);
+}
+
+.account-menu__item--danger:hover .account-menu__label {
+  color: var(--error-color);
+}
+
+@keyframes menu-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  /* The bar is tight, so the hairline goes and the button matches the size of
+     the menu toggle beside it. */
+  .account-menu {
+    border-left: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .account-menu__toggle {
+    height: 40px;
+    width: 40px;
+  }
+
+  .account-menu__panel {
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-menu__panel {
+    animation: none;
+  }
+
+  .account-menu__gear {
+    transition: none;
+  }
+}
+
 main {
   background-color: var(--light-bg);
   border-radius: 12px;
