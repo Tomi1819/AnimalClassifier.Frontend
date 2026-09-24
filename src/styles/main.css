@@ -41,6 +41,50 @@
   --violet-wash: #f3e8ff;
   --wash-blue: #d5ebfb;
   --wash-violet: #ece2ff;
+
+  color-scheme: light;
+}
+
+/* Set on <html> before the first paint by public/theme-init.js, and kept in
+   step by src/shared/theme.js. Only the palette changes, so every rule above
+   and below serves both themes. --brand stays as it is: the fills that carry
+   white text start from it. */
+:root[data-theme="dark"] {
+  --error-color: #f39a90;
+  --error-bg: #3a1c1c;
+  --error-border: #6b2c2a;
+  --success-color: #7fd9a5;
+  --success-bg: #11301f;
+  --success-border: #245c3b;
+  --warning-color: #f2c66b;
+  --warning-bg: #33280f;
+  --warning-border: #6a5220;
+
+  --canvas: #0b111a;
+  --surface: #131b27;
+  --surface-muted: #1b2534;
+  --field: #0f1620;
+  --hairline: #243042;
+  --hairline-strong: #35455b;
+  --ink: #e4ebf3;
+  --ink-muted: #95a5b8;
+  --brand-strong: #7cc4f5;
+  --brand-hover: #2f8fd4;
+  --brand-deep: #1667a3;
+  --brand-wash: #15314b;
+  --ring: rgba(124, 196, 245, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.45);
+
+  --chart-bar: #4aa3e0;
+  --chart-bar-muted: #35445a;
+
+  --violet: #d3adfb;
+  --violet-wash: #2c1f45;
+  --wash-blue: #0f2a44;
+  --wash-violet: #1f1a3d;
+
+  color-scheme: dark;
 }
 
 * {
@@ -167,6 +211,14 @@ nav .logo {
 nav .logo img {
   height: 50px;
   margin-right: 10px;
+}
+
+/* The logo is an opaque image with a light background, so on a dark bar it
+   sits on a tile of that colour rather than showing as a stray box. */
+:root[data-theme="dark"] nav .logo img {
+  background: #fff;
+  border-radius: 10px;
+  padding: 3px;
 }
 
 nav > ul {
@@ -2020,6 +2072,12 @@ a.ranking__name:focus-visible {
   object-fit: contain;
   transition: transform 0.3s ease;
   width: 100%;
+}
+
+/* Multiplying onto a dark tile would darken every photo, so in the dark the
+   images keep their own background. */
+:root[data-theme="dark"] .gallery__tile img {
+  mix-blend-mode: normal;
 }
 
 .gallery__tile:focus {
