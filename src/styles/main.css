@@ -1,14 +1,4 @@
 :root {
-  --primary-color: #005f99;
-  --secondary-color: #2c3e50;
-  --accent-color: #3498db;
-  --accent-hover: #2d89c6;
-  --light-bg: #ffffff;
-  --muted-bg: #ecf0f1;
-  --highlight-bg: #e3f2fd;
-  --text-light: #7f8c8d;
-  --border-color: #d0dce5;
-  --hover-bg-light: #dfefff;
   --error-color: #a93226;
   --error-bg: #fdecea;
   --error-border: #f5c6c0;
@@ -19,7 +9,7 @@
   --warning-bg: #fff8e6;
   --warning-border: #f5e0aa;
 
-  /* Surfaces, ink and elevation used by the dashboard. */
+  /* Surfaces, ink and elevation. */
   --surface: #ffffff;
   --surface-muted: #f1f5f9;
   --hairline: #e5eaf0;
@@ -28,6 +18,7 @@
   --ink-muted: #6b7c8f;
   --brand: #3498db;
   --brand-strong: #005f99;
+  --brand-hover: #2d89c6;
   --brand-wash: #eaf4fd;
   --ring: rgba(52, 152, 219, 0.45);
   --radius-md: 12px;
@@ -56,7 +47,7 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #f7f7f7;
-  color: var(--secondary-color);
+  color: var(--ink);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -69,7 +60,7 @@ h1,
 h2,
 h3 {
   font-weight: 600;
-  color: var(--secondary-color);
+  color: var(--ink);
   margin-bottom: 20px;
 }
 
@@ -83,12 +74,12 @@ h2 {
 
 h3 {
   font-size: 20px;
-  color: var(--primary-color);
+  color: var(--brand-strong);
 }
 
 p {
   font-size: 1.1rem;
-  color: var(--text-light);
+  color: var(--ink-muted);
   margin-bottom: 30px;
 }
 
@@ -103,19 +94,19 @@ input {
   width: 100%;
   padding: 12px;
   margin: 10px 0;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--hairline-strong);
   border-radius: 8px;
   background: #f9f9f9;
 }
 
 input:focus {
-  border-color: var(--accent-color);
+  border-color: var(--brand);
   background-color: #fff;
   outline: none;
 }
 
 button {
-  background-color: var(--accent-color);
+  background-color: var(--brand);
   color: white;
   padding: 12px;
   border: none;
@@ -127,7 +118,7 @@ button {
 }
 
 button:hover {
-  background: var(--accent-hover);
+  background: var(--brand-hover);
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
@@ -613,7 +604,7 @@ nav > ul > li > a.active {
 }
 
 main {
-  background-color: var(--light-bg);
+  background-color: var(--surface);
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   margin: 30px auto;
@@ -651,14 +642,14 @@ main {
 }
 
 .message--progress {
-  background-color: var(--muted-bg);
-  border-color: var(--border-color);
-  color: var(--text-light);
+  background-color: var(--surface-muted);
+  border-color: var(--hairline-strong);
+  color: var(--ink-muted);
 }
 
 footer {
-  background-color: var(--light-bg);
-  color: var(--secondary-color);
+  background-color: var(--surface);
+  color: var(--ink);
   text-align: center;
   padding: 20px;
   position: fixed;
@@ -1805,7 +1796,7 @@ a.ranking__name:focus-visible {
 }
 
 .search-container {
-  background: var(--light-bg);
+  background: var(--surface);
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   padding: 40px;
@@ -1814,14 +1805,14 @@ a.ranking__name:focus-visible {
 
 .search-container h1 {
   text-align: center;
-  color: var(--primary-color);
+  color: var(--brand-strong);
   margin-bottom: 10px;
   font-size: 2.8rem;
 }
 
 .search-container > p {
   text-align: center;
-  color: var(--text-light);
+  color: var(--ink-muted);
   margin-bottom: 40px;
   font-size: 1.2rem;
 }
@@ -1843,21 +1834,21 @@ a.ranking__name:focus-visible {
   flex: 1;
   padding: 15px 20px;
   font-size: 18px;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--hairline-strong);
   border-radius: 25px;
   background: #fafafa;
   transition: all 0.3s ease;
 }
 
 .search-input-container input:focus {
-  border-color: var(--accent-color);
+  border-color: var(--brand);
   background: white;
   box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
   outline: none;
 }
 
 .search-btn {
-  background: var(--accent-color);
+  background: var(--brand);
   border: none;
   border-radius: 50%;
   width: 50px;
@@ -1871,7 +1862,7 @@ a.ranking__name:focus-visible {
 }
 
 .search-btn:hover {
-  background: var(--accent-hover);
+  background: var(--brand-hover);
   transform: scale(1.05);
 }
 
@@ -1880,7 +1871,7 @@ a.ranking__name:focus-visible {
 }
 
 .search-suggestions h3 {
-  color: var(--secondary-color);
+  color: var(--ink);
   margin-bottom: 15px;
   font-size: 1.1rem;
   font-weight: 500;
@@ -1896,13 +1887,13 @@ a.ranking__name:focus-visible {
 }
 
 .suggestion-btn {
-  background: var(--muted-bg);
+  background: var(--surface-muted);
   border: 2px solid transparent;
   border-radius: 20px;
   padding: 8px 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: var(--secondary-color);
+  color: var(--ink);
   font-size: 14px;
   font-weight: 500;
   display: flex;
@@ -1911,7 +1902,7 @@ a.ranking__name:focus-visible {
 }
 
 .suggestion-btn:hover {
-  background: var(--accent-color);
+  background: var(--brand);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
@@ -1936,20 +1927,20 @@ a.ranking__name:focus-visible {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--hairline-strong);
   padding-bottom: 15px;
 }
 
 .results-header h2 {
-  color: var(--primary-color);
+  color: var(--brand-strong);
   margin: 0;
   font-size: 1.8rem;
 }
 
 .results-count {
-  color: var(--text-light);
+  color: var(--ink-muted);
   font-size: 16px;
-  background: var(--muted-bg);
+  background: var(--surface-muted);
   padding: 5px 15px;
   border-radius: 15px;
   font-weight: 500;
@@ -2040,31 +2031,31 @@ a.ranking__name:focus-visible {
 .no-results {
   text-align: center;
   padding: 60px 20px;
-  color: var(--text-light);
+  color: var(--ink-muted);
 }
 
 .no-results-icon {
   font-size: 4rem;
-  color: var(--border-color);
+  color: var(--hairline-strong);
   margin-bottom: 20px;
 }
 
 .no-results h2 {
-  color: var(--secondary-color);
+  color: var(--ink);
   margin-bottom: 10px;
 }
 
 .loading-indicator {
   text-align: center;
   padding: 60px 20px;
-  color: var(--text-light);
+  color: var(--ink-muted);
 }
 
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid var(--muted-bg);
-  border-top: 4px solid var(--accent-color);
+  border: 4px solid var(--surface-muted);
+  border-top: 4px solid var(--brand);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
