@@ -154,9 +154,12 @@ nav {
   z-index: 1000;
 }
 
+/* The margin pushes everything after the logo to the far end of the bar, where
+   the links and the account menu sit together. */
 nav .logo {
   display: flex;
   align-items: center;
+  margin-right: auto;
 }
 
 nav .logo img {
@@ -235,6 +238,10 @@ nav > ul > li > a.active {
     display: flex;
     height: 40px;
     justify-content: center;
+    /* Last in the bar, after the account menu, where a menu button is
+       expected. */
+    margin-left: 8px;
+    order: 1;
     padding: 0;
     width: 40px;
   }

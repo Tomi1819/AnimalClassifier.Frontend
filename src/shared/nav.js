@@ -1,4 +1,5 @@
-import { clearSession, isAdmin, isAuthenticated } from "../auth/session.js";
+import { isAuthenticated } from "../auth/session.js";
+import { createAccountMenu } from "./account-menu.js";
 import { initDisclosure } from "./disclosure.js";
 
 const NAV_LINKS_ID = "navLinks";
@@ -15,10 +16,7 @@ const AUTHENTICATED_LINKS = [
   { href: "/pages/dashboard.html", label: "Dashboard" },
   { href: "/pages/search.html", label: "Search" },
   { href: "/pages/statistics.html", label: "Statistics" },
-  { href: "/pages/account.html", label: "Account" },
 ];
-
-const ADMIN_LINK = { href: "/pages/admin.html", label: "Admin" };
 
 const ANONYMOUS_LINKS = [
   { href: HOME_PAGE, label: "Home" },
@@ -46,15 +44,14 @@ export function initNavigation() {
     return;
   }
 
-  const links = isAuthenticated() ? AUTHENTICATED_LINKS : ANONYMOUS_LINKS;
+  const signedIn = isAuthenticated();
+  const links = signedIn ? AUTHENTICATED_LINKS : ANONYMOUS_LINKS;
   navLinks.replaceChildren(...links.map(createNavItem));
 
-  if (isAdmin()) {
-    navLinks.append(createNavItem(ADMIN_LINK));
-  }
-
-  if (isAuthenticated()) {
-    navLinks.append(createLogoutItem());
+  // The account pages and signing out sit behind a menu of their own, so the
+  // links stay the pages the user works in.
+  if (signedIn) {
+    navLinks.after(createAccountMenu());
   }
 
   initMenu(navLinks);
@@ -72,25 +69,6 @@ function createNavItem({ href, label }) {
   const item = document.createElement("li");
   item.append(link);
   return item;
-}
-
-function createLogoutItem() {
-  const link = document.createElement("a");
-  link.href = "#";
-  link.textContent = "Logout";
-  link.addEventListener("click", (event) => {
-    event.preventDefault();
-    logout();
-  });
-
-  const item = document.createElement("li");
-  item.append(link);
-  return item;
-}
-
-function logout() {
-  clearSession();
-  window.location.href = HOME_PAGE;
 }
 
 /**
