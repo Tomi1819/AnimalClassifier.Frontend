@@ -2,9 +2,11 @@ import { apiFetch } from "../api/client.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
+import { initTheme } from "../shared/theme.js";
 
 const LOGIN_PAGE = "/pages/login.html";
 
+initTheme();
 initNavigation();
 initPasswordToggles();
 

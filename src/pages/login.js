@@ -4,9 +4,11 @@ import { setSession } from "../auth/session.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
+import { initTheme } from "../shared/theme.js";
 
 const DASHBOARD_PAGE = "/pages/dashboard.html";
 
+initTheme();
 initNavigation();
 initPasswordToggles();
 

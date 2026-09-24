@@ -1,5 +1,6 @@
 import { isAuthenticated } from "../auth/session.js";
 import { initNavigation } from "../shared/nav.js";
+import { initTheme } from "../shared/theme.js";
 
 const SIGN_UP_ACTION_SELECTOR = "[data-sign-up-action]";
 const ACTION_LABEL_SELECTOR = ".action__label";
@@ -8,6 +9,7 @@ const SIGN_IN_ACTION_ID = "signInAction";
 const DASHBOARD_PAGE = "/pages/dashboard.html";
 const DASHBOARD_LABEL = "Open your dashboard";
 
+initTheme();
 initNavigation();
 initCallsToAction();
 

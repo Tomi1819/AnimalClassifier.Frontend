@@ -1,7 +1,9 @@
 import { apiFetch } from "../api/client.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
+import { initTheme } from "../shared/theme.js";
 
+initTheme();
 initNavigation();
 
 const form = document.getElementById("forgotPasswordForm");

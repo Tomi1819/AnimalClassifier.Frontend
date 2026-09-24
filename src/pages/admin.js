@@ -4,6 +4,7 @@ import { askToConfirm } from "../shared/confirm.js";
 import { showError, showSuccess } from "../shared/feedback.js";
 import { createHistoryCard, formatDate, fromHistoryItem } from "../shared/history.js";
 import { initNavigation } from "../shared/nav.js";
+import { initTheme } from "../shared/theme.js";
 
 const USERS_PATH = "/api/admin/users";
 const AUDIT_PATH = "/api/admin/audit";
@@ -48,6 +49,7 @@ let usersPage = 1;
 // Module scripts are deferred, so the document is already parsed here.
 // The guard runs first, so a non-administrator never paints the page.
 if (requireAdmin()) {
+  initTheme();
   initNavigation();
 
   const page = collectPageElements();

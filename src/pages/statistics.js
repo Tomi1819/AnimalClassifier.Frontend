@@ -2,6 +2,7 @@ import { apiFetch } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
 import { showError } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
+import { initTheme } from "../shared/theme.js";
 
 const SEARCH_PAGE = "/pages/search.html";
 const NO_VALUE = "—";
@@ -40,6 +41,7 @@ const fullDate = new Intl.DateTimeFormat(undefined, {
 // Module scripts are deferred, so the document is already parsed here.
 // The guard runs first, so an expired session never paints the signed-in nav.
 if (requireAuthentication()) {
+  initTheme();
   initNavigation();
   await Promise.all([showStatistics(), showActivity()]);
 }

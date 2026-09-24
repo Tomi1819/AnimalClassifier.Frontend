@@ -9,12 +9,14 @@ import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { formatDate } from "../shared/history.js";
 import { initNavigation } from "../shared/nav.js";
+import { initTheme } from "../shared/theme.js";
 
 const NO_PASSKEYS = "No passkeys yet. Add one to sign in with this device.";
 const UNSUPPORTED =
   "This browser cannot use passkeys. Sign in with your password instead.";
 
 if (requireAuthentication()) {
+  initTheme();
   initNavigation();
 
   const page = collectPageElements();

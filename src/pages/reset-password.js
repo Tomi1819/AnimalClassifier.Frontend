@@ -2,6 +2,7 @@ import { apiFetch } from "../api/client.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
+import { initTheme } from "../shared/theme.js";
 
 const LOGIN_PAGE = "/pages/login.html";
 
@@ -12,6 +13,7 @@ const MISMATCH_MESSAGE = "The two passwords do not match.";
 // Long enough to read what happened, short enough not to feel stuck.
 const REDIRECT_DELAY_MS = 2500;
 
+initTheme();
 initNavigation();
 initPasswordToggles();
 

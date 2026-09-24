@@ -1,6 +1,7 @@
 import { apiFetch, resolveUrl } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
 import { initNavigation } from "../shared/nav.js";
+import { initTheme } from "../shared/theme.js";
 
 const NOT_FOUND_STATUS = 404;
 const SEARCH_DEBOUNCE_MS = 500;
@@ -33,6 +34,7 @@ let debounceTimeout;
 // Module scripts are deferred, so the document is already parsed here.
 // The guard runs first, so an expired session never paints the signed-in nav.
 if (requireAuthentication()) {
+  initTheme();
   initNavigation();
 
   elements = collectElements();
