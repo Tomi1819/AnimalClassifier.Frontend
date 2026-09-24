@@ -55,7 +55,7 @@ export function createAccountMenu() {
   const admin = isAdmin();
   const items = admin ? [ACCOUNT_ITEM, ADMIN_ITEM] : [ACCOUNT_ITEM];
 
-  const toggle = createToggle(items.some(isCurrentPage));
+  const toggle = createToggle(items.some(({ href }) => isCurrentPage(href)));
   const panel = createPanel(items, admin);
   initDisclosure(toggle, panel);
 
