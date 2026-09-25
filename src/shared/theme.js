@@ -1,12 +1,10 @@
 // Shared with public/theme-init.js, which applies the saved choice before the
 // page is painted; this module keeps it in step from then on.
 const STORAGE_KEY = "theme";
-const DARK_QUERY = "(prefers-color-scheme: dark)";
 
 export const THEME_PREFERENCES = Object.freeze({
   LIGHT: "light",
   DARK: "dark",
-  SYSTEM: "system",
 });
 
 const listeners = new Set();
@@ -16,14 +14,11 @@ const listeners = new Set();
 let currentPreference = readStoredPreference();
 
 /**
- * Keeps the page's theme following the user's choice, and, while that choice
- * is to follow the system, the system's setting as it changes. A choice made in
- * another tab is picked up too.
+ * Keeps the page's theme following the user's choice, including one made in
+ * another tab.
  */
 export function initTheme() {
   applyTheme();
-
-  window.matchMedia(DARK_QUERY).addEventListener("change", applyTheme);
 
   window.addEventListener("storage", (event) => {
     // A null key means storage was cleared, which resets the choice as well.
@@ -36,7 +31,7 @@ export function initTheme() {
 }
 
 /**
- * @returns one of THEME_PREFERENCES, SYSTEM when nothing has been chosen.
+ * @returns one of THEME_PREFERENCES, LIGHT when nothing has been chosen.
  */
 export function getThemePreference() {
   return currentPreference;
@@ -49,9 +44,7 @@ export function getThemePreference() {
  */
 export function setThemePreference(preference) {
   currentPreference = preference;
-  // Following the system is the absence of a choice, so it is stored as none;
-  // that way a later change of default reaches everyone who never chose.
-  writeStoredPreference(preference === THEME_PREFERENCES.SYSTEM ? null : preference);
+  writeStoredPreference(preference);
   applyTheme();
   notifyListeners();
 }
@@ -65,12 +58,7 @@ export function onThemePreferenceChange(listener) {
 }
 
 function applyTheme() {
-  const preference = getThemePreference();
-  const dark =
-    preference === THEME_PREFERENCES.DARK ||
-    (preference === THEME_PREFERENCES.SYSTEM && window.matchMedia(DARK_QUERY).matches);
-
-  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  document.documentElement.dataset.theme = currentPreference;
 }
 
 function notifyListeners() {
@@ -89,18 +77,12 @@ function readStoredPreference() {
     console.error("The browser would not let the theme be read:", error);
   }
 
-  return stored === THEME_PREFERENCES.LIGHT || stored === THEME_PREFERENCES.DARK
-    ? stored
-    : THEME_PREFERENCES.SYSTEM;
+  return stored === THEME_PREFERENCES.DARK ? THEME_PREFERENCES.DARK : THEME_PREFERENCES.LIGHT;
 }
 
 function writeStoredPreference(value) {
   try {
-    if (value === null) {
-      localStorage.removeItem(STORAGE_KEY);
-    } else {
-      localStorage.setItem(STORAGE_KEY, value);
-    }
+    localStorage.setItem(STORAGE_KEY, value);
   } catch (error) {
     console.error("The browser would not let the theme be saved:", error);
   }

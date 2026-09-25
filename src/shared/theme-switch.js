@@ -12,13 +12,12 @@ const LABEL = "Theme";
 const OPTIONS = [
   { preference: THEME_PREFERENCES.LIGHT, label: "Light", icon: "sun" },
   { preference: THEME_PREFERENCES.DARK, label: "Dark", icon: "moon" },
-  { preference: THEME_PREFERENCES.SYSTEM, label: "System", icon: "monitor" },
 ];
 
 /**
- * Builds the control that picks the theme: light, dark, or whatever the system
- * is set to. It shows the choice as it stands, including one made in another
- * tab, and applies a new one at once.
+ * Builds the control that picks the theme, light or dark. It shows the choice
+ * as it stands, including one made in another tab, and applies a new one at
+ * once.
  *
  * @returns the element to place in a menu or a page.
  */
