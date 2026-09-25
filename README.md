@@ -62,15 +62,15 @@ shared with the API. See the backend README.
 
 ## 🌗 Themes
 
-The site has a light and a dark theme. It follows the system setting until the
-user picks one from the switch in the account menu, and the choice is kept in
-`localStorage` under `theme`.
+The site has a light and a dark theme. It is light until the user picks dark
+from the switch in the account menu, and the choice is kept in `localStorage`
+under `theme`.
 
 - `public/theme-init.js` runs in each page's `<head>` and sets
   `<html data-theme="light|dark">` before the first paint, so a dark page never
   flashes light. Every new page needs the same `<script>` tag.
-- `src/shared/theme.js` keeps the page in step afterwards: with the system as it
-  changes, and with a choice made in another tab.
+- `src/shared/theme.js` keeps the page in step afterwards, including with a
+  choice made in another tab.
 - `src/styles/main.css` defines every colour as a variable on `:root` and gives
   the dark values under `:root[data-theme="dark"]`. New rules should use the
   variables rather than fixed colours, so that they work in both themes.
@@ -92,7 +92,7 @@ src/
   shared/icons.js         The outline icons the menus draw
   shared/nav.js           Session-aware navigation
   shared/theme.js         The theme choice, stored and applied
-  shared/theme-switch.js  The light, dark and system control
+  shared/theme-switch.js  The light and dark control
   pages/                  One module per page
   styles/main.css         Application styles
 ```
