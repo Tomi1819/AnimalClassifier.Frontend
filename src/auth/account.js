@@ -2,12 +2,20 @@ import { apiFetch } from "../api/client.js";
 import { setSession } from "./session.js";
 
 const CHANGE_PASSWORD_PATH = "/api/account/change-password";
+const SIGN_OUT_OTHER_SESSIONS_PATH = "/api/account/sign-out-other-sessions";
 
 /**
  * Changes the signed-in user's password.
  */
 export function changePassword(currentPassword, newPassword) {
   return continueSession(CHANGE_PASSWORD_PATH, { currentPassword, newPassword });
+}
+
+/**
+ * Signs the account out everywhere except here.
+ */
+export function signOutOtherSessions() {
+  return continueSession(SIGN_OUT_OTHER_SESSIONS_PATH);
 }
 
 /**
