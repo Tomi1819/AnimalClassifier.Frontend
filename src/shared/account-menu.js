@@ -14,7 +14,7 @@ const UNKNOWN_EMAIL = "Signed in";
 const ACCOUNT_ITEM = {
   href: "/pages/account.html",
   label: "Account",
-  hint: "Passkeys and sign in",
+  hint: "Password and passkeys",
   icon: "account",
 };
 
