@@ -1,3 +1,4 @@
+import { initAccountHeader } from "../account/account-header.js";
 import { initPasskeySection } from "../account/passkey-section.js";
 import { initPasswordSection } from "../account/password-section.js";
 import { requireAuthentication } from "../auth/session.js";
@@ -10,6 +11,7 @@ if (requireAuthentication()) {
   initNavigation();
   initPasswordToggles();
 
+  initAccountHeader();
   initPasswordSection();
   await initPasskeySection();
 }

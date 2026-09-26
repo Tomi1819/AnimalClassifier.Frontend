@@ -20,13 +20,11 @@
     </header>
 
     <main class="dashboard">
-      <section class="page-header">
-        <p class="eyebrow">Account</p>
-        <h1>Sign-in and security</h1>
-        <p class="page-header__subtitle">
-          Change your password and choose the devices that can sign you in
-          without it.
-        </p>
+      <!-- Filled in by src/account/account-header.js from the session. -->
+      <section class="page-header account-header">
+        <span class="avatar account-header__avatar" id="accountAvatar" aria-hidden="true"></span>
+        <h1 id="accountEmail">Your account</h1>
+        <span class="role-badge" id="accountRole"></span>
       </section>
 
       <div class="settings">

@@ -1210,6 +1210,28 @@ footer {
 
 /* --- Settings ------------------------------------------------------------- */
 
+.account-header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-header__avatar {
+  font-size: 1.7rem;
+  height: 72px;
+  width: 72px;
+}
+
+/* Smaller than the other pages' headings, since it is an address, and often a
+   long one. */
+.account-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 /* Narrower than the other pages: a row reads across, and a wide one leaves
    its label and its button far apart. */
 .settings {
