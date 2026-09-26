@@ -1290,6 +1290,12 @@ footer {
   margin-top: 16px;
 }
 
+/* Focused only to keep the keyboard's place; the open row's edge already
+   marks it. */
+.setting__panel:focus {
+  outline: none;
+}
+
 .setting__note {
   color: var(--ink-muted);
   font-size: 0.92rem;

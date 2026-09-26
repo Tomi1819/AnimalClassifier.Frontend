@@ -26,6 +26,10 @@ export function initSetting(row, { onOpen = () => {}, onClose = () => {} } = {})
   const openButton = row.querySelector(OPEN_SELECTOR);
   const panel = row.querySelector(PANEL_SELECTOR);
 
+  // Focusable from script only, for a panel that opens with no field to start
+  // on. It stays out of the tab order.
+  panel.tabIndex = -1;
+
   const setOpen = (open) => {
     row.classList.toggle(OPEN_CLASS, open);
     panel.hidden = !open;
@@ -38,6 +42,13 @@ export function initSetting(row, { onOpen = () => {}, onClose = () => {} } = {})
       openSetting = setting;
       setOpen(true);
       onOpen();
+
+      // The button that opened it has just hidden, and focus left with it.
+      // Without this, a keyboard user would start again from the top of the
+      // page, and Escape would not reach the panel.
+      if (!panel.contains(document.activeElement)) {
+        panel.focus();
+      }
     },
 
     close() {
