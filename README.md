@@ -93,6 +93,10 @@ backend ends every session the account had and answers with a new token, which
 this tab and any other open on the same browser stay signed in. Other devices
 have to sign in again.
 
+Signing out the other devices, from the same page, works the same way: the
+backend ends every session, and `signOutOtherSessions` keeps this one going
+with the token it answers with.
+
 ## 🌗 Themes
 
 The site has a light and a dark theme. It is light until the user picks dark
