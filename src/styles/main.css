@@ -1325,11 +1325,6 @@ footer {
   margin: 0 0 18px;
 }
 
-/* A full-width form would stretch each field across the whole card. */
-.password-form {
-  max-width: 420px;
-}
-
 /* --- Passkeys ------------------------------------------------------------- */
 
 .passkey-form {

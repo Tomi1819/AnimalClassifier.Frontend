@@ -1,6 +1,7 @@
 import { changePassword } from "../auth/password.js";
 import { getUserEmail } from "../auth/session.js";
-import { showError, showProgress, showSuccess } from "../shared/feedback.js";
+import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
+import { initSetting } from "./setting.js";
 
 const MISMATCH_MESSAGE = "The two new passwords do not match.";
 const CHANGED_MESSAGE =
@@ -15,14 +16,27 @@ export function initPasswordSection() {
   // change leaves it in place.
   section.username.defaultValue = getUserEmail() ?? "";
 
+  const setting = initSetting(section.row, {
+    onOpen: () => {
+      hideMessage(section.message);
+      section.current.focus();
+    },
+    // Nothing typed into a password field outlives the panel it was typed in.
+    onClose: () => {
+      section.form.reset();
+      hideMessage(section.message);
+    },
+  });
+
   section.form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    await submit(section);
+    await submit(section, setting);
   });
 }
 
 function collectSectionElements() {
   return {
+    row: document.getElementById("passwordSetting"),
     form: document.getElementById("changePasswordForm"),
     username: document.getElementById("passwordUsername"),
     current: document.getElementById("currentPassword"),
@@ -33,7 +47,7 @@ function collectSectionElements() {
   };
 }
 
-async function submit(section) {
+async function submit(section, setting) {
   // Caught here rather than by the backend, which is given one new password
   // and cannot tell that the user meant to type a different one.
   if (section.next.value !== section.confirmation.value) {
@@ -49,7 +63,8 @@ async function submit(section) {
   try {
     await changePassword(section.current.value, section.next.value);
 
-    section.form.reset();
+    // Closing clears the form and its message, so the news follows it.
+    setting.close();
     showSuccess(section.message, CHANGED_MESSAGE);
   } catch (error) {
     console.error("Changing the password failed:", error);
