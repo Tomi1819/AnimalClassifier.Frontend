@@ -31,6 +31,158 @@
 
       <section class="card">
         <div class="history__head">
+          <h2>Password</h2>
+        </div>
+        <p class="card__intro">
+          Changing it signs you out everywhere else. This device stays signed in.
+        </p>
+
+        <form id="changePasswordForm" class="auth-form password-form">
+          <div class="field">
+            <label class="field__label" for="currentPassword">Current password</label>
+            <div class="field__control">
+              <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="10" width="16" height="10" rx="2.5" />
+                <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+              </svg>
+              <input
+                type="password"
+                id="currentPassword"
+                autocomplete="current-password"
+                placeholder="Your password now"
+                required
+              />
+              <button
+                type="button"
+                class="field__toggle"
+                data-password-toggle="currentPassword"
+                aria-label="Show password"
+              >
+                <svg
+                  class="field__toggle-icon"
+                  data-icon="eye"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg
+                  class="field__toggle-icon"
+                  data-icon="eye-off"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  hidden
+                >
+                  <path
+                    d="M10.6 6.2A9.4 9.4 0 0 1 12 6c6 0 9.5 6 9.5 6a17.7 17.7 0 0 1-3.4 4M6.2 8.1A17.4 17.4 0 0 0 2.5 12S6 18 12 18a9.6 9.6 0 0 0 3.4-.6"
+                  />
+                  <path d="m3 3 18 18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="newPassword">New password</label>
+            <div class="field__control">
+              <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="10" width="16" height="10" rx="2.5" />
+                <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+              </svg>
+              <input
+                type="password"
+                id="newPassword"
+                autocomplete="new-password"
+                placeholder="Choose a password"
+                required
+              />
+              <button
+                type="button"
+                class="field__toggle"
+                data-password-toggle="newPassword"
+                aria-label="Show password"
+              >
+                <svg
+                  class="field__toggle-icon"
+                  data-icon="eye"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg
+                  class="field__toggle-icon"
+                  data-icon="eye-off"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  hidden
+                >
+                  <path
+                    d="M10.6 6.2A9.4 9.4 0 0 1 12 6c6 0 9.5 6 9.5 6a17.7 17.7 0 0 1-3.4 4M6.2 8.1A17.4 17.4 0 0 0 2.5 12S6 18 12 18a9.6 9.6 0 0 0 3.4-.6"
+                  />
+                  <path d="m3 3 18 18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="newPasswordConfirmation">Repeat the new password</label>
+            <div class="field__control">
+              <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="10" width="16" height="10" rx="2.5" />
+                <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+              </svg>
+              <input
+                type="password"
+                id="newPasswordConfirmation"
+                autocomplete="new-password"
+                placeholder="Type it once more"
+                required
+              />
+              <button
+                type="button"
+                class="field__toggle"
+                data-password-toggle="newPasswordConfirmation"
+                aria-label="Show password"
+              >
+                <svg
+                  class="field__toggle-icon"
+                  data-icon="eye"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg
+                  class="field__toggle-icon"
+                  data-icon="eye-off"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  hidden
+                >
+                  <path
+                    d="M10.6 6.2A9.4 9.4 0 0 1 12 6c6 0 9.5 6 9.5 6a17.7 17.7 0 0 1-3.4 4M6.2 8.1A17.4 17.4 0 0 0 2.5 12S6 18 12 18a9.6 9.6 0 0 0 3.4-.6"
+                  />
+                  <path d="m3 3 18 18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button id="changePasswordSubmit" class="btn" type="submit">
+            Change my password
+          </button>
+        </form>
+
+        <p id="passwordMessage" class="message" hidden></p>
+      </section>
+
+      <section class="card">
+        <div class="history__head">
           <h2>Registered passkeys</h2>
           <!-- Revealed by src/pages/account.js only where the browser can use
                passkeys, so it never offers something that cannot work. -->
