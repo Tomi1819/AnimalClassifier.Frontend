@@ -60,6 +60,14 @@ party id has to be this frontend's domain. In development that is `localhost`,
 which browsers accept without HTTPS; a deployment needs HTTPS and a domain
 shared with the API. See the backend README.
 
+## 🔑 Changing the password
+
+The account page changes the password once the current one is confirmed. The
+backend ends every session the account had and answers with a new token, which
+`changePassword` in `src/auth/password.js` stores in place of the old one, so
+this tab and any other open on the same browser stay signed in. Other devices
+have to sign in again.
+
 ## 🌗 Themes
 
 The site has a light and a dark theme. It is light until the user picks dark
@@ -86,6 +94,8 @@ src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
   auth/session.js         Token storage and the page guard
   auth/passkeys.js        WebAuthn ceremonies, one function each
+  auth/password.js        Changing the password and keeping the new session
+  account/                The account page's sections: password and passkeys
   shared/account-menu.js  The settings menu: account, admin, theme and sign out
   shared/confirm.js       The modal confirmation, built in script
   shared/disclosure.js    Open and close handling shared by the bar's menus
