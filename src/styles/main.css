@@ -367,6 +367,36 @@ nav > ul > li > a.active {
   }
 }
 
+/* --- Who is signed in ----------------------------------------------------- */
+
+/* Shared by the account menu and the account page, which each size the avatar
+   for their own place. */
+.avatar {
+  background-image: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  border-radius: 50%;
+  color: #fff;
+  display: grid;
+  flex-shrink: 0;
+  font-weight: 700;
+  place-items: center;
+}
+
+.role-badge {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 9px;
+  text-transform: uppercase;
+}
+
+.role-badge--admin {
+  background: var(--brand-wash);
+  color: var(--brand-strong);
+}
+
 /* --- Account menu --------------------------------------------------------- */
 
 /* Set apart from the page links, since it holds the user rather than a page.
@@ -465,15 +495,8 @@ nav > ul > li > a.active {
 }
 
 .account-menu__avatar {
-  background-image: linear-gradient(135deg, var(--brand), var(--brand-deep));
-  border-radius: 50%;
-  color: #fff;
-  display: grid;
-  flex-shrink: 0;
   font-size: 1.05rem;
-  font-weight: 700;
   height: 42px;
-  place-items: center;
   width: 42px;
 }
 
@@ -495,22 +518,6 @@ nav > ul > li > a.active {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.account-menu__role {
-  background: var(--surface-muted);
-  border-radius: 999px;
-  color: var(--ink-muted);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 2px 9px;
-  text-transform: uppercase;
-}
-
-.account-menu__role--admin {
-  background: var(--brand-wash);
-  color: var(--brand-strong);
 }
 
 .account-menu__list {

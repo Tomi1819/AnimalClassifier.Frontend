@@ -75,10 +75,10 @@ function createIdentity({ email, initial, roleLabel, admin }) {
   const identity = document.createElement("div");
   identity.className = "account-menu__identity";
   identity.innerHTML = `
-    <span class="account-menu__avatar" aria-hidden="true"></span>
+    <span class="avatar account-menu__avatar" aria-hidden="true"></span>
     <span class="account-menu__who">
       <span class="account-menu__email"></span>
-      <span class="account-menu__role"></span>
+      <span class="role-badge"></span>
     </span>
   `;
 
@@ -89,9 +89,9 @@ function createIdentity({ email, initial, roleLabel, admin }) {
   emailText.title = email ?? "";
   identity.querySelector(".account-menu__avatar").textContent = initial;
 
-  const role = identity.querySelector(".account-menu__role");
+  const role = identity.querySelector(".role-badge");
   role.textContent = roleLabel;
-  role.classList.toggle("account-menu__role--admin", admin);
+  role.classList.toggle("role-badge--admin", admin);
 
   return identity;
 }
