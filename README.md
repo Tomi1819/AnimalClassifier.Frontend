@@ -60,6 +60,31 @@ party id has to be this frontend's domain. In development that is `localhost`,
 which browsers accept without HTTPS; a deployment needs HTTPS and a domain
 shared with the API. See the backend README.
 
+## ⚙️ Account settings
+
+The account page is a list of settings, grouped under titles such as "Sign-in
+and security". Each row names a setting, sums up its state, and opens in place
+to change it; opening one closes any other, so the page never holds two
+changes half made.
+
+To add a setting:
+
+1. Add a row to a group's list in `pages/account.html`: an `li.setting` with an
+   id, a `.setting__head` holding the label, the summary and a button marked
+   `data-setting-open`, and a `.setting__panel hidden` holding the change, with
+   a button marked `data-setting-close`. A setting that is a single action,
+   such as signing out everywhere, can leave the panel out and give its button
+   a handler of its own.
+2. Give it a module in `src/account/` that calls `initSetting` from
+   `src/account/setting.js`. `onOpen` focuses where the user starts, `onClose`
+   clears whatever was typed, and the returned `close` puts the panel away once
+   the change is made.
+3. Call that module's init from `src/pages/account.js`.
+
+A setting that belongs with none of the groups gets a new
+`section.settings-group` of its own, such as a "Danger zone" for deleting the
+account.
+
 ## 🔑 Changing the password
 
 The account page changes the password once the current one is confirmed. The
@@ -95,12 +120,14 @@ src/
   auth/session.js         Token storage and the page guard
   auth/passkeys.js        WebAuthn ceremonies, one function each
   auth/password.js        Changing the password and keeping the new session
-  account/                The account page's sections: password and passkeys
+  account/setting.js      A settings row that opens in place
+  account/                The account page's header and one module per setting
   shared/account-menu.js  The settings menu: account, admin, theme and sign out
   shared/confirm.js       The modal confirmation, built in script
   shared/disclosure.js    Open and close handling shared by the bar's menus
   shared/icons.js         The outline icons the menus draw
   shared/nav.js           Session-aware navigation
+  shared/signed-in-user.js  Who is signed in, as the menu and account page show it
   shared/theme.js         The theme choice, stored and applied
   shared/theme-switch.js  The light and dark control
   pages/                  One module per page
