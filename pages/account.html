@@ -38,6 +38,10 @@
         </p>
 
         <form id="changePasswordForm" class="auth-form password-form">
+          <!-- Never shown. It tells a password manager which saved account the
+               new password belongs to; src/account/password-section.js fills it. -->
+          <input type="email" id="passwordUsername" autocomplete="username" hidden />
+
           <div class="field">
             <label class="field__label" for="currentPassword">Current password</label>
             <div class="field__control">

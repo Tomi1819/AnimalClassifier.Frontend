@@ -1,4 +1,5 @@
 import { changePassword } from "../auth/password.js";
+import { getUserEmail } from "../auth/session.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
 
 const MISMATCH_MESSAGE = "The two new passwords do not match.";
@@ -10,6 +11,9 @@ const CHANGED_MESSAGE =
  */
 export function initPasswordSection() {
   const section = collectSectionElements();
+  // The default rather than the value, so that clearing the form after a
+  // change leaves it in place.
+  section.username.defaultValue = getUserEmail() ?? "";
 
   section.form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -20,6 +24,7 @@ export function initPasswordSection() {
 function collectSectionElements() {
   return {
     form: document.getElementById("changePasswordForm"),
+    username: document.getElementById("passwordUsername"),
     current: document.getElementById("currentPassword"),
     next: document.getElementById("newPassword"),
     confirmation: document.getElementById("newPasswordConfirmation"),
