@@ -1208,6 +1208,116 @@ footer {
   width: 19px;
 }
 
+/* --- Settings ------------------------------------------------------------- */
+
+/* Narrower than the other pages: a row reads across, and a wide one leaves
+   its label and its button far apart. */
+.settings {
+  margin: 0 auto;
+  max-width: 720px;
+}
+
+.settings-group + .settings-group {
+  margin-top: 34px;
+}
+
+.settings-group__title {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px 4px;
+  text-transform: uppercase;
+}
+
+.settings-list {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  list-style: none;
+  margin: 0;
+  /* Keeps the open row's edge inside the rounded corners. */
+  overflow: hidden;
+  padding: 0;
+}
+
+.setting {
+  padding: 18px 22px;
+  transition: box-shadow 0.2s ease;
+}
+
+.setting + .setting {
+  border-top: 1px solid var(--hairline);
+}
+
+/* An edge rather than a tint, which would take the contrast out of the fields
+   in the panel. */
+.setting.is-open {
+  box-shadow: inset 3px 0 0 var(--brand);
+}
+
+.setting__head {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+/* Lets a long summary wrap rather than push the button out of the row. */
+.setting__text {
+  min-width: 0;
+}
+
+.setting__label {
+  color: var(--ink);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.setting__summary {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.setting__head .btn-ghost {
+  flex-shrink: 0;
+}
+
+.setting__panel {
+  margin-top: 16px;
+}
+
+.setting__note {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  margin: 0 0 18px;
+}
+
+/* A full-width form would stretch each field across the whole row. */
+.setting__form {
+  max-width: 420px;
+}
+
+.setting__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.setting__actions .btn {
+  margin-top: 0;
+  padding: 8px 20px;
+  width: auto;
+}
+
+.setting .message {
+  margin-top: 14px;
+}
+
 /* --- Account -------------------------------------------------------------- */
 
 .card__intro {
