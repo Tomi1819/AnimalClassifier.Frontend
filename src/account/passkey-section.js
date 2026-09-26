@@ -7,8 +7,9 @@ import {
 import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { formatDate } from "../shared/history.js";
+import { initSetting } from "./setting.js";
 
-const NO_PASSKEYS = "No passkeys yet. Add one to sign in with this device.";
+const NO_PASSKEYS_SUMMARY = "Not set up yet";
 const UNSUPPORTED =
   "This browser cannot use passkeys. Sign in with your password instead.";
 
@@ -18,18 +19,29 @@ const UNSUPPORTED =
 export async function initPasskeySection() {
   const page = collectPageElements();
 
-  if (isPasskeySupported()) {
-    initAdding(page);
-    await showPasskeys(page);
-  } else {
-    // Nothing in this section works without them, so it says so once rather
+  if (!isPasskeySupported()) {
+    // Nothing in this section works without them, so the row says so rather
     // than offering actions that would fail.
-    showEmpty(page, UNSUPPORTED);
+    page.summary.textContent = UNSUPPORTED;
+    return;
   }
+
+  page.manageButton.hidden = false;
+  initSetting(page.row, {
+    onOpen: () => hideMessage(page.message),
+    onClose: () => setFormOpen(page, false),
+  });
+
+  initAdding(page);
+  await showPasskeys(page);
 }
 
 function collectPageElements() {
   return {
+    row: document.getElementById("passkeySetting"),
+    summary: document.getElementById("passkeySummary"),
+    manageButton: document.getElementById("managePasskeys"),
+    actions: document.getElementById("passkeyActions"),
     message: document.getElementById("passkeyMessage"),
     empty: document.getElementById("passkeyEmpty"),
     list: document.getElementById("passkeyList"),
@@ -41,8 +53,6 @@ function collectPageElements() {
 }
 
 function initAdding(page) {
-  page.addButton.hidden = false;
-
   page.addButton.addEventListener("click", () => setFormOpen(page, true));
   page.cancelButton.addEventListener("click", () => setFormOpen(page, false));
 
@@ -53,12 +63,12 @@ function initAdding(page) {
 }
 
 /**
- * The form and the button that opens it are alternatives, so exactly one of
+ * The form and the buttons it opens from are alternatives, so exactly one of
  * them is on screen at a time.
  */
 function setFormOpen(page, open) {
   page.form.hidden = !open;
-  page.addButton.hidden = open;
+  page.actions.hidden = open;
 
   if (open) {
     page.name.focus();
@@ -89,23 +99,20 @@ async function showPasskeys(page) {
     const passkeys = await listPasskeys();
 
     page.list.replaceChildren(...passkeys.map((passkey) => createCard(page, passkey)));
-
-    if (passkeys.length === 0) {
-      showEmpty(page, NO_PASSKEYS);
-      return;
-    }
-
-    page.empty.hidden = true;
+    page.empty.hidden = passkeys.length > 0;
+    page.summary.textContent = describeCount(passkeys.length);
   } catch (error) {
     console.error("Could not load the passkeys:", error);
     showError(page.message, error.message);
   }
 }
 
-function showEmpty(page, text) {
-  page.empty.textContent = text;
-  page.empty.hidden = false;
-  page.list.replaceChildren();
+function describeCount(count) {
+  if (count === 0) {
+    return NO_PASSKEYS_SUMMARY;
+  }
+
+  return count === 1 ? "1 passkey" : `${count} passkeys`;
 }
 
 function createCard(page, passkey) {

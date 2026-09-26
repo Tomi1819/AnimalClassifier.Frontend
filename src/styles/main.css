@@ -1318,32 +1318,10 @@ footer {
   margin-top: 14px;
 }
 
-/* --- Account -------------------------------------------------------------- */
-
-.card__intro {
-  color: var(--ink-muted);
-  margin: 0 0 18px;
-}
-
 /* --- Passkeys ------------------------------------------------------------- */
 
 .passkey-form {
-  border-bottom: 1px solid var(--hairline);
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-}
-
-.passkey-form__actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 14px;
-}
-
-.passkey-form .btn {
-  margin-top: 0;
-  padding: 8px 20px;
-  width: auto;
+  margin-top: 18px;
 }
 
 .passkey-list {
