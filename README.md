@@ -89,7 +89,7 @@ account.
 
 The account page changes the password once the current one is confirmed. The
 backend ends every session the account had and answers with a new token, which
-`changePassword` in `src/auth/password.js` stores in place of the old one, so
+`changePassword` in `src/auth/account.js` stores in place of the old one, so
 this tab and any other open on the same browser stay signed in. Other devices
 have to sign in again.
 
@@ -119,7 +119,7 @@ src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
   auth/session.js         Token storage and the page guard
   auth/passkeys.js        WebAuthn ceremonies, one function each
-  auth/password.js        Changing the password and keeping the new session
+  auth/account.js         Account changes that keep this session going
   account/setting.js      A settings row that opens in place
   account/                The account page's header and one module per setting
   shared/account-menu.js  The settings menu: account, admin, theme and sign out

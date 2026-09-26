@@ -1,4 +1,4 @@
-import { changePassword } from "../auth/password.js";
+import { changePassword } from "../auth/account.js";
 import { getUserEmail } from "../auth/session.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initSetting } from "./setting.js";
