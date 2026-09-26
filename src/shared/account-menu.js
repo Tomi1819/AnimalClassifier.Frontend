@@ -1,14 +1,13 @@
-import { clearSession, getUserEmail, isAdmin } from "../auth/session.js";
+import { clearSession } from "../auth/session.js";
 import { initDisclosure } from "./disclosure.js";
 import { svgIcon } from "./icons.js";
+import { describeSignedInUser } from "./signed-in-user.js";
 import { createThemeSwitch } from "./theme-switch.js";
 
 const PANEL_ID = "accountMenu";
 const TOGGLE_LABEL = "Account and settings";
 const HOME_PAGE = "/";
 
-const ADMIN_ROLE_LABEL = "Administrator";
-const MEMBER_ROLE_LABEL = "Member";
 const UNKNOWN_EMAIL = "Signed in";
 
 const ACCOUNT_ITEM = {
@@ -33,11 +32,11 @@ const ADMIN_ITEM = {
  * @returns the element to place in the bar.
  */
 export function createAccountMenu() {
-  const admin = isAdmin();
-  const items = admin ? [ACCOUNT_ITEM, ADMIN_ITEM] : [ACCOUNT_ITEM];
+  const user = describeSignedInUser();
+  const items = user.admin ? [ACCOUNT_ITEM, ADMIN_ITEM] : [ACCOUNT_ITEM];
 
   const toggle = createToggle(items.some(({ href }) => isCurrentPage(href)));
-  const panel = createPanel(items, admin);
+  const panel = createPanel(items, user);
   initDisclosure(toggle, panel);
 
   const menu = document.createElement("div");
@@ -59,7 +58,7 @@ function createToggle(holdsCurrentPage) {
   return toggle;
 }
 
-function createPanel(items, admin) {
+function createPanel(items, user) {
   const panel = document.createElement("div");
   panel.id = PANEL_ID;
   panel.className = "account-menu__panel";
@@ -68,13 +67,11 @@ function createPanel(items, admin) {
   list.className = "account-menu__list";
   list.append(...items.map(createLinkItem));
 
-  panel.append(createIdentity(admin), list, createThemeSwitch(), createSignOut());
+  panel.append(createIdentity(user), list, createThemeSwitch(), createSignOut());
   return panel;
 }
 
-function createIdentity(admin) {
-  const email = getUserEmail();
-
+function createIdentity({ email, initial, roleLabel, admin }) {
   const identity = document.createElement("div");
   identity.className = "account-menu__identity";
   identity.innerHTML = `
@@ -90,10 +87,10 @@ function createIdentity(admin) {
   const emailText = identity.querySelector(".account-menu__email");
   emailText.textContent = email ?? UNKNOWN_EMAIL;
   emailText.title = email ?? "";
-  identity.querySelector(".account-menu__avatar").textContent = initialOf(email);
+  identity.querySelector(".account-menu__avatar").textContent = initial;
 
   const role = identity.querySelector(".account-menu__role");
-  role.textContent = admin ? ADMIN_ROLE_LABEL : MEMBER_ROLE_LABEL;
+  role.textContent = roleLabel;
   role.classList.toggle("account-menu__role--admin", admin);
 
   return identity;
@@ -142,10 +139,6 @@ function itemContent(iconName) {
 function fillItemText(item, label, hint) {
   item.querySelector(".account-menu__label").textContent = label;
   item.querySelector(".account-menu__hint").textContent = hint;
-}
-
-function initialOf(email) {
-  return email ? email.charAt(0).toUpperCase() : "?";
 }
 
 function isCurrentPage(href) {
