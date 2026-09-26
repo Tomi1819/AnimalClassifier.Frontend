@@ -1,4 +1,5 @@
 import { initAccountHeader } from "../account/account-header.js";
+import { initOtherSessionsSection } from "../account/other-sessions-section.js";
 import { initPasskeySection } from "../account/passkey-section.js";
 import { initPasswordSection } from "../account/password-section.js";
 import { requireAuthentication } from "../auth/session.js";
@@ -13,5 +14,6 @@ if (requireAuthentication()) {
 
   initAccountHeader();
   initPasswordSection();
+  initOtherSessionsSection();
   await initPasskeySection();
 }
