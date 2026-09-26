@@ -3048,6 +3048,12 @@ a.ranking__name:focus-visible {
 
 /* --- Reveal button -------------------------------------------------------- */
 
+/* Edge draws a reveal button of its own into password fields, which would sit
+   beside this one. */
+.field__control input::-ms-reveal {
+  display: none;
+}
+
 .field__toggle {
   align-items: center;
   background: none;
