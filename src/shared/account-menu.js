@@ -13,7 +13,7 @@ const UNKNOWN_EMAIL = "Signed in";
 const ACCOUNT_ITEM = {
   href: "/pages/account.html",
   label: "Account",
-  hint: "Password and passkeys",
+  hint: "Settings and security",
   icon: "account",
 };
 
