@@ -1,5 +1,6 @@
 import { initAccountHeader } from "../account/account-header.js";
 import { initDeleteAccountSection } from "../account/delete-account-section.js";
+import { initNameSection } from "../account/name-section.js";
 import { initOtherSessionsSection } from "../account/other-sessions-section.js";
 import { initPasskeySection } from "../account/passkey-section.js";
 import { initPasswordSection } from "../account/password-section.js";
@@ -17,5 +18,7 @@ if (requireAuthentication()) {
   initPasswordSection();
   initOtherSessionsSection();
   initDeleteAccountSection();
-  await initPasskeySection();
+
+  // Each waits on the backend, so they load side by side.
+  await Promise.all([initNameSection(), initPasskeySection()]);
 }

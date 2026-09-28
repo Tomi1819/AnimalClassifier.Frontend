@@ -28,6 +28,61 @@
       </section>
 
       <div class="settings">
+        <section class="settings-group" aria-labelledby="profileTitle">
+          <h2 class="settings-group__title" id="profileTitle">Profile</h2>
+
+          <ul class="settings-list">
+            <li class="setting" id="nameSetting">
+              <div class="setting__head">
+                <div class="setting__text">
+                  <h3 class="setting__label">Name</h3>
+                  <!-- src/account/name-section.js puts the name here once the
+                       profile has loaded. -->
+                  <p class="setting__summary" id="nameSummary">
+                    The name your account goes by.
+                  </p>
+                </div>
+                <button class="btn-ghost" type="button" data-setting-open>Change</button>
+              </div>
+
+              <div class="setting__panel" hidden>
+                <p class="setting__note">
+                  Passkeys you already have keep showing the old name on your
+                  devices.
+                </p>
+
+                <form id="changeNameForm" class="auth-form setting__form">
+                  <div class="field">
+                    <label class="field__label" for="fullName">Full name</label>
+                    <div class="field__control">
+                      <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="8" r="3.4" />
+                        <path d="M4.6 20a7.4 7.4 0 0 1 14.8 0" />
+                      </svg>
+                      <!-- The limit matches the backend's. -->
+                      <input
+                        type="text"
+                        id="fullName"
+                        autocomplete="name"
+                        maxlength="100"
+                        placeholder="Jane Goodall"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="setting__actions">
+                    <button class="btn-ghost" type="button" data-setting-close>Cancel</button>
+                    <button id="changeNameSubmit" class="btn" type="submit">Save name</button>
+                  </div>
+                </form>
+              </div>
+
+              <p id="nameMessage" class="message" hidden></p>
+            </li>
+          </ul>
+        </section>
+
         <section class="settings-group" aria-labelledby="securityTitle">
           <h2 class="settings-group__title" id="securityTitle">Sign-in and security</h2>
 
