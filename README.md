@@ -85,6 +85,16 @@ A setting that belongs with none of the groups gets a new
 `section.settings-group` of its own, as deleting the account has in "Danger
 zone".
 
+## ✏️ Changing the name
+
+The token carries only the email, so the "Profile" group asks the backend for
+the name with `getProfile` in `src/auth/account.js` and shows it as the row's
+summary. The field starts from that name, and cancelling puts it back.
+
+`changeName` saves what was typed. The backend keeps the letters as they are
+and tidies only the spacing, and the row shows its copy. Passkeys made before
+the change keep the old name on the user's devices.
+
 ## 🔑 Changing the password
 
 The account page changes the password once the current one is confirmed. The
