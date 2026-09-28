@@ -2,8 +2,32 @@ import { apiFetch } from "../api/client.js";
 import { clearSession, setSession } from "./session.js";
 
 const ACCOUNT_PATH = "/api/account";
+const CHANGE_NAME_PATH = "/api/account/name";
 const CHANGE_PASSWORD_PATH = "/api/account/change-password";
 const SIGN_OUT_OTHER_SESSIONS_PATH = "/api/account/sign-out-other-sessions";
+
+/**
+ * The signed-in user's name, email and registration date. The token carries
+ * only the email, so the name has to be asked for.
+ *
+ * @returns `{ fullName, email, dateRegistered }`.
+ */
+export function getProfile() {
+  return apiFetch(ACCOUNT_PATH);
+}
+
+/**
+ * Changes the name the signed-in user goes by. The backend keeps it as typed
+ * apart from its spacing.
+ *
+ * @returns the profile with the name as the backend stored it.
+ */
+export function changeName(fullName) {
+  return apiFetch(CHANGE_NAME_PATH, {
+    method: "PUT",
+    body: JSON.stringify({ fullName }),
+  });
+}
 
 /**
  * Changes the signed-in user's password.
