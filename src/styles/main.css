@@ -8,6 +8,11 @@
   --warning-color: #92610a;
   --warning-bg: #fff8e6;
   --warning-border: #f5e0aa;
+  /* The fill behind white text on a button that cannot be taken back. Unlike
+     --error-color, the dark theme keeps it, since a lighter red would lose
+     the white text. */
+  --danger-fill: #a93226;
+  --danger-fill-hover: #8e2a20;
 
   /* Surfaces, ink and elevation. */
   --canvas: #f4f7fb;
@@ -1344,6 +1349,37 @@ footer {
 
 .setting .message {
   margin-top: 14px;
+}
+
+/* --- Danger zone ---------------------------------------------------------- */
+
+/* Red rather than the brand's blue, for the changes that cannot be taken back. */
+.setting--danger.is-open {
+  box-shadow: inset 3px 0 0 var(--error-color);
+}
+
+.btn-ghost--danger {
+  color: var(--error-color);
+}
+
+.btn-ghost--danger:hover {
+  background: var(--error-bg);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+/* Chained with .btn to outrank its gradient in every state. */
+.btn.btn--danger,
+.btn.btn--danger:disabled,
+.btn.btn--danger:disabled:hover {
+  background-color: var(--danger-fill);
+  background-image: none;
+  box-shadow: none;
+}
+
+.btn.btn--danger:hover {
+  background-color: var(--danger-fill-hover);
+  background-image: none;
 }
 
 /* --- Passkeys ------------------------------------------------------------- */

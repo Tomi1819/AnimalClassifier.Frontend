@@ -1,4 +1,5 @@
 import { initAccountHeader } from "../account/account-header.js";
+import { initDeleteAccountSection } from "../account/delete-account-section.js";
 import { initOtherSessionsSection } from "../account/other-sessions-section.js";
 import { initPasskeySection } from "../account/passkey-section.js";
 import { initPasswordSection } from "../account/password-section.js";
@@ -15,5 +16,6 @@ if (requireAuthentication()) {
   initAccountHeader();
   initPasswordSection();
   initOtherSessionsSection();
+  initDeleteAccountSection();
   await initPasskeySection();
 }
