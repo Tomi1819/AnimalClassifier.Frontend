@@ -1,6 +1,7 @@
 import { apiFetch } from "../api/client.js";
-import { setSession } from "./session.js";
+import { clearSession, setSession } from "./session.js";
 
+const ACCOUNT_PATH = "/api/account";
 const CHANGE_PASSWORD_PATH = "/api/account/change-password";
 const SIGN_OUT_OTHER_SESSIONS_PATH = "/api/account/sign-out-other-sessions";
 
@@ -16,6 +17,19 @@ export function changePassword(currentPassword, newPassword) {
  */
 export function signOutOtherSessions() {
   return continueSession(SIGN_OUT_OTHER_SESSIONS_PATH);
+}
+
+/**
+ * Deletes the signed-in user's account once its password is confirmed. Every
+ * session ends with it, so this one is forgotten as well.
+ */
+export async function deleteAccount(password) {
+  await apiFetch(ACCOUNT_PATH, {
+    method: "DELETE",
+    body: JSON.stringify({ password }),
+  });
+
+  clearSession();
 }
 
 /**
