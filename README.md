@@ -82,8 +82,8 @@ To add a setting:
 3. Call that module's init from `src/pages/account.js`.
 
 A setting that belongs with none of the groups gets a new
-`section.settings-group` of its own, such as a "Danger zone" for deleting the
-account.
+`section.settings-group` of its own, as deleting the account has in "Danger
+zone".
 
 ## 🔑 Changing the password
 
@@ -96,6 +96,19 @@ have to sign in again.
 Signing out the other devices, from the same page, works the same way: the
 backend ends every session, and `signOutOtherSessions` keeps this one going
 with the token it answers with.
+
+## 🗑️ Deleting the account
+
+The "Danger zone" at the bottom of the account page deletes the account once
+its password is typed in and a last question is answered. The backend removes
+the account with its history, uploads and passkeys, and every session ends with
+it, so `deleteAccount` in `src/auth/account.js` clears the stored session and
+the page returns to the home page. A wrong password, or an administrator's
+account, which the backend refuses to delete, is explained under the form.
+
+Its red, in `.btn--danger` and `.btn-ghost--danger`, is kept for changes that
+cannot be taken back. The fill comes from `--danger-fill`, which the dark theme
+leaves as it is so the white text on it stays readable.
 
 ## 🌗 Themes
 
