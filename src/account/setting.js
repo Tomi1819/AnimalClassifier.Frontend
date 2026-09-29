@@ -56,8 +56,12 @@ export function initSetting(row, { onOpen = () => {}, onClose = () => {} } = {})
         return;
       }
 
-      // Read before the panel hides, which takes the focus out of it.
-      const focusWasInPanel = panel.contains(document.activeElement);
+      // Read before the panel hides, which takes the focus out of it. Focus on
+      // the page itself counts as the panel's too: a section disables its
+      // submit button while the change is saved, and Chrome drops the focus to
+      // the page when the button it was on is disabled.
+      const focusWasInPanel =
+        panel.contains(document.activeElement) || isFocusLost();
 
       openSetting = null;
       setOpen(false);
@@ -82,4 +86,8 @@ export function initSetting(row, { onOpen = () => {}, onClose = () => {} } = {})
   });
 
   return setting;
+}
+
+function isFocusLost() {
+  return !document.activeElement || document.activeElement === document.body;
 }
