@@ -347,15 +347,27 @@
                 <div class="setting__text">
                   <h3 class="setting__label">Download your data</h3>
                   <p class="setting__summary">
-                    A copy of your profile, your history and everything you
-                    uploaded.
+                    A ZIP of your profile, history and uploads.
                   </p>
                 </div>
                 <!-- A single action, so it downloads at once rather than
-                     opening a panel. -->
-                <button id="exportData" class="btn-ghost" type="button">Download</button>
+                     opening a panel, and shows its progress on itself. -->
+                <button
+                  id="exportData"
+                  class="btn-ghost busy-button"
+                  type="button"
+                  aria-label="Download your data"
+                >
+                  <span class="busy-button__idle">Download</span>
+                  <span class="busy-button__busy">
+                    <span class="busy-button__spinner"></span>
+                    Preparing...
+                  </span>
+                </button>
               </div>
 
+              <!-- Tells a screen reader what the spinner shows. -->
+              <span id="exportDataStatus" class="visually-hidden" role="status"></span>
               <p id="exportDataMessage" class="message" hidden></p>
             </li>
           </ul>

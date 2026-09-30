@@ -1,6 +1,8 @@
 import { exportData } from "../auth/account.js";
-import { hideMessage, showError, showProgress } from "../shared/feedback.js";
+import { hideMessage, showError } from "../shared/feedback.js";
 import { saveFile } from "../shared/save-file.js";
+
+const PREPARING_MESSAGE = "Preparing your data...";
 
 /**
  * Downloads a copy of everything the account holds. It is a single action
@@ -16,6 +18,7 @@ export function initExportDataSection() {
 function collectSectionElements() {
   return {
     button: document.getElementById("exportData"),
+    status: document.getElementById("exportDataStatus"),
     message: document.getElementById("exportDataMessage"),
   };
 }
@@ -23,23 +26,37 @@ function collectSectionElements() {
 async function download(section) {
   // The backend allows only a few exports in a while, and a second click
   // would spend one on a copy the user is already getting.
-  section.button.disabled = true;
-  showProgress(section.message, "Preparing your data...");
+  if (isBusy(section)) {
+    return;
+  }
+
+  setBusy(section, true);
+  hideMessage(section.message);
 
   try {
+    // Nothing is said once the browser has the file. Its own prompt or
+    // download bar takes over, and the page is never told whether the file
+    // was saved or the prompt cancelled.
     saveFile(await exportData(), exportFileName());
-
-    // From here the browser's own prompt or download bar takes over. The page
-    // is never told whether the file was saved or the prompt cancelled, so it
-    // claims neither.
-    hideMessage(section.message);
   } catch (error) {
     console.error("Exporting the data failed:", error);
     // Asking too often is explained by the backend's message.
     showError(section.message, error.message);
   } finally {
-    section.button.disabled = false;
+    setBusy(section, false);
   }
+}
+
+function isBusy(section) {
+  return section.button.getAttribute("aria-busy") === "true";
+}
+
+// Marked busy rather than disabled, because Chrome drops the focus of a
+// button that is disabled, and a keyboard user would lose their place.
+function setBusy(section, busy) {
+  section.button.setAttribute("aria-busy", String(busy));
+  section.button.setAttribute("aria-disabled", String(busy));
+  section.status.textContent = busy ? PREPARING_MESSAGE : "";
 }
 
 // Dated by the user's own calendar, so that copies from different days sit
