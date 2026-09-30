@@ -121,10 +121,16 @@ to save. The file is named after the day in the user's own time zone. The
 backend allows only a few exports in a while, and explains a refusal under the
 button.
 
-The row shows its progress only while the backend builds the archive. After
-that the browser's own save prompt or download bar takes over, and the page is
-never told whether the file was saved or the prompt cancelled, so it reports
-neither.
+While the backend builds the archive, the button itself shows a spinner and
+"Preparing...", so nothing below the row appears or moves. It is marked
+`aria-busy` rather than disabled, which would drop the keyboard's focus, and a
+hidden status tells a screen reader the same. Once the browser has the file,
+its own save prompt or download bar takes over. The page is never told whether
+the file was saved or the prompt cancelled, so it reports neither.
+
+`.busy-button` in `src/styles/main.css` is the button's look, and suits any
+single action that takes a moment: it stacks both labels in one place, so the
+button keeps its width when they swap.
 
 ## 🗑️ Deleting the account
 
