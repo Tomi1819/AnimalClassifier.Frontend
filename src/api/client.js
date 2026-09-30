@@ -63,7 +63,28 @@ export function resolveUrl(path) {
  * @throws {ApiError} when the backend responds with a non-2xx status.
  * @throws {NetworkError} when the backend cannot be reached at all.
  */
-export async function apiFetch(path, { headers, ...options } = {}) {
+export async function apiFetch(path, options) {
+  const response = await sendAuthorizedRequest(path, options);
+
+  return response.status === 204 ? null : await response.json();
+}
+
+/**
+ * Fetches a file from the backend, the same way `apiFetch` calls it.
+ *
+ * @returns the file's contents.
+ * @throws {ApiError} when the backend responds with a non-2xx status.
+ * @throws {NetworkError} when the backend cannot be reached at all.
+ */
+export async function apiDownload(path) {
+  const response = await sendAuthorizedRequest(path);
+
+  return await response.blob();
+}
+
+// Everything `apiFetch` and `apiDownload` share: the request with the token
+// attached, and the answer checked, so that only a success is returned.
+async function sendAuthorizedRequest(path, { headers, ...options } = {}) {
   const authorization = authorizationHeader();
 
   const response = await sendRequest(path, {
@@ -87,7 +108,7 @@ export async function apiFetch(path, { headers, ...options } = {}) {
     throw new ApiError(await readErrorMessage(response), response.status);
   }
 
-  return response.status === 204 ? null : await response.json();
+  return response;
 }
 
 // `fetch` rejects only when the request never reached the server; a response
