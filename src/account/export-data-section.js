@@ -1,8 +1,6 @@
 import { exportData } from "../auth/account.js";
-import { showError, showProgress, showSuccess } from "../shared/feedback.js";
+import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { saveFile } from "../shared/save-file.js";
-
-const DOWNLOADED_MESSAGE = "Your data has been downloaded.";
 
 /**
  * Downloads a copy of everything the account holds. It is a single action
@@ -30,7 +28,11 @@ async function download(section) {
 
   try {
     saveFile(await exportData(), exportFileName());
-    showSuccess(section.message, DOWNLOADED_MESSAGE);
+
+    // From here the browser's own prompt or download bar takes over. The page
+    // is never told whether the file was saved or the prompt cancelled, so it
+    // claims neither.
+    hideMessage(section.message);
   } catch (error) {
     console.error("Exporting the data failed:", error);
     // Asking too often is explained by the backend's message.
