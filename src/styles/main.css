@@ -1351,6 +1351,60 @@ footer {
   margin-top: 14px;
 }
 
+/* --- Busy button ---------------------------------------------------------- */
+
+/* A button that shows its work on itself, for an action that takes a moment
+   and leaves nothing to report. Both labels share one grid cell, so the button
+   is as wide as the longer one and stays put when they swap. */
+.busy-button {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.busy-button__idle,
+.busy-button__busy {
+  grid-area: 1 / 1;
+}
+
+.busy-button__busy {
+  align-items: center;
+  display: inline-flex;
+  gap: 7px;
+  visibility: hidden;
+}
+
+.busy-button[aria-busy="true"] .busy-button__idle {
+  visibility: hidden;
+}
+
+.busy-button[aria-busy="true"] .busy-button__busy {
+  visibility: visible;
+}
+
+/* Working rather than unavailable, so it takes the brand's colour instead of
+   fading the way a disabled button does. */
+.busy-button[aria-busy="true"],
+.busy-button[aria-busy="true"]:hover {
+  border-color: var(--brand);
+  color: var(--brand-strong);
+  cursor: progress;
+}
+
+.busy-button__spinner {
+  animation: spin 0.8s linear infinite;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-right-color: transparent;
+  height: 0.85em;
+  width: 0.85em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .busy-button__spinner {
+    animation: none;
+  }
+}
+
 /* --- Danger zone ---------------------------------------------------------- */
 
 /* Red rather than the brand's blue, for the changes that cannot be taken back. */
