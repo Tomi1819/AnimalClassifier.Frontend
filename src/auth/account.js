@@ -1,10 +1,11 @@
-import { apiFetch } from "../api/client.js";
+import { apiDownload, apiFetch } from "../api/client.js";
 import { clearSession, setSession } from "./session.js";
 
 const ACCOUNT_PATH = "/api/account";
 const CHANGE_NAME_PATH = "/api/account/name";
 const CHANGE_PASSWORD_PATH = "/api/account/change-password";
 const SIGN_OUT_OTHER_SESSIONS_PATH = "/api/account/sign-out-other-sessions";
+const EXPORT_DATA_PATH = "/api/account/export";
 
 /**
  * The signed-in user's name, email and registration date. The token carries
@@ -41,6 +42,16 @@ export function changePassword(currentPassword, newPassword) {
  */
 export function signOutOtherSessions() {
   return continueSession(SIGN_OUT_OTHER_SESSIONS_PATH);
+}
+
+/**
+ * A copy of everything the signed-in user's account holds: their profile,
+ * their whole history and the files they uploaded.
+ *
+ * @returns the ZIP archive the backend builds, as a Blob.
+ */
+export function exportData() {
+  return apiDownload(EXPORT_DATA_PATH);
 }
 
 /**
