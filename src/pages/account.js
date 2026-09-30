@@ -1,5 +1,6 @@
 import { initAccountHeader } from "../account/account-header.js";
 import { initDeleteAccountSection } from "../account/delete-account-section.js";
+import { initExportDataSection } from "../account/export-data-section.js";
 import { initNameSection } from "../account/name-section.js";
 import { initOtherSessionsSection } from "../account/other-sessions-section.js";
 import { initPasskeySection } from "../account/passkey-section.js";
@@ -17,6 +18,7 @@ if (requireAuthentication()) {
   initAccountHeader();
   initPasswordSection();
   initOtherSessionsSection();
+  initExportDataSection();
   initDeleteAccountSection();
 
   // Each waits on the backend, so they load side by side.
