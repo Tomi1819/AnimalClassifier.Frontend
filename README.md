@@ -107,6 +107,20 @@ Signing out the other devices, from the same page, works the same way: the
 backend ends every session, and `signOutOtherSessions` keeps this one going
 with the token it answers with.
 
+## 📦 Downloading the account's data
+
+"Your data" on the account page downloads a copy of everything the account
+holds: the profile, the whole history, cleared entries included, and the
+uploaded files, in one ZIP archive the backend builds. It is a single action,
+so the row has no panel and nothing to confirm.
+
+`exportData` in `src/auth/account.js` fetches the archive with `apiDownload`,
+which calls the backend the way `apiFetch` does but hands back a Blob rather
+than JSON, and `saveFile` in `src/shared/save-file.js` gives it to the browser
+to save. The file is named after the day in the user's own time zone. The
+backend allows only a few exports in a while, and explains a refusal under the
+button.
+
 ## 🗑️ Deleting the account
 
 The "Danger zone" at the bottom of the account page deletes the account once
@@ -154,6 +168,7 @@ src/
   shared/disclosure.js    Open and close handling shared by the bar's menus
   shared/icons.js         The outline icons the menus draw
   shared/nav.js           Session-aware navigation
+  shared/save-file.js     Saves a file the page holds as a download
   shared/signed-in-user.js  Who is signed in, as the menu and account page show it
   shared/theme.js         The theme choice, stored and applied
   shared/theme-switch.js  The light and dark control
