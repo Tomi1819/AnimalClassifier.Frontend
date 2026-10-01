@@ -2,6 +2,7 @@ import { deleteAccount } from "../auth/account.js";
 import { getUserEmail } from "../auth/session.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
+import { maskPasswords } from "../shared/password-toggle.js";
 import { initSetting } from "./setting.js";
 
 const HOME_PAGE = "/";
@@ -27,6 +28,7 @@ export function initDeleteAccountSection() {
     // Nothing typed into a password field outlives the panel it was typed in.
     onClose: () => {
       section.form.reset();
+      maskPasswords(section.form);
       hideMessage(section.message);
     },
   });

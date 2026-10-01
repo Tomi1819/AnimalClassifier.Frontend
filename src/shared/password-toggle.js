@@ -17,13 +17,31 @@ export function initPasswordToggles() {
   }
 }
 
+/**
+ * Masks every password field in a container again. Resetting a form empties
+ * its fields but leaves a revealed one revealed, so whatever is typed into it
+ * next would show.
+ *
+ * @param container the element holding the fields and their reveal buttons.
+ */
+export function maskPasswords(container) {
+  for (const toggle of container.querySelectorAll(TOGGLE_SELECTOR)) {
+    setRevealed(toggle, false);
+  }
+}
+
 function togglePassword(toggle) {
+  const input = document.getElementById(toggle.dataset.passwordToggle);
+
+  setRevealed(toggle, input?.type === "password");
+}
+
+function setRevealed(toggle, revealed) {
   const input = document.getElementById(toggle.dataset.passwordToggle);
   if (!input) {
     return;
   }
 
-  const revealed = input.type === "password";
   input.type = revealed ? "text" : "password";
   toggle.setAttribute("aria-label", revealed ? HIDE_LABEL : SHOW_LABEL);
 
