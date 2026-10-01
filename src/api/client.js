@@ -1,4 +1,4 @@
-import { endSession, getToken } from "../auth/session.js";
+import { endSession, getToken, isSessionRequired } from "../auth/session.js";
 
 // Empty during development so requests stay relative and the Vite dev proxy
 // forwards them to the backend. See vite.config.js and .env.development.
@@ -98,8 +98,12 @@ async function sendAuthorizedRequest(path, { headers, ...options } = {}) {
 
   // Only a token that was actually sent can have been rejected. Without one, a
   // 401 is the endpoint's own answer -- a failed sign-in, say -- and belongs to
-  // the caller.
-  if (response.status === UNAUTHORIZED_STATUS && authorization.Authorization) {
+  // the caller. The exception is a page that needs a session: there the token
+  // has run out or been signed out from under it, and the answer is the same.
+  if (
+    response.status === UNAUTHORIZED_STATUS &&
+    (authorization.Authorization || isSessionRequired())
+  ) {
     endSession();
     throw new ApiError(SESSION_EXPIRED_MESSAGE, response.status);
   }

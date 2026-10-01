@@ -13,6 +13,9 @@ const EMAIL_CLAIMS = [
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
 ];
 
+// Set once a guarded page has been let in. See isSessionRequired.
+let sessionRequired = false;
+
 /**
  * The token is kept in localStorage rather than sessionStorage so that every
  * tab and window shares one session.
@@ -82,11 +85,21 @@ export function getUserEmail() {
  */
 export function requireAuthentication() {
   if (isAuthenticated()) {
+    sessionRequired = true;
     return true;
   }
 
   redirectToLogin();
   return false;
+}
+
+/**
+ * Whether this page was let in on the strength of a session. On such a page a
+ * request refused for want of one means the session has gone since: the token
+ * ran out, or the user signed out in another tab.
+ */
+export function isSessionRequired() {
+  return sessionRequired;
 }
 
 /**
