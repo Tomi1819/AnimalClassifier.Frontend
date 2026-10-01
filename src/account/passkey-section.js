@@ -13,6 +13,10 @@ const NO_PASSKEYS_SUMMARY = "Not set up yet";
 const UNSUPPORTED =
   "This browser cannot use passkeys. Sign in with your password instead.";
 
+// The passkey being added, if one is, so that putting the form away can call
+// it off.
+let attempt = null;
+
 /**
  * Lists the account's passkeys and lets the user add and remove them.
  */
@@ -48,6 +52,7 @@ function collectPageElements() {
     addButton: document.getElementById("addPasskey"),
     form: document.getElementById("addPasskeyForm"),
     name: document.getElementById("passkeyName"),
+    submitButton: document.getElementById("addPasskeySubmit"),
     cancelButton: document.getElementById("cancelPasskey"),
   };
 }
@@ -75,22 +80,43 @@ function setFormOpen(page, open) {
     return;
   }
 
+  // Putting the form away is the user changing their mind, so a passkey still
+  // being waited for must not turn up afterwards.
+  attempt?.abort();
+
   page.name.value = "";
   hideMessage(page.message);
 }
 
 async function addPasskey(page) {
+  const { signal } = (attempt = new AbortController());
+
+  // A second submission would start a second prompt over the first, which the
+  // browser refuses.
+  page.submitButton.disabled = true;
   showProgress(page.message, "Waiting for your device...");
 
   try {
-    const passkey = await registerPasskey(page.name.value.trim());
+    const passkey = await registerPasskey(page.name.value.trim(), signal);
 
-    setFormOpen(page, false);
+    // Called off too late to stop, the passkey is still reported, but a form
+    // the user has since opened again is theirs to finish.
+    if (!signal.aborted) {
+      setFormOpen(page, false);
+    }
+
     showSuccess(page.message, `${passkey.name} is ready to sign you in.`);
     await showPasskeys(page);
   } catch (error) {
+    // Called off by the user, who needs no telling.
+    if (signal.aborted) {
+      return;
+    }
+
     console.error("Registering a passkey failed:", error);
     showError(page.message, error.message);
+  } finally {
+    page.submitButton.disabled = false;
   }
 }
 
