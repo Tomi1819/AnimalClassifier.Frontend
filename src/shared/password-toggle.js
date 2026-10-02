@@ -18,14 +18,19 @@ export function initPasswordToggles() {
 }
 
 /**
- * Masks every password field in a container again. Resetting a form empties
- * its fields but leaves a revealed one revealed, so whatever is typed into it
- * next would show.
+ * Empties a form that takes a password, so that nothing typed into one
+ * outlives the panel it was typed in.
  *
- * @param container the element holding the fields and their reveal buttons.
+ * Resetting the form alone empties its fields but leaves a revealed one
+ * revealed, and whatever is typed into it next would show. Every password
+ * field is therefore masked again as well.
+ *
+ * @param form the form holding the fields and their reveal buttons.
  */
-export function maskPasswords(container) {
-  for (const toggle of container.querySelectorAll(TOGGLE_SELECTOR)) {
+export function clearPasswordForm(form) {
+  form.reset();
+
+  for (const toggle of form.querySelectorAll(TOGGLE_SELECTOR)) {
     setRevealed(toggle, false);
   }
 }

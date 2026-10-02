@@ -3,7 +3,7 @@ import { getUserEmail } from "../auth/session.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { HOME_PAGE } from "../shared/pages.js";
-import { maskPasswords } from "../shared/password-toggle.js";
+import { clearPasswordForm } from "../shared/password-toggle.js";
 import { initSetting } from "./setting.js";
 
 const CONFIRM_QUESTION = "Delete your account for good?";
@@ -24,10 +24,8 @@ export function initDeleteAccountSection() {
       hideMessage(section.message);
       section.password.focus();
     },
-    // Nothing typed into a password field outlives the panel it was typed in.
     onClose: () => {
-      section.form.reset();
-      maskPasswords(section.form);
+      clearPasswordForm(section.form);
       hideMessage(section.message);
     },
   });
