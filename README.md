@@ -108,6 +108,12 @@ backend ends every session the account had and answers with a new token, which
 this tab and any other open on the same browser stay signed in. Other devices
 have to sign in again.
 
+A new password has to be at least 8 characters long, here and on the register
+and reset pages. The fields say so and check it before the backend is asked,
+with a `minlength` that matches the backend's minimum. Its other refusals, such
+as the account's email or the password the account already has, are explained
+under the form.
+
 Signing out the other devices, from the same page, works the same way: the
 backend ends every session, and `signOutOtherSessions` keeps this one going
 with the token it answers with.
