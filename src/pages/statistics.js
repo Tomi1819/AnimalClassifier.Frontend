@@ -2,9 +2,9 @@ import { apiFetch } from "../api/client.js";
 import { requireAuthentication } from "../auth/session.js";
 import { showError } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
+import { SEARCH_PAGE } from "../shared/pages.js";
 import { initTheme } from "../shared/theme.js";
 
-const SEARCH_PAGE = "/pages/search.html";
 const NO_VALUE = "—";
 
 // Past this a figure is shortened, so 128,450 reads as 128.5K and still fits its tile.

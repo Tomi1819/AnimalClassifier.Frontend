@@ -2,10 +2,9 @@ import { deleteAccount } from "../auth/account.js";
 import { getUserEmail } from "../auth/session.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
+import { HOME_PAGE } from "../shared/pages.js";
 import { maskPasswords } from "../shared/password-toggle.js";
 import { initSetting } from "./setting.js";
-
-const HOME_PAGE = "/";
 
 const CONFIRM_QUESTION = "Delete your account for good?";
 const CONFIRM_NOTE =

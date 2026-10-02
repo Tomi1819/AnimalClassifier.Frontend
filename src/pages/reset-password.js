@@ -1,10 +1,9 @@
 import { apiFetch } from "../api/client.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
+import { LOGIN_PAGE } from "../shared/pages.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
 import { initTheme } from "../shared/theme.js";
-
-const LOGIN_PAGE = "/pages/login.html";
 
 const INCOMPLETE_LINK_MESSAGE =
   "This link is incomplete. Please ask for a new one.";
