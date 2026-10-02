@@ -285,7 +285,11 @@
 
                 <ul class="passkey-list" id="passkeyList"></ul>
 
-                <form id="addPasskeyForm" class="passkey-form setting__form" hidden>
+                <form id="addPasskeyForm" class="auth-form passkey-form setting__form" hidden>
+                  <!-- Never shown. It tells a password manager which saved account to
+                       fill in; src/account/passkey-section.js fills it. -->
+                  <input type="email" id="passkeyUsername" autocomplete="username" hidden />
+
                   <div class="field">
                     <label class="field__label" for="passkeyName">Name this passkey</label>
                     <div class="field__control">
@@ -300,6 +304,53 @@
                         placeholder="This device"
                         autocomplete="off"
                       />
+                    </div>
+                  </div>
+
+                  <!-- A passkey outlasts the session that adds it, so the
+                       backend asks for the password first. -->
+                  <div class="field">
+                    <label class="field__label" for="passkeyPassword">Password</label>
+                    <div class="field__control">
+                      <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="4" y="10" width="16" height="10" rx="2.5" />
+                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                      </svg>
+                      <input
+                        type="password"
+                        id="passkeyPassword"
+                        autocomplete="current-password"
+                        placeholder="Your password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        class="field__toggle"
+                        data-password-toggle="passkeyPassword"
+                        aria-label="Show password"
+                      >
+                        <svg
+                          class="field__toggle-icon"
+                          data-icon="eye"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        <svg
+                          class="field__toggle-icon"
+                          data-icon="eye-off"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          hidden
+                        >
+                          <path
+                            d="M10.6 6.2A9.4 9.4 0 0 1 12 6c6 0 9.5 6 9.5 6a17.7 17.7 0 0 1-3.4 4M6.2 8.1A17.4 17.4 0 0 0 2.5 12S6 18 12 18a9.6 9.6 0 0 0 3.4-.6"
+                          />
+                          <path d="m3 3 18 18" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
 

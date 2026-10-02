@@ -39,14 +39,20 @@ export function isPasskeySupported() {
 /**
  * Registers a new passkey against the signed-in account.
  *
+ * @param password the account's password. A passkey outlasts the session that
+ *   adds it, so the backend confirms it before handing out the options.
  * @param signal calls the attempt off while it waits on the backend's options
  *   or on the device. Once the device has made the passkey it is past calling
  *   off: the passkey exists there, and leaving the account without it would
  *   strand one that can never sign in.
  * @returns the passkey as the account now lists it.
  */
-export async function registerPasskey(name, signal) {
-  const { options, state } = await apiFetch(CREATION_OPTIONS_PATH, { method: "POST", signal });
+export async function registerPasskey(name, password, signal) {
+  const { options, state } = await apiFetch(CREATION_OPTIONS_PATH, {
+    method: "POST",
+    body: JSON.stringify({ password }),
+    signal,
+  });
 
   const credential = await perform(() =>
     navigator.credentials.create({
