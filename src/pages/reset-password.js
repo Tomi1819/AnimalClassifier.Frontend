@@ -1,4 +1,4 @@
-import { apiFetch } from "../api/client.js";
+import { resetPassword } from "../auth/authentication.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 import { LOGIN_PAGE } from "../shared/pages.js";
@@ -41,10 +41,7 @@ form.addEventListener("submit", async (event) => {
   showProgress(formMessage, "Changing your password...");
 
   try {
-    const { message } = await apiFetch("/api/auth/reset-password", {
-      method: "POST",
-      body: JSON.stringify({ ...link, newPassword: password }),
-    });
+    const { message } = await resetPassword(link.email, link.token, password);
 
     // The token is spent and the account's sessions have ended, so there is
     // nothing left to do on this page.
