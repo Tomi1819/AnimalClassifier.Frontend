@@ -55,6 +55,11 @@ which is decided by `isPasskeySupported` in `src/auth/passkeys.js`: it looks for
 the JSON helpers on `PublicKeyCredential`, which spare the module from
 converting every field to and from its binary form by hand.
 
+Adding a passkey asks for the account's password as well as a name. A passkey
+outlasts the session that adds it, so the backend confirms the password before
+it hands `registerPasskey` the options, and a wrong one is explained under the
+form.
+
 A passkey is bound to the domain in the address bar, so the backend's relying
 party id has to be this frontend's domain. In development that is `localhost`,
 which browsers accept without HTTPS; a deployment needs HTTPS and a domain
