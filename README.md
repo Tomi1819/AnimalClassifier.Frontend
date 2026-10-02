@@ -181,6 +181,7 @@ public/                   Static files served from the root, e.g. /logo.png
 src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
   auth/session.js         Token storage and the page guard
+  auth/authentication.js  Registering, signing in and resetting a password
   auth/passkeys.js        WebAuthn ceremonies, one function each
   auth/account.js         Account changes that keep this session going
   account/setting.js      A settings row that opens in place
@@ -190,6 +191,8 @@ src/
   shared/disclosure.js    Open and close handling shared by the bar's menus
   shared/icons.js         The outline icons the menus draw
   shared/nav.js           Session-aware navigation
+  shared/pages.js         The path of each page, for links and redirects
+  shared/password-toggle.js  Showing, masking and emptying password fields
   shared/save-file.js     Saves a file the page holds as a download
   shared/signed-in-user.js  Who is signed in, as the menu and account page show it
   shared/theme.js         The theme choice, stored and applied
