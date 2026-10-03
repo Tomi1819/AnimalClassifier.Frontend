@@ -43,3 +43,14 @@
   flex: 1 1 0;
   min-width: 0;
 }
+
+/* On a narrow screen the options share the width between them. */
+@media (max-width: 720px) {
+  .segmented {
+    display: flex;
+  }
+
+  .segmented__btn {
+    flex: 1;
+  }
+}

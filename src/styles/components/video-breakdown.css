@@ -128,16 +128,12 @@
   text-align: right;
 }
 
-@media (max-width: 720px) {
-  .result-card {
+@media (max-width: 576px) {
+  .animals-grid {
     grid-template-columns: 1fr;
   }
 
-  .segmented {
-    display: flex;
-  }
-
-  .segmented__btn {
-    flex: 1;
+  .counter-value {
+    font-size: 28px;
   }
 }
