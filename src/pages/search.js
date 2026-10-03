@@ -30,6 +30,8 @@ const FALLBACK_IMAGE = `data:image/svg+xml,${encodeURIComponent(
 
 let elements;
 let debounceTimeout;
+// The search waiting for its answer, so that a newer one can call it off.
+let pendingSearch = null;
 
 if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   elements = collectElements();
@@ -78,22 +80,36 @@ function initSearchControls() {
     if (query.length >= MIN_QUERY_LENGTH) {
       debounceTimeout = setTimeout(() => search(query), SEARCH_DEBOUNCE_MS);
     } else if (!query) {
+      cancelSearch();
       hideAllSections();
     }
   });
 }
 
 async function search(query) {
+  // However it was started, a search replaces the one waiting to start and the
+  // one waiting for its answer, which could otherwise arrive later and be
+  // shown in place of this one's.
+  cancelSearch();
+
   if (!query) {
     return;
   }
 
+  const { signal } = (pendingSearch = new AbortController());
   showLoading();
 
   try {
-    const results = await searchAnimals(query);
-    displayResults(results, query);
+    const results = await searchAnimals(query, signal);
+    if (!signal.aborted) {
+      displayResults(results, query);
+    }
   } catch (error) {
+    // Replaced by a newer search, which shows its own answer.
+    if (signal.aborted) {
+      return;
+    }
+
     console.error("Search failed:", error);
 
     // The backend answers 404 when nothing matches, which is not an error here.
@@ -106,6 +122,11 @@ async function search(query) {
     // than implying the search term was at fault.
     showEmptyState("Search Error", error.message);
   }
+}
+
+function cancelSearch() {
+  clearTimeout(debounceTimeout);
+  pendingSearch?.abort();
 }
 
 function displayResults(results, query) {
