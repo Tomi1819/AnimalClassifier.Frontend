@@ -4,12 +4,10 @@ import {
   getTotalRecognitions,
   getUserCount,
 } from "../api/recognitions.js";
-import { requireAuthentication } from "../auth/session.js";
 import { showError } from "../shared/feedback.js";
 import { pluralize } from "../shared/format.js";
-import { initNavigation } from "../shared/nav.js";
+import { initPage, PAGE_ACCESS } from "../shared/page.js";
 import { SEARCH_PAGE } from "../shared/pages.js";
-import { initTheme } from "../shared/theme.js";
 
 const NO_VALUE = "—";
 
@@ -44,11 +42,7 @@ const fullDate = new Intl.DateTimeFormat(undefined, {
   month: "short",
 });
 
-// Module scripts are deferred, so the document is already parsed here.
-// The guard runs first, so an expired session never paints the signed-in nav.
-if (requireAuthentication()) {
-  initTheme();
-  initNavigation();
+if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   await Promise.all([showStatistics(), showActivity()]);
 }
 

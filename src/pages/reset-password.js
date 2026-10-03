@@ -1,9 +1,8 @@
 import { resetPassword } from "../auth/authentication.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
-import { initNavigation } from "../shared/nav.js";
+import { initPage } from "../shared/page.js";
 import { LOGIN_PAGE } from "../shared/pages.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
-import { initTheme } from "../shared/theme.js";
 
 const INCOMPLETE_LINK_MESSAGE =
   "This link is incomplete. Please ask for a new one.";
@@ -12,8 +11,7 @@ const MISMATCH_MESSAGE = "The two passwords do not match.";
 // Long enough to read what happened, short enough not to feel stuck.
 const REDIRECT_DELAY_MS = 2500;
 
-initTheme();
-initNavigation();
+initPage();
 initPasswordToggles();
 
 const form = document.getElementById("resetPasswordForm");

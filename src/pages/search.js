@@ -1,9 +1,7 @@
 import { resolveUrl } from "../api/client.js";
 import { searchAnimals } from "../api/recognitions.js";
-import { requireAuthentication } from "../auth/session.js";
 import { pluralize } from "../shared/format.js";
-import { initNavigation } from "../shared/nav.js";
-import { initTheme } from "../shared/theme.js";
+import { initPage, PAGE_ACCESS } from "../shared/page.js";
 
 const NOT_FOUND_STATUS = 404;
 const SEARCH_DEBOUNCE_MS = 500;
@@ -33,12 +31,7 @@ const FALLBACK_IMAGE = `data:image/svg+xml,${encodeURIComponent(
 let elements;
 let debounceTimeout;
 
-// Module scripts are deferred, so the document is already parsed here.
-// The guard runs first, so an expired session never paints the signed-in nav.
-if (requireAuthentication()) {
-  initTheme();
-  initNavigation();
-
+if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   elements = collectElements();
   initSearchControls();
   renderSuggestions(POPULAR_ANIMALS);

@@ -1,10 +1,8 @@
 import { requestPasswordReset } from "../auth/authentication.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
-import { initNavigation } from "../shared/nav.js";
-import { initTheme } from "../shared/theme.js";
+import { initPage } from "../shared/page.js";
 
-initTheme();
-initNavigation();
+initPage();
 
 const form = document.getElementById("forgotPasswordForm");
 const formMessage = document.getElementById("formMessage");

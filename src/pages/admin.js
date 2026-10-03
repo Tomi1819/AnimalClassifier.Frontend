@@ -7,13 +7,11 @@ import {
   revokeAdmin,
   unlockUser,
 } from "../api/admin.js";
-import { requireAdmin } from "../auth/session.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { showError, showSuccess } from "../shared/feedback.js";
 import { formatDate } from "../shared/format.js";
 import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
-import { initNavigation } from "../shared/nav.js";
-import { initTheme } from "../shared/theme.js";
+import { initPage, PAGE_ACCESS } from "../shared/page.js";
 
 // Every change on this page ends the user's sessions.
 const SIGNED_OUT_NOTE = "The user will be signed out.";
@@ -55,12 +53,7 @@ const AUDIT_ACTIONS = {
 // The page of users on screen, which a change reloads.
 let usersPage = 1;
 
-// Module scripts are deferred, so the document is already parsed here.
-// The guard runs first, so a non-administrator never paints the page.
-if (requireAdmin()) {
-  initTheme();
-  initNavigation();
-
+if (initPage(PAGE_ACCESS.ADMIN)) {
   const page = collectPageElements();
   initSearch(page);
   page.closeHistory.addEventListener("click", () => {

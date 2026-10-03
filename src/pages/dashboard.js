@@ -1,11 +1,9 @@
 import { resolveUrl } from "../api/client.js";
 import { clearHistory, getHistory, uploadImage, uploadVideo } from "../api/recognitions.js";
-import { requireAuthentication } from "../auth/session.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { formatDate, formatFileSize } from "../shared/format.js";
 import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
-import { initNavigation } from "../shared/nav.js";
-import { initTheme } from "../shared/theme.js";
+import { initPage, PAGE_ACCESS } from "../shared/page.js";
 
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
 const HIGH_CONFIDENCE_THRESHOLD = 0.75;
@@ -54,12 +52,7 @@ const VIDEO_UPLOAD = {
   toRecognition: toVideoRecognition,
 };
 
-// Module scripts are deferred, so the document is already parsed here.
-// The guard runs first, so an expired session never paints the signed-in nav.
-if (requireAuthentication()) {
-  initTheme();
-  initNavigation();
-
+if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   const page = collectPageElements();
   const tabs = [IMAGE_UPLOAD, VIDEO_UPLOAD].map((config) => initUpload(config, page));
   initTabs(tabs);

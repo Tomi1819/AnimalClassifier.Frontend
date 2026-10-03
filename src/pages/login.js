@@ -2,13 +2,11 @@ import { signInWithPassword } from "../auth/authentication.js";
 import { isPasskeySupported, signInWithPasskey } from "../auth/passkeys.js";
 import { setSession } from "../auth/session.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
-import { initNavigation } from "../shared/nav.js";
+import { initPage } from "../shared/page.js";
 import { DASHBOARD_PAGE } from "../shared/pages.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
-import { initTheme } from "../shared/theme.js";
 
-initTheme();
-initNavigation();
+initPage();
 initPasswordToggles();
 
 const formMessage = document.getElementById("formMessage");
