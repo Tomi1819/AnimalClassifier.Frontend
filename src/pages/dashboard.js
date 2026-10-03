@@ -1,5 +1,12 @@
 import { resolveUrl } from "../api/client.js";
-import { clearHistory, getHistory, uploadImage, uploadVideo } from "../api/recognitions.js";
+import {
+  clearHistory,
+  getHistory,
+  MAX_UPLOAD_BYTES,
+  MAX_UPLOAD_MEGABYTES,
+  uploadImage,
+  uploadVideo,
+} from "../api/recognitions.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { formatDate, formatFileSize } from "../shared/format.js";
 import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
@@ -12,6 +19,7 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
 const COUNTER_ANIMATION_MS = 1200;
 const SCORE_ANIMATION_DELAY_MS = 500;
 const SCORE_ANIMATION_STAGGER_MS = 200;
+const TOO_LARGE_MESSAGE = `That file is larger than ${MAX_UPLOAD_MEGABYTES} MB.`;
 
 // The two tabs are the same widget pointed at a different endpoint, so they
 // differ only by the ids they own and the wording they use.
@@ -123,7 +131,19 @@ function initUpload(config, page) {
 function initDropzone(config, elements, page) {
   const { dropzone, input } = elements;
 
-  input.addEventListener("change", () => showSelectedFile(elements, input.files[0]));
+  input.addEventListener("change", () => {
+    const [file] = input.files;
+    showSelectedFile(elements, file);
+
+    // Said as soon as the file is chosen, rather than once the user has
+    // pressed upload.
+    const problem = file && findProblem(config, file, input.accept);
+    if (problem) {
+      showError(page.uploadStatus, problem);
+    } else {
+      hideMessage(page.uploadStatus);
+    }
+  });
 
   dropzone.addEventListener("dragover", (event) => {
     event.preventDefault();
@@ -147,8 +167,9 @@ function initDropzone(config, elements, page) {
       return;
     }
 
-    if (!isAccepted(file, input.accept)) {
-      showError(page.uploadStatus, config.wrongType);
+    const problem = findProblem(config, file, input.accept);
+    if (problem) {
+      showError(page.uploadStatus, problem);
       return;
     }
 
@@ -159,6 +180,16 @@ function initDropzone(config, elements, page) {
     input.files = transfer.files;
     showSelectedFile(elements, file);
   });
+}
+
+// Checked here as well as by the backend, so that a file it would refuse is
+// never sent: a large video takes a while to upload only to be turned away.
+function findProblem(config, file, accept) {
+  if (!isAccepted(file, accept)) {
+    return config.wrongType;
+  }
+
+  return file.size > MAX_UPLOAD_BYTES ? TOO_LARGE_MESSAGE : null;
 }
 
 // Windows reports no type at all for some AVI files; the backend validates
@@ -198,6 +229,12 @@ function initSubmit(config, elements, page) {
     const file = input.files[0];
     if (!file) {
       showError(page.uploadStatus, config.missingFile);
+      return;
+    }
+
+    const problem = findProblem(config, file, input.accept);
+    if (problem) {
+      showError(page.uploadStatus, problem);
       return;
     }
 

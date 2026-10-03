@@ -10,6 +10,16 @@ const STATISTICS_PATH = "/api/statistics";
 const IMAGE_FIELD = "formFile";
 const VIDEO_FIELD = "videoFile";
 
+const BYTES_PER_MEGABYTE = 1024 * 1024;
+
+/**
+ * The largest file the backend accepts, image or video. It is the backend's
+ * UploadValidator.MaxFileSize, and the two have to match, as do the hints the
+ * dashboard's dropzones give.
+ */
+export const MAX_UPLOAD_MEGABYTES = 5;
+export const MAX_UPLOAD_BYTES = MAX_UPLOAD_MEGABYTES * BYTES_PER_MEGABYTE;
+
 /**
  * Recognises the animal in an image, and adds it to the signed-in user's
  * history.
