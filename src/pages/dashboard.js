@@ -1,86 +1,25 @@
-import { resolveUrl } from "../api/client.js";
-import {
-  clearHistory,
-  getHistory,
-  MAX_UPLOAD_BYTES,
-  MAX_UPLOAD_MEGABYTES,
-  uploadImage,
-  uploadVideo,
-} from "../api/recognitions.js";
-import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
-import { formatDate, formatFileSize } from "../shared/format.js";
+import { clearHistory, getHistory } from "../api/recognitions.js";
+import { initResultCard } from "../dashboard/result-card.js";
+import { initUploadForms } from "../dashboard/upload-form.js";
+import { hideMessage, showError } from "../shared/feedback.js";
 import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
 import { initPage, PAGE_ACCESS } from "../shared/page.js";
 
-const LOW_CONFIDENCE_THRESHOLD = 0.5;
-const HIGH_CONFIDENCE_THRESHOLD = 0.75;
-// Counters run for a fixed span, so a long video does not take longer to
-// count than it did to analyse.
-const COUNTER_ANIMATION_MS = 1200;
-const SCORE_ANIMATION_DELAY_MS = 500;
-const SCORE_ANIMATION_STAGGER_MS = 200;
-const TOO_LARGE_MESSAGE = `That file is larger than ${MAX_UPLOAD_MEGABYTES} MB.`;
-
-// The two tabs are the same widget pointed at a different endpoint, so they
-// differ only by the ids they own and the wording they use.
-const IMAGE_UPLOAD = {
-  tab: "imageTabBtn",
-  panel: "imageUploadTab",
-  dropzone: "imageDropzone",
-  input: "imageFileUpload",
-  form: "imageUploadForm",
-  button: "imageUploadButton",
-  summary: "imageFileSummary",
-  fileName: "imageFileName",
-  fileSize: "imageFileSize",
-  thumbnail: "imageThumb",
-  upload: uploadImage,
-  missingFile: "Please select an image file.",
-  wrongType: "That file is not a JPG or PNG image.",
-  progress: "Uploading image...",
-  success: "Image upload successful!",
-  toRecognition: toImageRecognition,
-};
-
-const VIDEO_UPLOAD = {
-  tab: "videoTabBtn",
-  panel: "videoUploadTab",
-  dropzone: "videoDropzone",
-  input: "videoFileUpload",
-  form: "videoUploadForm",
-  button: "videoUploadButton",
-  summary: "videoFileSummary",
-  fileName: "videoFileName",
-  fileSize: "videoFileSize",
-  upload: uploadVideo,
-  missingFile: "Please select a video file.",
-  wrongType: "That file is not an MP4, MOV or AVI video.",
-  progress: "Uploading video...",
-  success: "Video upload successful!",
-  toRecognition: toVideoRecognition,
-};
-
 if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   const page = collectPageElements();
-  const tabs = [IMAGE_UPLOAD, VIDEO_UPLOAD].map((config) => initUpload(config, page));
-  initTabs(tabs);
-  initClearButton(page);
-  await showHistory(page);
+  const resultCard = initResultCard();
+
+  initUploadForms({
+    status: page.uploadStatus,
+    onRecognised: (recognition) => addRecognition(page, resultCard, recognition),
+  });
+  initClearButton(page, resultCard);
+  await showHistory(page, resultCard);
 }
 
 function collectPageElements() {
   return {
     uploadStatus: document.getElementById("uploadStatus"),
-    resultSection: document.getElementById("resultSection"),
-    resultImage: document.getElementById("resultImage"),
-    resultVideo: document.getElementById("resultVideo"),
-    predictedLabel: document.getElementById("predictedLabel"),
-    dateRecognized: document.getElementById("dateRecognized"),
-    predictionScore: document.getElementById("predictionScore"),
-    confidenceBlock: document.getElementById("confidenceBlock"),
-    confidenceFill: document.getElementById("confidenceFill"),
-    lowConfidenceMessage: document.getElementById("lowConfidenceMessage"),
-    videoStatsSlot: document.getElementById("videoStatsSlot"),
     historyList: document.getElementById("historyList"),
     historyEmpty: document.getElementById("historyEmpty"),
     clearHistory: document.getElementById("clearHistory"),
@@ -88,177 +27,7 @@ function collectPageElements() {
 }
 
 /* -------------------------------------------------------------------------
-   Tabs
-   ------------------------------------------------------------------------- */
-
-function initTabs(tabs) {
-  tabs.forEach((tab) => {
-    tab.button.addEventListener("click", () => {
-      tabs.forEach((other) => {
-        const isSelected = other === tab;
-        other.button.classList.toggle("is-active", isSelected);
-        other.panel.hidden = !isSelected;
-      });
-    });
-  });
-}
-
-/* -------------------------------------------------------------------------
-   Upload
-   ------------------------------------------------------------------------- */
-
-function initUpload(config, page) {
-  const elements = {
-    dropzone: document.getElementById(config.dropzone),
-    input: document.getElementById(config.input),
-    form: document.getElementById(config.form),
-    button: document.getElementById(config.button),
-    summary: document.getElementById(config.summary),
-    fileName: document.getElementById(config.fileName),
-    fileSize: document.getElementById(config.fileSize),
-    thumbnail: config.thumbnail ? document.getElementById(config.thumbnail) : null,
-  };
-
-  initDropzone(config, elements, page);
-  initSubmit(config, elements, page);
-
-  return {
-    button: document.getElementById(config.tab),
-    panel: document.getElementById(config.panel),
-  };
-}
-
-function initDropzone(config, elements, page) {
-  const { dropzone, input } = elements;
-
-  input.addEventListener("change", () => {
-    const [file] = input.files;
-    showSelectedFile(elements, file);
-
-    // Said as soon as the file is chosen, rather than once the user has
-    // pressed upload.
-    const problem = file && findProblem(config, file, input.accept);
-    if (problem) {
-      showError(page.uploadStatus, problem);
-    } else {
-      hideMessage(page.uploadStatus);
-    }
-  });
-
-  dropzone.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    dropzone.classList.add("is-dragging");
-  });
-
-  // `dragleave` also fires when the pointer crosses onto a child element, so
-  // the highlight is only dropped once the pointer has left the dropzone.
-  dropzone.addEventListener("dragleave", (event) => {
-    if (!dropzone.contains(event.relatedTarget)) {
-      dropzone.classList.remove("is-dragging");
-    }
-  });
-
-  dropzone.addEventListener("drop", (event) => {
-    event.preventDefault();
-    dropzone.classList.remove("is-dragging");
-
-    const [file] = event.dataTransfer.files;
-    if (!file) {
-      return;
-    }
-
-    const problem = findProblem(config, file, input.accept);
-    if (problem) {
-      showError(page.uploadStatus, problem);
-      return;
-    }
-
-    // A dropped file has to be handed to the input, which is what the form
-    // reads from; assigning `files` does not raise a change event.
-    const transfer = new DataTransfer();
-    transfer.items.add(file);
-    input.files = transfer.files;
-    showSelectedFile(elements, file);
-  });
-}
-
-// Checked here as well as by the backend, so that a file it would refuse is
-// never sent: a large video takes a while to upload only to be turned away.
-function findProblem(config, file, accept) {
-  if (!isAccepted(file, accept)) {
-    return config.wrongType;
-  }
-
-  return file.size > MAX_UPLOAD_BYTES ? TOO_LARGE_MESSAGE : null;
-}
-
-// Windows reports no type at all for some AVI files; the backend validates
-// the upload regardless, so only a positively wrong type is refused here.
-function isAccepted(file, accept) {
-  const types = accept.split(",").map((type) => type.trim());
-  return !file.type || types.includes(file.type);
-}
-
-function showSelectedFile({ dropzone, summary, fileName, fileSize, thumbnail }, file) {
-  if (!file) {
-    dropzone.classList.remove("has-file");
-    summary.hidden = true;
-    return;
-  }
-
-  fileName.textContent = file.name;
-  fileSize.textContent = formatFileSize(file.size);
-
-  if (thumbnail) {
-    // The previous preview is released before its URL is replaced, so choosing
-    // several files in a row does not retain every one of them.
-    URL.revokeObjectURL(thumbnail.src);
-    thumbnail.src = URL.createObjectURL(file);
-  }
-
-  dropzone.classList.add("has-file");
-  summary.hidden = false;
-}
-
-function initSubmit(config, elements, page) {
-  const { form, input, button } = elements;
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const file = input.files[0];
-    if (!file) {
-      showError(page.uploadStatus, config.missingFile);
-      return;
-    }
-
-    const problem = findProblem(config, file, input.accept);
-    if (problem) {
-      showError(page.uploadStatus, problem);
-      return;
-    }
-
-    showProgress(page.uploadStatus, config.progress);
-    button.disabled = true;
-
-    try {
-      const result = await config.upload(file);
-      addRecognition(page, config.toRecognition(result));
-      showSuccess(page.uploadStatus, config.success);
-    } catch (error) {
-      console.error("The upload failed:", error);
-      // The error explains itself, so an offline backend is not reported as a
-      // problem with the file the user chose.
-      showError(page.uploadStatus, error.message);
-    } finally {
-      button.disabled = false;
-    }
-  });
-}
-
-
-/* -------------------------------------------------------------------------
-   Recognitions
+   History
 
    The history lives on the server, so it is the same in every tab and on every
    device. An upload and a stored entry render through the same path, so the
@@ -266,30 +35,7 @@ function initSubmit(config, elements, page) {
    Only the animations differ.
    ------------------------------------------------------------------------- */
 
-function toImageRecognition(result) {
-  return {
-    type: "image",
-    url: resolveUrl(result.imagePath),
-    animal: result.recognizedAnimal,
-    date: result.dateRecognized,
-    score: result.predictionScore,
-  };
-}
-
-function toVideoRecognition(result) {
-  return {
-    type: "video",
-    url: resolveUrl(result.videoPath),
-    // A video has no single prediction, so its strongest match stands in for
-    // one in the history list.
-    animal: result.topAnimals[0]?.animal ?? "Unknown",
-    date: new Date().toISOString(),
-    framesProcessed: result.framesProcessed,
-    topAnimals: result.topAnimals,
-  };
-}
-
-async function showHistory(page) {
+async function showHistory(page, resultCard) {
   let recognitions;
 
   try {
@@ -308,13 +54,13 @@ async function showHistory(page) {
   const [latest] = recognitions;
   // A stored result is not new, so it appears settled rather than counting and
   // filling as though it had just been recognised.
-  renderResult(page, latest, { animate: false });
+  resultCard.show(latest, { animate: false });
   page.historyList.replaceChildren(...recognitions.map(createHistoryCard));
   showHistoryControls(page);
 }
 
-function addRecognition(page, recognition) {
-  renderResult(page, recognition, { animate: true });
+function addRecognition(page, resultCard, recognition) {
+  resultCard.show(recognition, { animate: true });
   page.historyList.prepend(createHistoryCard(recognition));
   showHistoryControls(page);
 }
@@ -324,7 +70,7 @@ function showHistoryControls(page) {
   page.clearHistory.hidden = false;
 }
 
-function initClearButton(page) {
+function initClearButton(page, resultCard) {
   page.clearHistory.addEventListener("click", async () => {
     page.clearHistory.disabled = true;
 
@@ -341,220 +87,9 @@ function initClearButton(page) {
     }
 
     page.historyList.replaceChildren();
-    page.videoStatsSlot.replaceChildren();
     page.historyEmpty.hidden = false;
-    page.resultSection.hidden = true;
     page.clearHistory.hidden = true;
+    resultCard.hide();
     hideMessage(page.uploadStatus);
   });
-}
-
-/* -------------------------------------------------------------------------
-   Result card
-   ------------------------------------------------------------------------- */
-
-function renderResult(page, recognition, { animate }) {
-  const isVideo = recognition.type === "video";
-
-  page.resultImage.hidden = isVideo;
-  page.resultVideo.hidden = !isVideo;
-  (isVideo ? page.resultVideo : page.resultImage).src = recognition.url;
-
-  page.dateRecognized.textContent = formatDate(recognition.date);
-  page.videoStatsSlot.replaceChildren();
-
-  if (isVideo) {
-    renderVideoBreakdown(page, recognition, animate);
-  } else {
-    renderPrediction(page, recognition, animate);
-  }
-
-  page.resultSection.hidden = false;
-}
-
-function renderPrediction(page, recognition, animate) {
-  page.predictedLabel.textContent = recognition.animal;
-  page.predictedLabel.hidden = false;
-
-  // Recognitions stored before the score was recorded have none, so the meter
-  // is left out rather than reporting them as a confident failure.
-  const hasScore = recognition.score > 0;
-  page.confidenceBlock.hidden = !hasScore;
-  page.lowConfidenceMessage.hidden =
-    !hasScore || recognition.score >= LOW_CONFIDENCE_THRESHOLD;
-
-  if (!hasScore) {
-    return;
-  }
-
-  const percentage = recognition.score * 100;
-  page.confidenceBlock.className = `confidence ${confidenceVariant(recognition.score)}`;
-  page.predictionScore.textContent = `${percentage.toFixed(2)}%`;
-
-  if (!animate) {
-    page.confidenceFill.style.width = `${percentage}%`;
-    return;
-  }
-
-  // Restarting from zero on the next frame lets the width transition run,
-  // rather than the bar jumping straight to its new length.
-  page.confidenceFill.style.width = "0%";
-  requestAnimationFrame(() => {
-    page.confidenceFill.style.width = `${percentage}%`;
-  });
-}
-
-function confidenceVariant(score) {
-  if (score >= HIGH_CONFIDENCE_THRESHOLD) {
-    return "confidence--high";
-  }
-
-  return score >= LOW_CONFIDENCE_THRESHOLD ? "confidence--medium" : "confidence--low";
-}
-
-/* -------------------------------------------------------------------------
-   Video breakdown
-   ------------------------------------------------------------------------- */
-
-function renderVideoBreakdown(page, recognition, animate) {
-  // A video has no single prediction, so the animal heading and the accuracy
-  // meter give way to the per-animal breakdown below.
-  page.predictedLabel.hidden = true;
-  page.confidenceBlock.hidden = true;
-  page.lowConfidenceMessage.hidden = true;
-
-  const videoStats = createVideoStats(recognition);
-  page.videoStatsSlot.replaceChildren(videoStats);
-
-  showFrameCount(videoStats, recognition.framesProcessed, animate);
-
-  if (recognition.topAnimals?.length) {
-    renderDetectedAnimals(videoStats, recognition.topAnimals, animate);
-  }
-}
-
-function createVideoStats({ topAnimals = [] }) {
-  const container = document.createElement("div");
-  container.className = "video-stats";
-  container.innerHTML = `
-    <div class="frames-counter">
-      <div class="counter-label">Frames processed</div>
-      <div class="counter-value" data-frames-count>0</div>
-      <div class="counter-progress">
-        <div class="progress-bar" data-frames-progress></div>
-      </div>
-    </div>
-  `;
-
-  if (topAnimals.length > 0) {
-    const detected = document.createElement("div");
-    detected.className = "animals-detected";
-    detected.innerHTML = `
-      <h3>Animals detected (${topAnimals.length})</h3>
-      <div class="animals-grid" data-animals-grid></div>
-    `;
-    container.append(detected);
-  }
-
-  return container;
-}
-
-function showFrameCount(videoStats, targetFrames, animate) {
-  const counter = videoStats.querySelector("[data-frames-count]");
-  const progressBar = videoStats.querySelector("[data-frames-progress]");
-
-  const paint = (frames, progress) => {
-    counter.textContent = frames;
-    progressBar.style.width = `${progress * 100}%`;
-  };
-
-  if (animate) {
-    animateCount(targetFrames, paint);
-  } else {
-    paint(targetFrames > 0 ? targetFrames : 0, 1);
-  }
-}
-
-/**
- * Counts up to `target` over a fixed duration, reporting the current value and
- * how far along it is. A target the backend could not report, such as a video
- * it failed to read, settles at zero instead of counting forever.
- */
-function animateCount(target, onStep) {
-  if (!(target > 0)) {
-    onStep(0, 1);
-    return;
-  }
-
-  const start = performance.now();
-
-  const step = (now) => {
-    const progress = Math.min((now - start) / COUNTER_ANIMATION_MS, 1);
-    onStep(Math.round(target * progress), progress);
-
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    }
-  };
-
-  requestAnimationFrame(step);
-}
-
-function renderDetectedAnimals(videoStats, topAnimals, animate) {
-  const grid = videoStats.querySelector("[data-animals-grid]");
-
-  topAnimals.forEach((entry, index) => {
-    const card = createAnimalCard(entry, index);
-    grid.append(card);
-
-    const targetScore = Math.round(parseFloat(entry.averageScore) * 100);
-
-    if (!animate) {
-      showScore(card, Number.isFinite(targetScore) ? targetScore : 0);
-      return;
-    }
-
-    setTimeout(
-      () => animateCount(targetScore, (score) => showScore(card, score)),
-      SCORE_ANIMATION_DELAY_MS + index * SCORE_ANIMATION_STAGGER_MS,
-    );
-  });
-}
-
-function createAnimalCard({ animal }, index) {
-  const card = document.createElement("div");
-  card.className = "animal-card";
-  card.style.animationDelay = `${index * 0.08}s`;
-
-  const icon = document.createElement("div");
-  icon.className = "animal-icon";
-  icon.innerHTML = `
-    <svg viewBox="0 0 24 24" class="animal-svg">
-      <circle cx="12" cy="12" r="11"></circle>
-      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
-            font-size="10px" font-weight="700"></text>
-    </svg>
-  `;
-  icon.querySelector("text").textContent = animal.charAt(0).toUpperCase();
-
-  const details = document.createElement("div");
-  details.className = "animal-details";
-  details.innerHTML = `
-    <div class="animal-name"></div>
-    <div class="animal-score-container">
-      <div class="animal-score-bar">
-        <div class="animal-score-fill" style="width: 0%"></div>
-      </div>
-      <div class="animal-score-percentage">0%</div>
-    </div>
-  `;
-  details.querySelector(".animal-name").textContent = animal;
-
-  card.append(icon, details);
-  return card;
-}
-
-function showScore(card, score) {
-  card.querySelector(".animal-score-fill").style.width = `${score}%`;
-  card.querySelector(".animal-score-percentage").textContent = `${score}%`;
 }
