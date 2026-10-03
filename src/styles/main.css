@@ -2,22 +2,26 @@
    one stylesheet.
 
    The order is the cascade's: a later file wins where two rules are equally
-   specific, as the wide pages win over the card `main` has for the sign-in
-   pages. A new file goes after whatever it overrides.
-   - base/        the palette and the bare elements
+   specific. So each folder comes after the ones it builds on, and within a
+   folder a file goes after whatever it overrides, as the wide pages win over
+   the card `main` has for the sign-in pages.
+   - base/        the palette, the bare elements and the shared animations
    - layout/      the bar, `main`, and the frame of the wide pages
    - components/  pieces more than one page uses, or could
-   - pages/       what belongs to one page alone */
+   - pages/       what belongs to one page alone
+   - utilities/   single-purpose classes, last so that they win */
 
 @import "./base/tokens.css";
 @import "./base/elements.css";
 @import "./base/animations.css";
+
 @import "./layout/nav.css";
-@import "./components/account-menu.css";
 @import "./layout/main.css";
-@import "./components/message.css";
 @import "./layout/footer.css";
 @import "./layout/page.css";
+
+@import "./components/account-menu.css";
+@import "./components/message.css";
 @import "./components/segmented.css";
 @import "./components/theme-switch.css";
 @import "./components/dropzone.css";
@@ -25,17 +29,19 @@
 @import "./components/result-card.css";
 @import "./components/section-head.css";
 @import "./components/button-ghost.css";
-@import "./pages/account.css";
 @import "./components/busy-button.css";
 @import "./components/danger.css";
 @import "./components/passkeys.css";
 @import "./components/history.css";
 @import "./components/video-breakdown.css";
+@import "./components/confirm-dialog.css";
+@import "./components/image-viewer.css";
+
+@import "./pages/account.css";
 @import "./pages/statistics.css";
 @import "./pages/search.css";
 @import "./pages/home.css";
 @import "./pages/auth.css";
 @import "./pages/admin.css";
-@import "./components/confirm-dialog.css";
-@import "./components/image-viewer.css";
+
 @import "./utilities/visually-hidden.css";
