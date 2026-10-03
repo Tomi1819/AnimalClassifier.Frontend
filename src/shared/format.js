@@ -1,5 +1,18 @@
 // Built once, since building a formatter reads the locale's data.
 const count = new Intl.NumberFormat();
+const compactCount = new Intl.NumberFormat(undefined, {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+const day = new Intl.DateTimeFormat(undefined, {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+});
+
+// Past this a count is shortened, so 128,450 reads as 128.5K and still fits
+// where a short figure does.
+const COMPACT_FROM = 10_000;
 
 const BYTES_PER_UNIT = 1024;
 const SIZE_UNITS = ["B", "KB", "MB", "GB"];
@@ -14,6 +27,31 @@ const PRECISE_SIZE_BELOW = 10;
  */
 export function formatDate(date) {
   return new Date(date).toLocaleString();
+}
+
+/**
+ * A day such as "2026-10-03", read as that day in the user's own time zone.
+ * On its own such a date is read as midnight UTC, which is still the day
+ * before anywhere west of it; with a time, it is read as local.
+ */
+export function parseDay(isoDay) {
+  return new Date(`${isoDay}T00:00`);
+}
+
+/**
+ * A day such as "2026-10-03" as the locale writes it with its weekday, such
+ * as "Sat, 3 Oct".
+ */
+export function formatDay(isoDay) {
+  return day.format(parseDay(isoDay));
+}
+
+/**
+ * A count as the locale writes it, shortened once it is large, such as
+ * "9,870" or "128.5K".
+ */
+export function formatCount(value) {
+  return value >= COMPACT_FROM ? compactCount.format(value) : count.format(value);
 }
 
 /**
