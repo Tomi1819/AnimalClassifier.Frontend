@@ -1,0 +1,183 @@
+/* The bar along the top of every page, and the menu its links fold into on a
+   narrow screen. */
+
+nav {
+  width: 100%;
+  /* Translucent, so the page tints the bar as it scrolls underneath. */
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--hairline);
+  padding: 20px 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(16, 32, 52, 0.06);
+  z-index: 1000;
+}
+
+/* The margin pushes everything after the logo to the far end of the bar, where
+   the links and the account menu sit together. */
+nav .logo {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+
+nav .logo img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+/* The logo is an opaque image with a light background, so on a dark bar it
+   sits on a tile of that colour rather than showing as a stray box. */
+:root[data-theme="dark"] nav .logo img {
+  background: #fff;
+  border-radius: 10px;
+  padding: 3px;
+}
+
+nav > ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+nav > ul > li {
+  margin: 0 2px;
+}
+
+/* Quiet by default, so that only the current page carries a filled pill. */
+nav > ul > li > a {
+  background-color: transparent;
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  padding: 10px 18px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+nav > ul > li > a:hover {
+  background-color: var(--brand-wash);
+  color: var(--brand-strong);
+}
+
+nav > ul > li > a:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+nav > ul > li > a.active {
+  background-image: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  color: #fff;
+}
+
+/* The button src/shared/nav.js adds; it earns its place only once the links
+   no longer fit the bar. */
+.nav-toggle {
+  display: none;
+}
+
+.nav-toggle__icon {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.9;
+  width: 22px;
+}
+
+/* The bar has no room for a row of pills on a phone, so the links move into a
+   panel below it. */
+@media (max-width: 560px) {
+  nav {
+    padding: 12px 16px;
+  }
+
+  nav .logo img {
+    height: 38px;
+  }
+
+  .nav-toggle {
+    align-items: center;
+    background: none;
+    border-radius: 10px;
+    box-shadow: none;
+    color: var(--ink);
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    /* Last in the bar, after the account menu, where a menu button is
+       expected. */
+    margin-left: 8px;
+    order: 1;
+    padding: 0;
+    width: 40px;
+  }
+
+  .nav-toggle:hover {
+    background: var(--brand-wash);
+    box-shadow: none;
+    color: var(--brand-strong);
+    transform: none;
+  }
+
+  .nav-toggle:focus {
+    box-shadow: none;
+  }
+
+  .nav-toggle:focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Anchored to the bar, which is fixed and so is the containing block. */
+  nav > ul {
+    /* The bar centres its links; stacked, they read better as full rows. */
+    align-items: stretch;
+    animation: nav-drop 0.2s ease;
+    background: var(--surface);
+    border-bottom: 1px solid var(--hairline);
+    box-shadow: var(--shadow-md);
+    display: none;
+    flex-direction: column;
+    left: 0;
+    padding: 8px 16px 16px;
+    position: absolute;
+    right: 0;
+    top: 100%;
+  }
+
+  nav > ul.is-open {
+    display: flex;
+  }
+
+  nav > ul > li {
+    margin: 0;
+  }
+
+  nav > ul > li > a {
+    display: block;
+    padding: 13px 16px;
+  }
+}
+
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  nav > ul {
+    animation: none;
+  }
+}

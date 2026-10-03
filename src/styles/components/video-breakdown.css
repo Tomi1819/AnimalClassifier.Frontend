@@ -1,0 +1,154 @@
+/* What a video was found to show, in place of an image's single prediction. */
+
+.video-stats {
+  border-top: 1px solid var(--hairline);
+  padding-top: 24px;
+}
+
+.frames-counter {
+  background: var(--surface-muted);
+  border-radius: var(--radius-md);
+  margin-bottom: 22px;
+  padding: 20px;
+  text-align: center;
+}
+
+.counter-label {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.counter-value {
+  color: var(--brand-strong);
+  font-size: 2.2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  margin: 4px 0 14px;
+}
+
+.counter-progress {
+  background: var(--surface);
+  border-radius: 999px;
+  height: 8px;
+  margin: 0 auto;
+  max-width: 420px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-image: linear-gradient(90deg, var(--brand), var(--brand-strong));
+  border-radius: inherit;
+  height: 100%;
+  width: 0;
+}
+
+.animals-detected h3 {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+}
+
+.animals-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+.animal-card {
+  align-items: center;
+  animation: rise 0.35s ease both;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+}
+
+.animal-icon {
+  flex: none;
+  height: 40px;
+  width: 40px;
+}
+
+.animal-svg {
+  height: 100%;
+  width: 100%;
+}
+
+.animal-svg circle {
+  fill: var(--brand-wash);
+}
+
+.animal-svg text {
+  fill: var(--brand-strong);
+}
+
+.animal-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.video-stats .animal-name {
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-transform: capitalize;
+}
+
+.animal-score-container {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.animal-score-bar {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  flex: 1;
+  height: 6px;
+  overflow: hidden;
+}
+
+.animal-score-fill {
+  background-image: linear-gradient(90deg, var(--brand), var(--brand-strong));
+  border-radius: inherit;
+  height: 100%;
+}
+
+.animal-score-percentage {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  min-width: 38px;
+  text-align: right;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .result-card {
+    grid-template-columns: 1fr;
+  }
+
+  .segmented {
+    display: flex;
+  }
+
+  .segmented__btn {
+    flex: 1;
+  }
+}

@@ -1,0 +1,18 @@
+/* The card `main` is on the narrow sign-in pages, which every wider page
+   overrides. */
+
+main {
+  background-color: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  margin: 30px auto;
+  padding: 30px;
+  width: 90%;
+}
+
+main {
+  padding: 40px 30px;
+  max-width: 500px;
+  text-align: center;
+  margin-top: 80px;
+}

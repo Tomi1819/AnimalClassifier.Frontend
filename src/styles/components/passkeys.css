@@ -1,0 +1,58 @@
+/* The account's passkeys, and the way to sign in with one. */
+
+.passkey-form {
+  margin-top: 18px;
+}
+
+.passkey-list {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.passkey-card {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.passkey-card__name {
+  font-weight: 600;
+  margin: 0 0 3px;
+}
+
+.passkey-card__meta {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* --- Passkey sign in ------------------------------------------------------ */
+
+.passkey-signin__divider {
+  align-items: center;
+  color: var(--ink-muted);
+  display: flex;
+  font-size: 0.8rem;
+  gap: 12px;
+  margin: 18px 0 14px;
+  text-transform: uppercase;
+}
+
+/* The rules either side are drawn by the pseudo-elements, so the word sits in
+   a gap rather than on top of a line. */
+.passkey-signin__divider::before,
+.passkey-signin__divider::after {
+  background: var(--hairline-strong);
+  content: "";
+  flex: 1;
+  height: 1px;
+}

@@ -1,0 +1,133 @@
+/* The area a file is dropped on or chosen from. */
+
+.dropzone {
+  background: var(--surface-muted);
+  border: 2px dashed var(--hairline-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: block;
+  padding: 34px 24px;
+  position: relative;
+  text-align: center;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.dropzone:hover,
+.dropzone.is-dragging {
+  background: var(--brand-wash);
+  border-color: var(--brand);
+}
+
+.dropzone.is-dragging {
+  transform: scale(1.01);
+}
+
+.dropzone:has(.dropzone__input:focus-visible) {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+
+/* Kept in the layout, rather than display:none, so it stays focusable. */
+.dropzone__input {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.dropzone__prompt {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dropzone.has-file .dropzone__prompt {
+  display: none;
+}
+
+.dropzone__icon {
+  fill: none;
+  height: 40px;
+  stroke: var(--brand);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+  width: 40px;
+}
+
+.dropzone__title {
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.dropzone__hint {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.dropzone__browse {
+  color: var(--brand-strong);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.dropzone__file {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  text-align: left;
+}
+
+.dropzone__thumb {
+  background: var(--surface);
+  border-radius: 10px;
+  flex: none;
+  height: 56px;
+  object-fit: cover;
+  width: 56px;
+}
+
+.dropzone__thumb--video {
+  background: var(--brand-wash);
+  display: grid;
+  place-items: center;
+}
+
+.dropzone__thumb--video svg {
+  fill: var(--brand-strong);
+  height: 26px;
+  width: 26px;
+}
+
+.dropzone__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dropzone__name {
+  color: var(--ink);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropzone__size {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+.dropzone__swap {
+  color: var(--brand-strong);
+  flex: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: auto;
+}

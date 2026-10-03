@@ -1,0 +1,92 @@
+/* The list of recognitions, on the dashboard and in the admin page's view of
+   a user. */
+
+.history__empty {
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border: 1px dashed var(--hairline-strong);
+  border-radius: var(--radius-lg);
+  color: var(--ink-muted);
+  margin: 0;
+  padding: 34px 20px;
+  text-align: center;
+}
+
+.history__list {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  list-style: none;
+  padding: 0;
+}
+
+.history-card {
+  align-items: center;
+  animation: rise 0.35s ease both;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.history-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.history-card__media {
+  background: var(--surface-muted);
+  border-radius: 10px;
+  flex: none;
+  height: 68px;
+  object-fit: cover;
+  width: 68px;
+}
+
+.history-card__body {
+  min-width: 0;
+}
+
+.history-card__title {
+  color: var(--ink);
+  font-size: 1.05rem;
+  margin: 0 0 2px;
+  text-transform: capitalize;
+}
+
+.history-card__meta {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.history-card__extra {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin: 4px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  background: var(--brand-wash);
+  border-radius: 999px;
+  color: var(--brand-strong);
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  padding: 3px 9px;
+  text-transform: uppercase;
+}
+
+.badge--video {
+  background: var(--violet-wash);
+  color: var(--violet);
+}

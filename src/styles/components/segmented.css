@@ -1,0 +1,45 @@
+/* A row of buttons of which one is chosen, such as the image and video tabs. */
+
+.segmented {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 22px;
+  padding: 4px;
+}
+
+.segmented__btn {
+  background: transparent;
+  border-radius: 999px;
+  box-shadow: none;
+  color: var(--ink-muted);
+  font-weight: 600;
+  padding: 9px 24px;
+  width: auto;
+}
+
+.segmented__btn:hover:not(.is-active) {
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  box-shadow: none;
+  color: var(--ink);
+  transform: none;
+}
+
+.segmented__btn.is-active {
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+  color: var(--brand-strong);
+  transform: none;
+}
+
+/* Spans its container with equal options, for where it is the whole row. */
+.segmented--fill {
+  display: flex;
+  margin-bottom: 0;
+}
+
+.segmented--fill .segmented__btn {
+  flex: 1 1 0;
+  min-width: 0;
+}

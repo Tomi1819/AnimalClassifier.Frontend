@@ -1,0 +1,28 @@
+/* Red rather than the brand's blue, for the changes that cannot be taken back. */
+.setting--danger.is-open {
+  box-shadow: inset 3px 0 0 var(--error-color);
+}
+
+.btn-ghost--danger {
+  color: var(--error-color);
+}
+
+.btn-ghost--danger:hover {
+  background: var(--error-bg);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+/* Chained with .btn to outrank its gradient in every state. */
+.btn.btn--danger,
+.btn.btn--danger:disabled,
+.btn.btn--danger:disabled:hover {
+  background-color: var(--danger-fill);
+  background-image: none;
+  box-shadow: none;
+}
+
+.btn.btn--danger:hover {
+  background-color: var(--danger-fill-hover);
+  background-image: none;
+}
