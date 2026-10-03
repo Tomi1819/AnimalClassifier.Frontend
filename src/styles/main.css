@@ -2224,6 +2224,16 @@ a.ranking__name:focus-visible {
   transform: scale(1.05);
 }
 
+.search-btn__icon {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  width: 22px;
+}
+
 .search-suggestions {
   text-align: center;
 }
@@ -2401,9 +2411,14 @@ a.ranking__name:focus-visible {
 }
 
 .no-results-icon {
-  font-size: 4rem;
-  color: var(--hairline-strong);
-  margin-bottom: 20px;
+  display: block;
+  fill: none;
+  height: 4rem;
+  margin: 0 auto 20px;
+  stroke: var(--hairline-strong);
+  stroke-linecap: round;
+  stroke-width: 1.6;
+  width: 4rem;
 }
 
 .no-results h2 {
@@ -2436,55 +2451,67 @@ a.ranking__name:focus-visible {
   }
 }
 
-.image-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+/* --- Image viewer --------------------------------------------------------- */
+
+/* A modal dialog holding nothing but the image, which sits on the backdrop.
+   The reset at the top removes the margin that centres it. */
+.image-viewer {
+  background: none;
+  border: none;
+  margin: auto;
+  max-height: 90vh;
+  max-width: 90vw;
+  overflow: visible;
+  padding: 0;
+}
+
+.image-viewer::backdrop {
   background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
 }
 
-.image-modal.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-.image-modal img {
-  max-width: 90%;
-  max-height: 90%;
+.image-viewer__image {
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: block;
+  max-height: 90vh;
+  max-width: 90vw;
 }
 
-.image-modal .close-modal {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
-  z-index: 2001;
+/* In the window's corner rather than the image's, where it stays out of the
+   way of the picture. */
+.image-viewer__close {
+  align-items: center;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  box-shadow: none;
   display: flex;
-  align-items: center;
+  height: 50px;
   justify-content: center;
-  transition: all 0.3s ease;
+  padding: 0;
+  position: fixed;
+  right: 30px;
+  top: 20px;
+  width: 50px;
 }
 
-.image-modal .close-modal:hover {
+.image-viewer__close:hover {
   background: rgba(0, 0, 0, 0.8);
+  box-shadow: none;
   transform: scale(1.1);
+}
+
+.image-viewer__close:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.image-viewer__close-icon {
+  fill: none;
+  height: 24px;
+  stroke: white;
+  stroke-linecap: round;
+  stroke-width: 2.4;
+  width: 24px;
 }
 
 @media (max-width: 768px) {
