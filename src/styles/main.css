@@ -2140,7 +2140,12 @@ a.ranking__name:focus-visible {
   }
 }
 
+/* Overrides the card treatment `main` carries for the narrow auth pages, as
+   the other pages do, since the search card below is the page's card. */
 .search-main {
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -2239,7 +2244,9 @@ a.ranking__name:focus-visible {
   margin: 0 auto;
 }
 
+/* As wide as its label, where every button is otherwise a full row. */
 .suggestion-btn {
+  width: auto;
   background: var(--surface-muted);
   border: 2px solid transparent;
   border-radius: 20px;
