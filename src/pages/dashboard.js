@@ -527,7 +527,7 @@ function createAnimalCard({ animal }, index) {
   card.style.animationDelay = `${index * 0.08}s`;
 
   const icon = document.createElement("div");
-  icon.className = `animal-icon ${animal.toLowerCase()}`;
+  icon.className = "animal-icon";
   icon.innerHTML = `
     <svg viewBox="0 0 24 24" class="animal-svg">
       <circle cx="12" cy="12" r="11"></circle>
