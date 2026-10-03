@@ -2,7 +2,8 @@ import { resolveUrl } from "../api/client.js";
 import { clearHistory, getHistory, uploadImage, uploadVideo } from "../api/recognitions.js";
 import { requireAuthentication } from "../auth/session.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
-import { createHistoryCard, formatDate, fromHistoryItem } from "../shared/history.js";
+import { formatDate, formatFileSize } from "../shared/format.js";
+import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
 import { initNavigation } from "../shared/nav.js";
 import { initTheme } from "../shared/theme.js";
 
@@ -13,8 +14,6 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
 const COUNTER_ANIMATION_MS = 1200;
 const SCORE_ANIMATION_DELAY_MS = 500;
 const SCORE_ANIMATION_STAGGER_MS = 200;
-const BYTES_PER_UNIT = 1024;
-const SIZE_UNITS = ["B", "KB", "MB", "GB"];
 
 // The two tabs are the same widget pointed at a different endpoint, so they
 // differ only by the ids they own and the wording they use.
@@ -195,19 +194,6 @@ function showSelectedFile({ dropzone, summary, fileName, fileSize, thumbnail }, 
 
   dropzone.classList.add("has-file");
   summary.hidden = false;
-}
-
-function formatFileSize(bytes) {
-  let size = bytes;
-  let unit = 0;
-
-  while (size >= BYTES_PER_UNIT && unit < SIZE_UNITS.length - 1) {
-    size /= BYTES_PER_UNIT;
-    unit += 1;
-  }
-
-  const rounded = unit === 0 || size >= 10 ? Math.round(size) : size.toFixed(1);
-  return `${rounded} ${SIZE_UNITS[unit]}`;
 }
 
 function initSubmit(config, elements, page) {

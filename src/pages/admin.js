@@ -10,7 +10,8 @@ import {
 import { requireAdmin } from "../auth/session.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { showError, showSuccess } from "../shared/feedback.js";
-import { createHistoryCard, formatDate, fromHistoryItem } from "../shared/history.js";
+import { formatDate } from "../shared/format.js";
+import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
 import { initNavigation } from "../shared/nav.js";
 import { initTheme } from "../shared/theme.js";
 

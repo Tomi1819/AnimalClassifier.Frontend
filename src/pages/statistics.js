@@ -6,6 +6,7 @@ import {
 } from "../api/recognitions.js";
 import { requireAuthentication } from "../auth/session.js";
 import { showError } from "../shared/feedback.js";
+import { pluralize } from "../shared/format.js";
 import { initNavigation } from "../shared/nav.js";
 import { SEARCH_PAGE } from "../shared/pages.js";
 import { initTheme } from "../shared/theme.js";
@@ -367,10 +368,6 @@ function formatCount(value) {
 
 function formatShare(fraction) {
   return (fraction < PRECISE_SHARE_BELOW ? preciseShare : share).format(fraction);
-}
-
-function pluralize(value, noun) {
-  return `${count.format(value)} ${noun}${value === 1 ? "" : "s"}`;
 }
 
 function createElement(tag, className, text) {

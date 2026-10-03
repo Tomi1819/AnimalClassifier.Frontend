@@ -1,4 +1,5 @@
 import { resolveUrl } from "../api/client.js";
+import { formatDate } from "./format.js";
 
 /**
  * A recognition built from an entry in a user's history, as the dashboard and
@@ -14,10 +15,6 @@ export function fromHistoryItem(item) {
     score: item.predictionScore,
     framesProcessed: item.framesProcessed,
   };
-}
-
-export function formatDate(date) {
-  return new Date(date).toLocaleString();
 }
 
 export function createHistoryCard({ type, url, animal, date, framesProcessed, topAnimals }) {

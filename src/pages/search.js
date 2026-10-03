@@ -1,6 +1,7 @@
 import { resolveUrl } from "../api/client.js";
 import { searchAnimals } from "../api/recognitions.js";
 import { requireAuthentication } from "../auth/session.js";
+import { pluralize } from "../shared/format.js";
 import { initNavigation } from "../shared/nav.js";
 import { initTheme } from "../shared/theme.js";
 
@@ -128,10 +129,6 @@ function displayResults(results, query) {
 function describeResults(results) {
   const totalImages = results.reduce((total, animal) => total + (animal.count ?? 0), 0);
   return `${pluralize(results.length, "animal")} • ${pluralize(totalImages, "image")}`;
-}
-
-function pluralize(count, noun) {
-  return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }
 
 function createAnimalGallery({ animalName, count = 0, imagePaths = [] }) {
