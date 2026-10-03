@@ -305,19 +305,6 @@ a.ranking__name:focus-visible {
   white-space: nowrap;
 }
 
-/* Read by screen readers, but takes no space on screen. */
-.visually-hidden {
-  border: 0;
-  clip-path: inset(50%);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
-
 /* Holds a figure's place while it loads. */
 .skeleton {
   animation: shimmer 1.4s ease-in-out infinite;

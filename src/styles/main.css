@@ -37,3 +37,4 @@
 @import "./pages/auth.css";
 @import "./pages/admin.css";
 @import "./components/confirm-dialog.css";
+@import "./utilities/visually-hidden.css";
