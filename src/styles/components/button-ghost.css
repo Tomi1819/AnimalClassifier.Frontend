@@ -20,6 +20,15 @@
   transform: none;
 }
 
+.btn-ghost:disabled,
+.btn-ghost:disabled:hover {
+  background: transparent;
+  border-color: var(--hairline-strong);
+  color: var(--ink-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 /* Fills its container rather than sitting at its natural width, for the
    places a ghost button is the action rather than an aside to one. */
 .btn-ghost--block {

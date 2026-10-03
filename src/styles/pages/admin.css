@@ -80,15 +80,6 @@
   color: var(--error-color);
 }
 
-.btn-ghost:disabled,
-.btn-ghost:disabled:hover {
-  background: transparent;
-  border-color: var(--hairline-strong);
-  color: var(--ink-muted);
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
 .pager {
   align-items: center;
   color: var(--ink-muted);
