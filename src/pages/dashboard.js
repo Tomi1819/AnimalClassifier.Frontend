@@ -1,4 +1,5 @@
-import { apiFetch, resolveUrl } from "../api/client.js";
+import { resolveUrl } from "../api/client.js";
+import { clearHistory, getHistory, uploadImage, uploadVideo } from "../api/recognitions.js";
 import { requireAuthentication } from "../auth/session.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { createHistoryCard, formatDate, fromHistoryItem } from "../shared/history.js";
@@ -12,7 +13,6 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
 const COUNTER_ANIMATION_MS = 1200;
 const SCORE_ANIMATION_DELAY_MS = 500;
 const SCORE_ANIMATION_STAGGER_MS = 200;
-const HISTORY_PATH = "/api/upload/history";
 const BYTES_PER_UNIT = 1024;
 const SIZE_UNITS = ["B", "KB", "MB", "GB"];
 
@@ -29,8 +29,7 @@ const IMAGE_UPLOAD = {
   fileName: "imageFileName",
   fileSize: "imageFileSize",
   thumbnail: "imageThumb",
-  path: "/api/upload/image",
-  field: "formFile",
+  upload: uploadImage,
   missingFile: "Please select an image file.",
   wrongType: "That file is not a JPG or PNG image.",
   progress: "Uploading image...",
@@ -48,8 +47,7 @@ const VIDEO_UPLOAD = {
   summary: "videoFileSummary",
   fileName: "videoFileName",
   fileSize: "videoFileSize",
-  path: "/api/upload/video",
-  field: "videoFile",
+  upload: uploadVideo,
   missingFile: "Please select a video file.",
   wrongType: "That file is not an MP4, MOV or AVI video.",
   progress: "Uploading video...",
@@ -228,14 +226,11 @@ function initSubmit(config, elements, page) {
     button.disabled = true;
 
     try {
-      const formData = new FormData();
-      formData.append(config.field, file);
-
-      const result = await apiFetch(config.path, { method: "POST", body: formData });
+      const result = await config.upload(file);
       addRecognition(page, config.toRecognition(result));
       showSuccess(page.uploadStatus, config.success);
     } catch (error) {
-      console.error(`${config.path} failed:`, error);
+      console.error("The upload failed:", error);
       // The error explains itself, so an offline backend is not reported as a
       // problem with the file the user chose.
       showError(page.uploadStatus, error.message);
@@ -282,7 +277,7 @@ async function showHistory(page) {
   let recognitions;
 
   try {
-    const history = await apiFetch(HISTORY_PATH);
+    const history = await getHistory();
     recognitions = history.map(fromHistoryItem);
   } catch (error) {
     console.error("Could not load the history:", error);
@@ -320,7 +315,7 @@ function initClearButton(page) {
     try {
       // The recognitions are kept on the server, where the search and
       // statistics pages still count them; only this history is cleared.
-      await apiFetch(HISTORY_PATH, { method: "DELETE" });
+      await clearHistory();
     } catch (error) {
       console.error("Could not clear the history:", error);
       showError(page.uploadStatus, error.message);

@@ -1,4 +1,9 @@
-import { apiFetch } from "../api/client.js";
+import {
+  getActivity,
+  getMostCommonAnimals,
+  getTotalRecognitions,
+  getUserCount,
+} from "../api/recognitions.js";
 import { requireAuthentication } from "../auth/session.js";
 import { showError } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
@@ -53,9 +58,9 @@ async function showStatistics() {
     // Every figure on the page is derived from all three, so they are shown
     // together or not at all.
     const [total, users, topAnimals] = await Promise.all([
-      apiFetch("/api/statistics/total"),
-      apiFetch("/api/statistics/users"),
-      apiFetch("/api/statistics/top-animal"),
+      getTotalRecognitions(),
+      getUserCount(),
+      getMostCommonAnimals(),
     ]);
 
     renderFigures(total, users);
@@ -151,9 +156,7 @@ async function showActivity() {
   const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
 
   try {
-    const days = await apiFetch(
-      `/api/statistics/activity?days=${ACTIVITY_DAYS}&timeZone=${encodeURIComponent(timeZone)}`,
-    );
+    const days = await getActivity(ACTIVITY_DAYS, timeZone);
     renderActivity(chart, days);
     chart.removeAttribute("aria-busy");
   } catch (error) {

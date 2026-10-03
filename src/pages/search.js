@@ -1,4 +1,5 @@
-import { apiFetch, resolveUrl } from "../api/client.js";
+import { resolveUrl } from "../api/client.js";
+import { searchAnimals } from "../api/recognitions.js";
 import { requireAuthentication } from "../auth/session.js";
 import { initNavigation } from "../shared/nav.js";
 import { initTheme } from "../shared/theme.js";
@@ -96,7 +97,7 @@ async function search(query) {
   showLoading();
 
   try {
-    const results = await apiFetch(`/api/animal/search?searchTerm=${encodeURIComponent(query)}`);
+    const results = await searchAnimals(query);
     displayResults(results, query);
   } catch (error) {
     console.error("Search failed:", error);
