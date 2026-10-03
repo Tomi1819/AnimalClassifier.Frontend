@@ -6,9 +6,14 @@ initPage();
 
 const form = document.getElementById("forgotPasswordForm");
 const formMessage = document.getElementById("formMessage");
+const submitButton = form.querySelector('[type="submit"]');
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  // Each request mails another link and spends one of the few the backend
+  // allows in a while.
+  submitButton.disabled = true;
   showProgress(formMessage, "Sending the link...");
 
   const email = document.getElementById("email").value;
@@ -27,5 +32,7 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     console.error("Requesting a password reset failed:", error);
     showError(formMessage, error.message);
+  } finally {
+    submitButton.disabled = false;
   }
 });

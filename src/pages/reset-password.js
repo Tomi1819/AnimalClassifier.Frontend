@@ -16,6 +16,7 @@ initPasswordToggles();
 
 const form = document.getElementById("resetPasswordForm");
 const formMessage = document.getElementById("formMessage");
+const submitButton = form.querySelector('[type="submit"]');
 
 const link = readLink();
 
@@ -36,6 +37,9 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
+  // The link works once, so a second submission would be refused for using it
+  // again, after the first had already changed the password.
+  submitButton.disabled = true;
   showProgress(formMessage, "Changing your password...");
 
   try {
@@ -54,6 +58,7 @@ form.addEventListener("submit", async (event) => {
     // Whether the link has expired or the password fails the rules, the
     // backend's message is the one that explains it.
     showError(formMessage, error.message);
+    submitButton.disabled = false;
   }
 });
 
