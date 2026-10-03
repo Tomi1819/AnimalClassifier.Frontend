@@ -1,7 +1,4 @@
 /* Red rather than the brand's blue, for the changes that cannot be taken back. */
-.setting--danger.is-open {
-  box-shadow: inset 3px 0 0 var(--error-color);
-}
 
 .btn-ghost--danger {
   color: var(--error-color);

@@ -69,6 +69,11 @@
   box-shadow: inset 3px 0 0 var(--brand);
 }
 
+/* Red for the danger zone, as its buttons are. */
+.setting--danger.is-open {
+  box-shadow: inset 3px 0 0 var(--error-color);
+}
+
 .setting__head {
   align-items: center;
   display: flex;
