@@ -29,11 +29,18 @@
       </section>
 
       <section class="card upload-card">
-        <div class="segmented">
-          <button id="imageTabBtn" class="segmented__btn is-active" type="button">
+        <div class="segmented" role="group" aria-label="What to upload">
+          <button
+            id="imageTabBtn"
+            class="segmented__btn is-active"
+            type="button"
+            aria-pressed="true"
+          >
             Image
           </button>
-          <button id="videoTabBtn" class="segmented__btn" type="button">Video</button>
+          <button id="videoTabBtn" class="segmented__btn" type="button" aria-pressed="false">
+            Video
+          </button>
         </div>
 
         <div id="imageUploadTab" class="upload-tab">

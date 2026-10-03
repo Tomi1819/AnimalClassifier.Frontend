@@ -66,12 +66,15 @@ export function initUploadForms({ status, onRecognised }) {
    Tabs
    ------------------------------------------------------------------------- */
 
+// A pressed button is how a group of toggles announces which one is on, where
+// the class alone says so only to the eye.
 function initTabs(tabs) {
   tabs.forEach((tab) => {
     tab.button.addEventListener("click", () => {
       tabs.forEach((other) => {
         const isSelected = other === tab;
         other.button.classList.toggle("is-active", isSelected);
+        other.button.setAttribute("aria-pressed", String(isSelected));
         other.panel.hidden = !isSelected;
       });
     });
