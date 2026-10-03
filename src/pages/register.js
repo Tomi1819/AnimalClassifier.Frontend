@@ -1,10 +1,9 @@
-import { apiFetch } from "../api/client.js";
+import { register } from "../auth/authentication.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
+import { LOGIN_PAGE } from "../shared/pages.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
 import { initTheme } from "../shared/theme.js";
-
-const LOGIN_PAGE = "/pages/login.html";
 
 initTheme();
 initNavigation();
@@ -16,17 +15,12 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
   event.preventDefault();
   showProgress(formMessage, "Creating your account...");
 
-  const registration = {
-    fullName: document.getElementById("fullName").value,
-    email: document.getElementById("email").value,
-    password: document.getElementById("password").value,
-  };
+  const fullName = document.getElementById("fullName").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
   try {
-    await apiFetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify(registration),
-    });
+    await register(fullName, email, password);
 
     hideMessage(formMessage);
     window.location.href = LOGIN_PAGE;

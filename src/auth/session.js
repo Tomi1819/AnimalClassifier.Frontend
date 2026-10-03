@@ -1,8 +1,8 @@
+import { DASHBOARD_PAGE, LOGIN_PAGE } from "../shared/pages.js";
+
 const TOKEN_KEY = "token";
 const ROLES_KEY = "roles";
 const ADMIN_ROLE = "Admin";
-const LOGIN_PAGE = "/pages/login.html";
-const DASHBOARD_PAGE = "/pages/dashboard.html";
 const MILLISECONDS_PER_SECOND = 1000;
 
 // The backend writes .NET's ClaimTypes.Email without mapping it to the short

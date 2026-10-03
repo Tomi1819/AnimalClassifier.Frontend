@@ -1,4 +1,4 @@
-import { apiFetch } from "../api/client.js";
+import { requestPasswordReset } from "../auth/authentication.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
 import { initTheme } from "../shared/theme.js";
@@ -13,13 +13,10 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   showProgress(formMessage, "Sending the link...");
 
-  const request = { email: document.getElementById("email").value };
+  const email = document.getElementById("email").value;
 
   try {
-    const { message } = await apiFetch("/api/auth/forgot-password", {
-      method: "POST",
-      body: JSON.stringify(request),
-    });
+    const { message } = await requestPasswordReset(email);
 
     // The backend answers the same way whether or not the address has an
     // account, so that this page cannot be used to find out who is

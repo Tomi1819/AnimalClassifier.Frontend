@@ -1,9 +1,16 @@
 import { isAuthenticated } from "../auth/session.js";
 import { createAccountMenu } from "./account-menu.js";
 import { initDisclosure } from "./disclosure.js";
+import {
+  DASHBOARD_PAGE,
+  HOME_PAGE,
+  LOGIN_PAGE,
+  REGISTER_PAGE,
+  SEARCH_PAGE,
+  STATISTICS_PAGE,
+} from "./pages.js";
 
 const NAV_LINKS_ID = "navLinks";
-const HOME_PAGE = "/";
 
 // Matches the width at which the stylesheet drops the links out of the bar.
 const COMPACT_NAV_QUERY = "(max-width: 560px)";
@@ -13,15 +20,15 @@ const ICON_SELECTOR = "[data-icon]";
 
 const AUTHENTICATED_LINKS = [
   { href: HOME_PAGE, label: "Home" },
-  { href: "/pages/dashboard.html", label: "Dashboard" },
-  { href: "/pages/search.html", label: "Search" },
-  { href: "/pages/statistics.html", label: "Statistics" },
+  { href: DASHBOARD_PAGE, label: "Dashboard" },
+  { href: SEARCH_PAGE, label: "Search" },
+  { href: STATISTICS_PAGE, label: "Statistics" },
 ];
 
 const ANONYMOUS_LINKS = [
   { href: HOME_PAGE, label: "Home" },
-  { href: "/pages/register.html", label: "Register" },
-  { href: "/pages/login.html", label: "Login" },
+  { href: REGISTER_PAGE, label: "Register" },
+  { href: LOGIN_PAGE, label: "Login" },
 ];
 
 const MENU_ICONS = `

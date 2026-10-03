@@ -1,24 +1,24 @@
 import { clearSession } from "../auth/session.js";
 import { initDisclosure } from "./disclosure.js";
 import { svgIcon } from "./icons.js";
+import { ACCOUNT_PAGE, ADMIN_PAGE, HOME_PAGE } from "./pages.js";
 import { describeSignedInUser } from "./signed-in-user.js";
 import { createThemeSwitch } from "./theme-switch.js";
 
 const PANEL_ID = "accountMenu";
 const TOGGLE_LABEL = "Account and settings";
-const HOME_PAGE = "/";
 
 const UNKNOWN_EMAIL = "Signed in";
 
 const ACCOUNT_ITEM = {
-  href: "/pages/account.html",
+  href: ACCOUNT_PAGE,
   label: "Account",
   hint: "Settings and security",
   icon: "account",
 };
 
 const ADMIN_ITEM = {
-  href: "/pages/admin.html",
+  href: ADMIN_PAGE,
   label: "Admin",
   hint: "Users and audit log",
   icon: "admin",

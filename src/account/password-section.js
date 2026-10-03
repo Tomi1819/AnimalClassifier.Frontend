@@ -1,7 +1,7 @@
 import { changePassword } from "../auth/account.js";
 import { getUserEmail } from "../auth/session.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
-import { maskPasswords } from "../shared/password-toggle.js";
+import { clearPasswordForm } from "../shared/password-toggle.js";
 import { initSetting } from "./setting.js";
 
 const MISMATCH_MESSAGE = "The two new passwords do not match.";
@@ -22,10 +22,8 @@ export function initPasswordSection() {
       hideMessage(section.message);
       section.current.focus();
     },
-    // Nothing typed into a password field outlives the panel it was typed in.
     onClose: () => {
-      section.form.reset();
-      maskPasswords(section.form);
+      clearPasswordForm(section.form);
       hideMessage(section.message);
     },
   });

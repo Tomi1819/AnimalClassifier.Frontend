@@ -1,12 +1,11 @@
-import { apiFetch } from "../api/client.js";
+import { signInWithPassword } from "../auth/authentication.js";
 import { isPasskeySupported, signInWithPasskey } from "../auth/passkeys.js";
 import { setSession } from "../auth/session.js";
 import { hideMessage, showError, showProgress } from "../shared/feedback.js";
 import { initNavigation } from "../shared/nav.js";
+import { DASHBOARD_PAGE } from "../shared/pages.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
 import { initTheme } from "../shared/theme.js";
-
-const DASHBOARD_PAGE = "/pages/dashboard.html";
 
 initTheme();
 initNavigation();
@@ -20,17 +19,10 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
   event.preventDefault();
   showProgress(formMessage, "Signing in...");
 
-  const credentials = {
-    email: document.getElementById("email").value,
-    password: document.getElementById("password").value,
-  };
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  await signIn(() =>
-    apiFetch("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-    }),
-  );
+  await signIn(() => signInWithPassword(email, password));
 });
 
 /**

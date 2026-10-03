@@ -8,7 +8,7 @@ import { getUserEmail } from "../auth/session.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
 import { formatDate } from "../shared/history.js";
-import { maskPasswords } from "../shared/password-toggle.js";
+import { clearPasswordForm } from "../shared/password-toggle.js";
 import { initSetting } from "./setting.js";
 
 const NO_PASSKEYS_SUMMARY = "Not set up yet";
@@ -92,9 +92,7 @@ function setFormOpen(page, open) {
   // being waited for must not turn up afterwards.
   attempt?.abort();
 
-  // Nothing typed into a password field outlives the form it was typed in.
-  page.form.reset();
-  maskPasswords(page.form);
+  clearPasswordForm(page.form);
   hideMessage(page.message);
 }
 
