@@ -47,6 +47,16 @@ export function formatDay(isoDay) {
 }
 
 /**
+ * Today as the user's own calendar has it, such as "2026-10-04", for naming a
+ * file, so that copies made on different days sit side by side in order.
+ */
+export function formatFileDate(date = new Date()) {
+  return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+    .map((part) => String(part).padStart(2, "0"))
+    .join("-");
+}
+
+/**
  * A count as the locale writes it, shortened once it is large, such as
  * "9,870" or "128.5K".
  */

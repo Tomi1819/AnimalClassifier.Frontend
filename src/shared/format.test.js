@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatFileSize, pluralize } from "./format.js";
+import { formatFileDate, formatFileSize, pluralize } from "./format.js";
 
 describe("pluralize", () => {
   it.each([
@@ -25,5 +25,11 @@ describe("formatFileSize", () => {
     [3 * 1024 ** 4, "3072 GB"],
   ])("writes %i bytes as %s", (bytes, expected) => {
     expect(formatFileSize(bytes)).toBe(expected);
+  });
+});
+
+describe("formatFileDate", () => {
+  it("writes the day by the local calendar, padded", () => {
+    expect(formatFileDate(new Date(2026, 0, 5, 23, 30))).toBe("2026-01-05");
   });
 });
