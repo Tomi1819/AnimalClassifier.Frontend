@@ -1,0 +1,62 @@
+/* The dialog that shows an image at the size of the window. */
+
+/* A modal dialog holding nothing but the image, which sits on the backdrop.
+   The reset at the top removes the margin that centres it. */
+.image-viewer {
+  background: none;
+  border: none;
+  margin: auto;
+  max-height: 90vh;
+  max-width: 90vw;
+  overflow: visible;
+  padding: 0;
+}
+
+.image-viewer::backdrop {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.image-viewer__image {
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: block;
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+/* In the window's corner rather than the image's, where it stays out of the
+   way of the picture. */
+.image-viewer__close {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  box-shadow: none;
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  padding: 0;
+  position: fixed;
+  right: 30px;
+  top: 20px;
+  width: 50px;
+}
+
+.image-viewer__close:hover {
+  background: rgba(0, 0, 0, 0.8);
+  box-shadow: none;
+  transform: scale(1.1);
+}
+
+.image-viewer__close:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.image-viewer__close-icon {
+  fill: none;
+  height: 24px;
+  stroke: white;
+  stroke-linecap: round;
+  stroke-width: 2.4;
+  width: 24px;
+}

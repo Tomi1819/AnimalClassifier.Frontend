@@ -1,9 +1,8 @@
 import { resetPassword } from "../auth/authentication.js";
 import { showError, showProgress, showSuccess } from "../shared/feedback.js";
-import { initNavigation } from "../shared/nav.js";
+import { initPage } from "../shared/page.js";
 import { LOGIN_PAGE } from "../shared/pages.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
-import { initTheme } from "../shared/theme.js";
 
 const INCOMPLETE_LINK_MESSAGE =
   "This link is incomplete. Please ask for a new one.";
@@ -12,12 +11,12 @@ const MISMATCH_MESSAGE = "The two passwords do not match.";
 // Long enough to read what happened, short enough not to feel stuck.
 const REDIRECT_DELAY_MS = 2500;
 
-initTheme();
-initNavigation();
+initPage();
 initPasswordToggles();
 
 const form = document.getElementById("resetPasswordForm");
 const formMessage = document.getElementById("formMessage");
+const submitButton = form.querySelector('[type="submit"]');
 
 const link = readLink();
 
@@ -38,6 +37,9 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
+  // The link works once, so a second submission would be refused for using it
+  // again, after the first had already changed the password.
+  submitButton.disabled = true;
   showProgress(formMessage, "Changing your password...");
 
   try {
@@ -56,6 +58,7 @@ form.addEventListener("submit", async (event) => {
     // Whether the link has expired or the password fails the rules, the
     // backend's message is the one that explains it.
     showError(formMessage, error.message);
+    submitButton.disabled = false;
   }
 });
 

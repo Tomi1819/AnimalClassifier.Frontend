@@ -116,11 +116,17 @@ async function sendAuthorizedRequest(path, { headers, ...options } = {}) {
 }
 
 // `fetch` rejects only when the request never reached the server; a response
-// carrying an error status still resolves normally.
+// carrying an error status still resolves normally. A request the page called
+// off with its signal rejects too, and is passed on as it is: the server was
+// never the problem, and the caller is the one who knows why it stopped.
 async function sendRequest(path, options) {
   try {
     return await fetch(resolveUrl(path), options);
   } catch (cause) {
+    if (options.signal?.aborted) {
+      throw cause;
+    }
+
     throw new NetworkError(NO_RESPONSE_STATUS, cause);
   }
 }
@@ -135,7 +141,9 @@ function contentTypeHeader(body) {
   return body instanceof FormData ? {} : { "Content-Type": "application/json" };
 }
 
-// The backend reports errors both as { message } objects and as plain strings.
+// The backend answers every failure with { message }. Anything in front of it,
+// such as a proxy, may answer with a page or plain text of its own instead,
+// which is shown as it comes rather than lost.
 async function readErrorMessage(response) {
   const body = await response.text();
   if (!body) {

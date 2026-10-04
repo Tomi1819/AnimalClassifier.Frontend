@@ -1,38 +1,45 @@
-import { apiFetch } from "../api/client.js";
-import { requireAdmin } from "../auth/session.js";
+import {
+  getAuditLog,
+  getUserHistory,
+  getUsers,
+  grantAdmin,
+  lockUser,
+  revokeAdmin,
+  unlockUser,
+} from "../api/admin.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { showError, showSuccess } from "../shared/feedback.js";
-import { createHistoryCard, formatDate, fromHistoryItem } from "../shared/history.js";
-import { initNavigation } from "../shared/nav.js";
-import { initTheme } from "../shared/theme.js";
-
-const USERS_PATH = "/api/admin/users";
-const AUDIT_PATH = "/api/admin/audit";
+import { formatDate } from "../shared/format.js";
+import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
+import { initPage, PAGE_ACCESS } from "../shared/page.js";
 
 // Every change on this page ends the user's sessions.
 const SIGNED_OUT_NOTE = "The user will be signed out.";
 
-// Keyed by the endpoint each change is posted to.
 const USER_CHANGES = {
   lock: {
     label: "Lock",
     question: (email) => `Lock ${email}? They will not be able to sign in until unlocked.`,
     done: "The account is locked.",
+    apply: lockUser,
   },
   unlock: {
     label: "Unlock",
     question: (email) => `Unlock ${email}?`,
     done: "The account is unlocked.",
+    apply: unlockUser,
   },
-  "grant-admin": {
+  grantAdmin: {
     label: "Make admin",
     question: (email) => `Make ${email} an administrator?`,
     done: "The user is now an administrator.",
+    apply: grantAdmin,
   },
-  "revoke-admin": {
+  revokeAdmin: {
     label: "Remove admin",
     question: (email) => `Remove ${email} as an administrator?`,
     done: "The user is no longer an administrator.",
+    apply: revokeAdmin,
   },
 };
 
@@ -46,12 +53,7 @@ const AUDIT_ACTIONS = {
 // The page of users on screen, which a change reloads.
 let usersPage = 1;
 
-// Module scripts are deferred, so the document is already parsed here.
-// The guard runs first, so a non-administrator never paints the page.
-if (requireAdmin()) {
-  initTheme();
-  initNavigation();
-
+if (initPage(PAGE_ACCESS.ADMIN)) {
   const page = collectPageElements();
   initSearch(page);
   page.closeHistory.addEventListener("click", () => {
@@ -90,10 +92,8 @@ function initSearch(page) {
 }
 
 async function showUsers(page, pageNumber) {
-  const query = new URLSearchParams({ search: page.searchInput.value.trim(), page: pageNumber });
-
   try {
-    const result = await apiFetch(`${USERS_PATH}?${query}`);
+    const result = await getUsers(page.searchInput.value.trim(), pageNumber);
 
     usersPage = pageNumber;
     page.usersBody.replaceChildren(
@@ -128,7 +128,7 @@ function createUserRow(page, user) {
   const actions = createCell(
     createButton("History", () => showHistory(page, user)),
     createChangeButton(page, user, user.isLocked ? "unlock" : "lock"),
-    createChangeButton(page, user, user.isAdmin ? "revoke-admin" : "grant-admin"),
+    createChangeButton(page, user, user.isAdmin ? "revokeAdmin" : "grantAdmin"),
   );
   actions.className = "admin-table__actions";
 
@@ -148,18 +148,18 @@ function createChangeButton(page, user, change) {
 }
 
 async function changeUser(page, user, change) {
-  const { question, done } = USER_CHANGES[change];
+  const { question, done, apply } = USER_CHANGES[change];
 
   if (!(await askToConfirm(question(user.email), SIGNED_OUT_NOTE))) {
     return;
   }
 
   try {
-    await apiFetch(`${USERS_PATH}/${user.id}/${change}`, { method: "POST" });
+    await apply(user.id);
     showSuccess(page.status, done);
     await Promise.all([showUsers(page, usersPage), showAuditLog(page, 1)]);
   } catch (error) {
-    console.error(`Could not ${change} the user:`, error);
+    console.error(`Could not ${USER_CHANGES[change].label.toLowerCase()} the user:`, error);
     // The backend explains a refused change, such as an administrator
     // changing their own account.
     showError(page.status, error.message);
@@ -169,7 +169,7 @@ async function changeUser(page, user, change) {
 
 async function showHistory(page, user) {
   try {
-    const history = await apiFetch(`${USERS_PATH}/${user.id}/history`);
+    const history = await getUserHistory(user.id);
 
     page.historyTitle.textContent = `History of ${user.email}`;
     page.historyList.replaceChildren(
@@ -190,7 +190,7 @@ async function showHistory(page, user) {
 
 async function showAuditLog(page, pageNumber) {
   try {
-    const result = await apiFetch(`${AUDIT_PATH}?page=${pageNumber}`);
+    const result = await getAuditLog(pageNumber);
 
     page.auditBody.replaceChildren(
       ...(result.items.length > 0

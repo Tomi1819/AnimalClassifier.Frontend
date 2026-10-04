@@ -7,14 +7,6 @@
     <script src="/theme-init.js"></script>
     <title>Search Animals - Animal Classifier</title>
     <link rel="stylesheet" href="/src/styles/main.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
   </head>
   <body>
     <header>
@@ -29,49 +21,51 @@
     <main class="search-main">
       <div class="search-container">
         <h1>Search Animals</h1>
-        <p>Find and explore your uploaded animal images</p>
+        <p>Find the images an animal was recognised in, from everyone's uploads</p>
         <div class="search-section">
-          <div class="search-input-container">
+          <form id="searchForm" class="search-input-container" role="search">
+            <label class="visually-hidden" for="searchInput">Animal</label>
             <input
               type="text"
               id="searchInput"
               placeholder="Search for animals..."
               autocomplete="off"
+              enterkeyhint="search"
             />
-            <button id="searchButton" class="search-btn">
-              <i class="fas fa-search"></i>
+            <button class="search-btn" type="submit" aria-label="Search">
+              <svg class="search-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
             </button>
-          </div>
+          </form>
           <div class="search-suggestions">
             <h3>Popular searches:</h3>
             <div class="suggestions-container" id="suggestionsContainer"></div>
           </div>
         </div>
-        <div id="searchResults" class="search-results" style="display: none">
+        <div id="searchResults" class="search-results" hidden>
           <div class="results-header">
             <h2 id="resultsTitle">Search Results</h2>
             <div class="results-count" id="resultsCount"></div>
           </div>
           <div class="results-list" id="resultsList"></div>
         </div>
-        <div id="noResults" class="no-results" style="display: none">
-          <div class="no-results-icon">
-            <i class="fas fa-search"></i>
-          </div>
+        <div id="noResults" class="no-results" hidden>
+          <svg class="no-results-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
           <h2>No animals found</h2>
           <p>Try a different search term or check your spelling</p>
         </div>
-        <div
-          id="loadingIndicator"
-          class="loading-indicator"
-          style="display: none"
-        >
+        <div id="loadingIndicator" class="loading-indicator" role="status" hidden>
           <div class="loading-spinner"></div>
           <p>Searching...</p>
         </div>
       </div>
     </main>
-    
+
     <script type="module" src="/src/pages/search.js"></script>
   </body>
 </html>

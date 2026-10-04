@@ -1,0 +1,51 @@
+/* The outlined button, for actions that sit beside the main one. */
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  box-shadow: none;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 7px 16px;
+  width: auto;
+}
+
+.btn-ghost:hover {
+  background: var(--surface);
+  border-color: var(--brand);
+  box-shadow: none;
+  color: var(--brand-strong);
+  transform: none;
+}
+
+.btn-ghost:disabled,
+.btn-ghost:disabled:hover {
+  background: transparent;
+  border-color: var(--hairline-strong);
+  color: var(--ink-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Fills its container rather than sitting at its natural width, for the
+   places a ghost button is the action rather than an aside to one. */
+.btn-ghost--block {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+  justify-content: center;
+  padding: 13px 18px;
+  width: 100%;
+}
+
+.btn-ghost__icon {
+  fill: none;
+  height: 19px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 19px;
+}

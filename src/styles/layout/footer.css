@@ -1,0 +1,12 @@
+/* The footer a page ends with. */
+
+footer {
+  background-color: var(--surface);
+  color: var(--ink);
+  text-align: center;
+  padding: 20px;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}

@@ -12,6 +12,7 @@ A lightweight, framework-free interface built with HTML, CSS, and vanilla JavaSc
 - 🎨 CSS
 - ⚙️ JavaScript (Vanilla, ES modules)
 - ⚡ Vite (dev server, API proxy, production build)
+- 🧪 Vitest and ESLint (tests and lint)
 
 ## 🚀 Getting Started
 
@@ -36,6 +37,11 @@ The app is served at <http://localhost:3000>.
 | `npm run dev`     | Dev server with hot reload and the API proxy   |
 | `npm run build`   | Production build into `dist/`                  |
 | `npm run preview` | Serves the production build locally            |
+| `npm run lint`    | Checks every module with ESLint                |
+| `npm test`        | Runs the tests once with Vitest                |
+
+A test sits beside the module it tests, as `name.test.js`. Tests run in Node;
+one that needs a document starts with `// @vitest-environment jsdom`.
 
 ## 🔌 Backend Connection
 
@@ -139,9 +145,9 @@ hidden status tells a screen reader the same. Once the browser has the file,
 its own save prompt or download bar takes over. The page is never told whether
 the file was saved or the prompt cancelled, so it reports neither.
 
-`.busy-button` in `src/styles/main.css` is the button's look, and suits any
-single action that takes a moment: it stacks both labels in one place, so the
-button keeps its width when they swap.
+`.busy-button` in `src/styles/components/busy-button.css` is the button's
+look, and suits any single action that takes a moment: it stacks both labels in
+one place, so the button keeps its width when they swap.
 
 ## 🗑️ Deleting the account
 
@@ -167,9 +173,40 @@ under `theme`.
   flashes light. Every new page needs the same `<script>` tag.
 - `src/shared/theme.js` keeps the page in step afterwards, including with a
   choice made in another tab.
-- `src/styles/main.css` defines every colour as a variable on `:root` and gives
-  the dark values under `:root[data-theme="dark"]`. New rules should use the
-  variables rather than fixed colours, so that they work in both themes.
+- `src/styles/base/tokens.css` defines every colour as a variable on `:root`
+  and gives the dark values under `:root[data-theme="dark"]`. New rules should
+  use the variables rather than fixed colours, so that they work in both themes.
+
+## 🧩 Adding a page
+
+Every page starts the same way, through `initPage` in `src/shared/page.js`. It
+lets in only who the page is for, sending anyone else to the login page or the
+dashboard, then follows the theme and draws the navigation:
+
+```js
+if (initPage(PAGE_ACCESS.SIGNED_IN)) {
+  // Set the page up.
+}
+```
+
+1. Add the HTML file to `pages/`, with the `theme-init.js` script in its
+   `<head>`, `/src/styles/main.css` as its only stylesheet, and its module.
+2. List it as an entry point in `vite.config.js`, and its path in
+   `src/shared/pages.js` if anything links or redirects to it.
+3. Give it a module in `src/pages/` that calls `initPage` with
+   `PAGE_ACCESS.ANYONE`, `SIGNED_IN` or `ADMIN`. The backend's calls go in
+   `src/api/`, and parts big enough to stand alone in a folder named after the
+   page, as the dashboard's do.
+4. Put its styles in `src/styles/pages/`, and import the file in `main.css`.
+
+## 🎨 Styles
+
+Every page links `src/styles/main.css` alone, and the build joins what it
+imports into one stylesheet. The imports are grouped by folder, and the order
+is the cascade's: `base/`, `layout/`, `components/`, `pages/`, then
+`utilities/`, which comes last so that its single-purpose classes win. Within a
+folder a file goes after whatever it overrides. A piece more than one page
+uses, or could, belongs in `components/` rather than in a page's file.
 
 ## 📁 Project Structure
 
@@ -180,16 +217,26 @@ public/                   Static files served from the root, e.g. /logo.png
   theme-init.js           Sets the theme before the first paint
 src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
+  api/recognitions.js     Uploads, the history, the search and the statistics
+  api/admin.js            The admin page's users and audit log
   auth/session.js         Token storage and the page guard
   auth/authentication.js  Registering, signing in and resetting a password
   auth/passkeys.js        WebAuthn ceremonies, one function each
   auth/account.js         Account changes that keep this session going
   account/setting.js      A settings row that opens in place
   account/                The account page's header and one module per setting
+  dashboard/              The dashboard's upload forms, result card and video breakdown
+  statistics/             The statistics page's activity chart
+  shared/page.js          initPage, which every page starts with
   shared/account-menu.js  The settings menu: account, admin, theme and sign out
   shared/confirm.js       The modal confirmation, built in script
   shared/disclosure.js    Open and close handling shared by the bar's menus
+  shared/dom.js           Builds an element with its class and its text
+  shared/feedback.js      Inline error, progress and success messages
+  shared/format.js        Dates, counts and file sizes, as the user's locale writes them
+  shared/history.js       A history entry's card, on the dashboard and the admin page
   shared/icons.js         The outline icons the menus draw
+  shared/image-viewer.js  Shows an image as large as the window allows
   shared/nav.js           Session-aware navigation
   shared/pages.js         The path of each page, for links and redirects
   shared/password-toggle.js  Showing, masking and emptying password fields
@@ -198,5 +245,10 @@ src/
   shared/theme.js         The theme choice, stored and applied
   shared/theme-switch.js  The light and dark control
   pages/                  One module per page
-  styles/main.css         Application styles
+  styles/main.css         The one stylesheet, which imports the folders below
+  styles/base/            The palette, the bare elements and the shared animations
+  styles/layout/          The bar, `main`, the footer and the frame of the wide pages
+  styles/components/      Pieces more than one page uses, a file each
+  styles/pages/           What belongs to one page alone
+  styles/utilities/       Single-purpose classes, such as .visually-hidden
 ```

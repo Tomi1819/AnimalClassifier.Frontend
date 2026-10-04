@@ -1,0 +1,97 @@
+/* The elements as they are before any class is put on them. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Components below set their own `display`, which would otherwise outrank the
+   browser's default [hidden] rule and leave hidden elements on screen. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  overflow-y: auto;
+  padding-top: 80px;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2.4rem;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+h3 {
+  font-size: 20px;
+  color: var(--brand-strong);
+}
+
+p {
+  font-size: 1.1rem;
+  color: var(--ink-muted);
+  margin-bottom: 30px;
+}
+
+input,
+button {
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+input:focus {
+  border-color: var(--brand);
+  background-color: var(--surface);
+  outline: none;
+}
+
+button {
+  background-color: var(--brand);
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  text-decoration: none;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--brand-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(86, 204, 242, 0.4);
+}

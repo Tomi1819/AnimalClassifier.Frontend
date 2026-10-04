@@ -29,11 +29,18 @@
       </section>
 
       <section class="card upload-card">
-        <div class="segmented">
-          <button id="imageTabBtn" class="segmented__btn is-active" type="button">
+        <div class="segmented" role="group" aria-label="What to upload">
+          <button
+            id="imageTabBtn"
+            class="segmented__btn is-active"
+            type="button"
+            aria-pressed="true"
+          >
             Image
           </button>
-          <button id="videoTabBtn" class="segmented__btn" type="button">Video</button>
+          <button id="videoTabBtn" class="segmented__btn" type="button" aria-pressed="false">
+            Video
+          </button>
         </div>
 
         <div id="imageUploadTab" class="upload-tab">
@@ -56,7 +63,8 @@
                 </svg>
                 <span class="dropzone__title">Drag and drop an image</span>
                 <span class="dropzone__hint">
-                  or <span class="dropzone__browse">browse</span> &middot; JPG or PNG
+                  or <span class="dropzone__browse">browse</span> &middot; JPG or PNG,
+                  up to 5 MB
                 </span>
               </span>
               <span class="dropzone__file" id="imageFileSummary" hidden>
@@ -92,7 +100,8 @@
                 </svg>
                 <span class="dropzone__title">Drag and drop a video</span>
                 <span class="dropzone__hint">
-                  or <span class="dropzone__browse">browse</span> &middot; MP4, MOV or AVI
+                  or <span class="dropzone__browse">browse</span> &middot; MP4, MOV or
+                  AVI, up to 5 MB
                 </span>
               </span>
               <span class="dropzone__file" id="videoFileSummary" hidden>

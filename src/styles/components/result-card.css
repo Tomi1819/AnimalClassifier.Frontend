@@ -1,0 +1,110 @@
+/* The latest recognition at the top of the dashboard, and the meter of how
+   sure the model is of it. */
+
+.result-card {
+  align-items: start;
+  animation: rise 0.4s ease both;
+  display: grid;
+  gap: 26px;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+}
+
+.result-card__media img,
+.result-card__media video {
+  background: var(--surface-muted);
+  border-radius: 14px;
+  display: block;
+  max-height: 340px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.result-card__animal {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  letter-spacing: -0.01em;
+  margin: 4px 0 20px;
+  text-transform: capitalize;
+}
+
+.result-card__date {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.result-card__extras {
+  grid-column: 1 / -1;
+}
+
+.result-card__extras:empty {
+  display: none;
+}
+
+.confidence {
+  margin-bottom: 18px;
+}
+
+.confidence__head {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.confidence__label {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.confidence__value {
+  color: var(--ink);
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.confidence__track {
+  background: var(--surface-muted);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.confidence__fill {
+  background-image: linear-gradient(90deg, var(--brand), var(--brand-strong));
+  border-radius: inherit;
+  height: 100%;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 0;
+}
+
+/* The bar carries the verdict, so a weak match reads as weak at a glance. */
+.confidence--high .confidence__fill {
+  background-image: linear-gradient(90deg, #2ecc71, #1e8449);
+}
+
+.confidence--medium .confidence__fill {
+  background-image: linear-gradient(90deg, #f5b041, #d68910);
+}
+
+.confidence--low .confidence__fill {
+  background-image: linear-gradient(90deg, #ec7063, #a93226);
+}
+
+.callout {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--radius-md);
+  color: var(--warning-color);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 18px 0 0;
+  padding: 12px 14px;
+}
+
+@media (max-width: 720px) {
+  .result-card {
+    grid-template-columns: 1fr;
+  }
+}

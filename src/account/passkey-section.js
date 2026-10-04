@@ -7,7 +7,7 @@ import {
 import { getUserEmail } from "../auth/session.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError, showProgress, showSuccess } from "../shared/feedback.js";
-import { formatDate } from "../shared/history.js";
+import { formatDate } from "../shared/format.js";
 import { clearPasswordForm } from "../shared/password-toggle.js";
 import { initSetting } from "./setting.js";
 

@@ -1,7 +1,8 @@
-import { apiFetch, resolveUrl } from "../api/client.js";
-import { requireAuthentication } from "../auth/session.js";
-import { initNavigation } from "../shared/nav.js";
-import { initTheme } from "../shared/theme.js";
+import { resolveUrl } from "../api/client.js";
+import { searchAnimals } from "../api/recognitions.js";
+import { pluralize } from "../shared/format.js";
+import { showImage } from "../shared/image-viewer.js";
+import { initPage, PAGE_ACCESS } from "../shared/page.js";
 
 const NOT_FOUND_STATUS = 404;
 const SEARCH_DEBOUNCE_MS = 500;
@@ -30,13 +31,10 @@ const FALLBACK_IMAGE = `data:image/svg+xml,${encodeURIComponent(
 
 let elements;
 let debounceTimeout;
+// The search waiting for its answer, so that a newer one can call it off.
+let pendingSearch = null;
 
-// Module scripts are deferred, so the document is already parsed here.
-// The guard runs first, so an expired session never paints the signed-in nav.
-if (requireAuthentication()) {
-  initTheme();
-  initNavigation();
-
+if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   elements = collectElements();
   initSearchControls();
   renderSuggestions(POPULAR_ANIMALS);
@@ -53,8 +51,8 @@ function searchFromAddress() {
 
 function collectElements() {
   return {
+    searchForm: document.getElementById("searchForm"),
     searchInput: document.getElementById("searchInput"),
-    searchButton: document.getElementById("searchButton"),
     suggestionsContainer: document.getElementById("suggestionsContainer"),
     searchResults: document.getElementById("searchResults"),
     resultsTitle: document.getElementById("resultsTitle"),
@@ -66,14 +64,12 @@ function collectElements() {
 }
 
 function initSearchControls() {
-  const { searchInput, searchButton } = elements;
+  const { searchForm, searchInput } = elements;
 
-  searchButton.addEventListener("click", () => search(searchInput.value.trim()));
-
-  searchInput.addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
-      search(searchInput.value.trim());
-    }
+  // The button and Enter in the field both submit the form.
+  searchForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    search(searchInput.value.trim());
   });
 
   searchInput.addEventListener("input", (event) => {
@@ -83,23 +79,35 @@ function initSearchControls() {
     if (query.length >= MIN_QUERY_LENGTH) {
       debounceTimeout = setTimeout(() => search(query), SEARCH_DEBOUNCE_MS);
     } else if (!query) {
+      cancelSearch();
       hideAllSections();
     }
   });
 }
 
 async function search(query) {
+  // However it was started, a search replaces the one waiting to start and the
+  // one waiting for its answer, which could otherwise arrive later and be
+  // shown in place of this one's.
+  cancelSearch();
+
   if (!query) {
     return;
   }
 
+  const { signal } = (pendingSearch = new AbortController());
   showLoading();
 
   try {
-    const results = await apiFetch(`/api/animal/search?searchTerm=${encodeURIComponent(query)}`);
-    displayResults(results, query);
+    const results = await searchAnimals(query, signal);
+    if (!signal.aborted) {
+      displayResults(results, query);
+    }
   } catch (error) {
-    console.error("Search failed:", error);
+    // Replaced by a newer search, which shows its own answer.
+    if (signal.aborted) {
+      return;
+    }
 
     // The backend answers 404 when nothing matches, which is not an error here.
     if (error.status === NOT_FOUND_STATUS) {
@@ -107,10 +115,17 @@ async function search(query) {
       return;
     }
 
+    console.error("Search failed:", error);
+
     // Anything else reports itself, so an unreachable backend says so rather
     // than implying the search term was at fault.
     showEmptyState("Search Error", error.message);
   }
+}
+
+function cancelSearch() {
+  clearTimeout(debounceTimeout);
+  pendingSearch?.abort();
 }
 
 function displayResults(results, query) {
@@ -121,16 +136,12 @@ function displayResults(results, query) {
   resultsTitle.textContent = `Results for "${query}"`;
   resultsCount.textContent = describeResults(results);
   resultsList.replaceChildren(...results.map(createAnimalGallery));
-  searchResults.style.display = "block";
+  searchResults.hidden = false;
 }
 
 function describeResults(results) {
   const totalImages = results.reduce((total, animal) => total + (animal.count ?? 0), 0);
   return `${pluralize(results.length, "animal")} • ${pluralize(totalImages, "image")}`;
-}
-
-function pluralize(count, noun) {
-  return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }
 
 function createAnimalGallery({ animalName, count = 0, imagePaths = [] }) {
@@ -201,7 +212,7 @@ function createImageTile(path, animalName, position, total) {
   tile.className = "gallery__tile";
   tile.setAttribute("aria-label", `Open ${animalName} image ${position + 1} of ${total}`);
   tile.append(image);
-  tile.addEventListener("click", () => openImageModal(image.src, animalName));
+  tile.addEventListener("click", () => showImage(image.src, animalName));
 
   const item = document.createElement("li");
   item.append(tile);
@@ -216,48 +227,11 @@ function buildImageUrl(path) {
   return path.startsWith("http") ? path : resolveUrl(path);
 }
 
-function openImageModal(source, alt) {
-  document.querySelector(".image-modal")?.remove();
-
-  const closeButton = document.createElement("span");
-  closeButton.className = "close-modal";
-  closeButton.innerHTML = "&times;";
-
-  const image = document.createElement("img");
-  image.src = source;
-  image.alt = alt;
-
-  const modal = document.createElement("div");
-  modal.className = "image-modal";
-  modal.append(closeButton, image);
-  document.body.append(modal);
-
-  const close = () => {
-    modal.remove();
-    document.removeEventListener("keydown", onKeyDown);
-  };
-
-  const onKeyDown = (event) => {
-    if (event.key === "Escape") {
-      close();
-    }
-  };
-
-  closeButton.addEventListener("click", close);
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      close();
-    }
-  });
-  document.addEventListener("keydown", onKeyDown);
-
-  requestAnimationFrame(() => modal.classList.add("active"));
-}
-
 function renderSuggestions(animals) {
   elements.suggestionsContainer.replaceChildren(
     ...animals.slice(0, MAX_SUGGESTIONS).map(({ name, icon }) => {
       const button = document.createElement("button");
+      button.type = "button";
       button.className = "suggestion-btn popular";
       button.textContent = `${icon} ${name}`;
       button.addEventListener("click", () => {
@@ -275,16 +249,16 @@ function showEmptyState(title, message) {
   hideAllSections();
   noResults.querySelector("h2").textContent = title;
   noResults.querySelector("p").textContent = message;
-  noResults.style.display = "block";
+  noResults.hidden = false;
 }
 
 function showLoading() {
   hideAllSections();
-  elements.loadingIndicator.style.display = "block";
+  elements.loadingIndicator.hidden = false;
 }
 
 function hideAllSections() {
-  elements.searchResults.style.display = "none";
-  elements.noResults.style.display = "none";
-  elements.loadingIndicator.style.display = "none";
+  elements.searchResults.hidden = true;
+  elements.noResults.hidden = true;
+  elements.loadingIndicator.hidden = true;
 }

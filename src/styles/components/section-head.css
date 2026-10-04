@@ -1,0 +1,13 @@
+/* A section's heading row, with an action such as Clear beside it. */
+
+.history__head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.history__head h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}

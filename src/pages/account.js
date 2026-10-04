@@ -5,14 +5,10 @@ import { initNameSection } from "../account/name-section.js";
 import { initOtherSessionsSection } from "../account/other-sessions-section.js";
 import { initPasskeySection } from "../account/passkey-section.js";
 import { initPasswordSection } from "../account/password-section.js";
-import { requireAuthentication } from "../auth/session.js";
-import { initNavigation } from "../shared/nav.js";
+import { initPage, PAGE_ACCESS } from "../shared/page.js";
 import { initPasswordToggles } from "../shared/password-toggle.js";
-import { initTheme } from "../shared/theme.js";
 
-if (requireAuthentication()) {
-  initTheme();
-  initNavigation();
+if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   initPasswordToggles();
 
   initAccountHeader();
