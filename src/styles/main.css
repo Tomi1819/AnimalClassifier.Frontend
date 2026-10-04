@@ -29,6 +29,7 @@
 @import "./components/result-card.css";
 @import "./components/section-head.css";
 @import "./components/kpi.css";
+@import "./components/pager.css";
 @import "./components/button-ghost.css";
 @import "./components/busy-button.css";
 @import "./components/danger.css";

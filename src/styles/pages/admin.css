@@ -79,13 +79,3 @@
   background: var(--error-bg);
   color: var(--error-color);
 }
-
-.pager {
-  align-items: center;
-  color: var(--ink-muted);
-  display: flex;
-  font-size: 0.9rem;
-  gap: 14px;
-  justify-content: flex-end;
-  margin-top: 14px;
-}
