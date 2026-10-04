@@ -34,6 +34,7 @@
 @import "./components/danger.css";
 @import "./components/passkeys.css";
 @import "./components/history.css";
+@import "./components/feedback-panel.css";
 @import "./components/video-breakdown.css";
 @import "./components/confirm-dialog.css";
 @import "./components/image-viewer.css";
