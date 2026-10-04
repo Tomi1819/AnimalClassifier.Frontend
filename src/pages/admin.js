@@ -7,11 +7,14 @@ import {
   revokeAdmin,
   unlockUser,
 } from "../api/admin.js";
+import { createBadge, createCell, createEmptyRow } from "../admin/table.js";
 import { askToConfirm } from "../shared/confirm.js";
+import { createGhostButton } from "../shared/dom.js";
 import { showError, showSuccess } from "../shared/feedback.js";
 import { formatDate } from "../shared/format.js";
 import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
 import { initPage, PAGE_ACCESS } from "../shared/page.js";
+import { renderPager } from "../shared/pager.js";
 
 // Every change on this page ends the user's sessions.
 const SIGNED_OUT_NOTE = "The user will be signed out.";
@@ -126,7 +129,7 @@ function createUserRow(page, user) {
   }
 
   const actions = createCell(
-    createButton("History", () => showHistory(page, user)),
+    createGhostButton("History", () => showHistory(page, user)),
     createChangeButton(page, user, user.isLocked ? "unlock" : "lock"),
     createChangeButton(page, user, user.isAdmin ? "revokeAdmin" : "grantAdmin"),
   );
@@ -144,7 +147,7 @@ function createUserRow(page, user) {
 }
 
 function createChangeButton(page, user, change) {
-  return createButton(USER_CHANGES[change].label, () => changeUser(page, user, change));
+  return createGhostButton(USER_CHANGES[change].label, () => changeUser(page, user, change));
 }
 
 async function changeUser(page, user, change) {
@@ -213,55 +216,4 @@ function createAuditRow({ action, datePerformed, adminEmail, userEmail }) {
     createCell(userEmail),
   );
   return row;
-}
-
-/* -------------------------------------------------------------------------
-   Shared building blocks
-   ------------------------------------------------------------------------- */
-
-function renderPager(pager, { page, pageSize, totalCount }, onPage) {
-  const pageCount = Math.max(1, Math.ceil(totalCount / pageSize));
-
-  const label = document.createElement("span");
-  label.textContent = `Page ${page} of ${pageCount}`;
-
-  const previous = createButton("Previous", () => onPage(page - 1));
-  previous.disabled = page <= 1;
-
-  const next = createButton("Next", () => onPage(page + 1));
-  next.disabled = page >= pageCount;
-
-  pager.replaceChildren(previous, label, next);
-}
-
-function createCell(...contents) {
-  const cell = document.createElement("td");
-  cell.append(...contents);
-  return cell;
-}
-
-function createEmptyRow(text, columns) {
-  const cell = createCell(text);
-  cell.colSpan = columns;
-  cell.className = "admin-table__empty";
-
-  const row = document.createElement("tr");
-  row.append(cell);
-  return row;
-}
-
-function createButton(label, onClick) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "btn-ghost";
-  button.textContent = label;
-  button.addEventListener("click", onClick);
-  return button;
-}
-
-function createBadge(text, className) {
-  const badge = document.createElement("span");
-  badge.className = className;
-  badge.textContent = text;
-  return badge;
 }
