@@ -1,3 +1,4 @@
+import { createFeedbackPanel } from "../feedback/feedback-panel.js";
 import { formatDate } from "../shared/format.js";
 import { renderVideoBreakdown } from "./video-breakdown.js";
 
@@ -5,21 +6,25 @@ const LOW_CONFIDENCE_THRESHOLD = 0.5;
 const HIGH_CONFIDENCE_THRESHOLD = 0.75;
 
 /**
- * The card at the top of the dashboard that shows the latest recognition: the
- * image or video, and what the model made of it.
+ * The card at the top of the dashboard that shows a recognition: the image or
+ * video, what the model made of it, and for an image, what the user says of
+ * that.
  *
+ * @param onFeedbackChange called with the recognition once the user gives,
+ *   changes or withdraws their feedback on it, which is then its `feedback`.
  * @returns `show(recognition, { animate })` and `hide()`. A result that has
  *   just arrived is shown animated; one loaded back from the history appears
  *   settled, as it is not new.
  */
-export function initResultCard() {
+export function initResultCard({ onFeedbackChange = () => {} } = {}) {
   const card = collectCardElements();
 
   return {
-    show: (recognition, options) => render(card, recognition, options),
+    show: (recognition, options) => render(card, recognition, { ...options, onFeedbackChange }),
     hide: () => {
       card.section.hidden = true;
       card.videoStatsSlot.replaceChildren();
+      card.feedbackSlot.replaceChildren();
     },
   };
 }
@@ -36,10 +41,11 @@ function collectCardElements() {
     confidenceFill: document.getElementById("confidenceFill"),
     lowConfidenceMessage: document.getElementById("lowConfidenceMessage"),
     videoStatsSlot: document.getElementById("videoStatsSlot"),
+    feedbackSlot: document.getElementById("feedbackSlot"),
   };
 }
 
-function render(card, recognition, { animate }) {
+function render(card, recognition, { animate, onFeedbackChange }) {
   const isVideo = recognition.type === "video";
 
   card.image.hidden = isVideo;
@@ -60,7 +66,29 @@ function render(card, recognition, { animate }) {
     renderPrediction(card, recognition, animate);
   }
 
+  renderFeedback(card, recognition, onFeedbackChange);
   card.section.hidden = false;
+}
+
+// Only an image's recognition takes feedback, as a video's names only the
+// animal seen in it most.
+function renderFeedback(card, recognition, onFeedbackChange) {
+  card.feedbackSlot.replaceChildren();
+
+  if (recognition.type !== "image") {
+    return;
+  }
+
+  card.feedbackSlot.append(
+    createFeedbackPanel(recognition, {
+      // The recognition is the history's own, so the change reaches its card
+      // there, and shows again if the user comes back to it.
+      onChange: (feedback) => {
+        recognition.feedback = feedback;
+        onFeedbackChange(recognition);
+      },
+    }),
+  );
 }
 
 function renderPrediction(card, recognition, animate) {

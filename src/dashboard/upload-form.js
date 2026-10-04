@@ -243,11 +243,13 @@ function initSubmit(config, elements, status, onRecognised) {
 
 function toImageRecognition(result) {
   return {
+    id: result.imageId,
     type: "image",
     url: resolveUrl(result.imagePath),
     animal: result.recognizedAnimal,
     date: result.dateRecognized,
     score: result.predictionScore,
+    feedback: null,
   };
 }
 

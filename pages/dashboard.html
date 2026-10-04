@@ -153,6 +153,9 @@
           <p id="lowConfidenceMessage" class="callout" hidden>
             The model is not confident in this classification. Try another file.
           </p>
+
+          <!-- An image's result asks here whether the model was right. -->
+          <div id="feedbackSlot"></div>
         </div>
 
         <!-- Video results append their frame and animal breakdown here. -->
@@ -168,7 +171,8 @@
         </div>
         <p class="history__empty" id="historyEmpty">
           Nothing recognised yet. Your results will appear here and stay while you
-          browse.
+          browse. Choose one to see it again, and to say whether the model was
+          right.
         </p>
         <ul class="history__list" id="historyList"></ul>
       </section>
