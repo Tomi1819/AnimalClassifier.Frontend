@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Blocking on purpose: it sets the theme before the first paint. -->
+    <script src="/theme-init.js"></script>
+    <title>Your Feedback - Animal Classifier</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body class="feedback-page">
+    <header>
+      <nav>
+        <div class="logo">
+          <img src="/logo.png" alt="Logo" />
+        </div>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
+      </nav>
+    </header>
+
+    <main class="feedback">
+      <section class="page-header">
+        <p class="eyebrow">Feedback</p>
+        <h1>What you told the model</h1>
+        <p class="page-header__subtitle">
+          Whether it named the right animal in your images. Change or withdraw
+          any of it here.
+        </p>
+      </section>
+
+      <section class="card">
+        <div class="history__head">
+          <h2>Your feedback</h2>
+        </div>
+
+        <p id="feedbackStatus" class="message" hidden></p>
+
+        <p class="history__empty" id="feedbackEmpty" hidden>
+          You have not given any feedback yet. Choose a result on the
+          <a href="/pages/dashboard.html">dashboard</a> to say whether the model
+          was right.
+        </p>
+
+        <ul class="feedback-list" id="feedbackList"></ul>
+        <div class="pager" id="feedbackPager" hidden></div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/pages/feedback.js"></script>
+  </body>
+</html>

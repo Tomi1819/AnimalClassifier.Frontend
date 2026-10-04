@@ -1,5 +1,6 @@
 import { exportData } from "../auth/account.js";
 import { hideMessage, showError } from "../shared/feedback.js";
+import { formatFileDate } from "../shared/format.js";
 import { saveFile } from "../shared/save-file.js";
 
 const PREPARING_MESSAGE = "Preparing your data...";
@@ -59,13 +60,6 @@ function setBusy(section, busy) {
   section.status.textContent = busy ? PREPARING_MESSAGE : "";
 }
 
-// Dated by the user's own calendar, so that copies from different days sit
-// side by side under the day they were made.
 function exportFileName() {
-  const today = new Date();
-  const date = [today.getFullYear(), today.getMonth() + 1, today.getDate()]
-    .map((part) => String(part).padStart(2, "0"))
-    .join("-");
-
-  return `animal-classifier-data-${date}.zip`;
+  return `animal-classifier-data-${formatFileDate()}.zip`;
 }

@@ -1,7 +1,7 @@
 import { clearSession } from "../auth/session.js";
 import { initDisclosure } from "./disclosure.js";
 import { svgIcon } from "./icons.js";
-import { ACCOUNT_PAGE, ADMIN_PAGE, HOME_PAGE } from "./pages.js";
+import { ACCOUNT_PAGE, ADMIN_PAGE, FEEDBACK_PAGE, HOME_PAGE } from "./pages.js";
 import { describeSignedInUser } from "./signed-in-user.js";
 import { createThemeSwitch } from "./theme-switch.js";
 
@@ -15,6 +15,13 @@ const ACCOUNT_ITEM = {
   label: "Account",
   hint: "Settings and security",
   icon: "account",
+};
+
+const FEEDBACK_ITEM = {
+  href: FEEDBACK_PAGE,
+  label: "Feedback",
+  hint: "What you told the model",
+  icon: "feedback",
 };
 
 const ADMIN_ITEM = {
@@ -33,7 +40,7 @@ const ADMIN_ITEM = {
  */
 export function createAccountMenu() {
   const user = describeSignedInUser();
-  const items = user.admin ? [ACCOUNT_ITEM, ADMIN_ITEM] : [ACCOUNT_ITEM];
+  const items = user.admin ? [ACCOUNT_ITEM, FEEDBACK_ITEM, ADMIN_ITEM] : [ACCOUNT_ITEM, FEEDBACK_ITEM];
 
   const toggle = createToggle(items.some(({ href }) => isCurrentPage(href)));
   const panel = createPanel(items, user);

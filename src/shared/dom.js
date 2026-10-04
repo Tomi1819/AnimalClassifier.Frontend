@@ -18,3 +18,14 @@ export function createElement(tag, className, text) {
 
   return element;
 }
+
+/**
+ * Builds an outlined button, the kind that sits beside a page's main action,
+ * which calls `onClick` when pressed.
+ */
+export function createGhostButton(label, onClick) {
+  const button = createElement("button", "btn-ghost", label);
+  button.type = "button";
+  button.addEventListener("click", onClick);
+  return button;
+}

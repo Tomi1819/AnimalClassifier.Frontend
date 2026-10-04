@@ -162,6 +162,35 @@ Its red, in `.btn--danger` and `.btn-ghost--danger`, is kept for changes that
 cannot be taken back. The fill comes from `--danger-fill`, which the dark theme
 leaves as it is so the white text on it stays readable.
 
+## 💬 Feedback on a recognition
+
+Under an image's result the dashboard asks "Was this right?". Yes or No opens a
+form that says so: the model was right, the image shows another animal it
+knows, or one it does not. Another animal it knows is picked from the list
+`GET /api/feedback/animals` gives, which the field offers as the user types;
+one the list lacks is refused before it is sent. The user can add a comment,
+and tick a box letting the image be used to train the model.
+
+Once sent, the panel shows the answer and whether the model will learn from
+it: not at all without the box ticked, and otherwise once an administrator has
+accepted it. Change opens the form as it was, and Withdraw takes the answer
+back after asking. A video's result asks nothing, as the backend takes feedback
+on images alone.
+
+`createFeedbackPanel` in `src/feedback/feedback-panel.js` is the whole of it,
+and `src/feedback/feedback-text.js` words what was said. Every history card
+shows the answer too, and on the dashboard a card opens its entry in the result
+card again, which is how an older image gets its feedback. The feedback page,
+from the account menu, lists everything the user has said, to change or
+withdraw.
+
+The admin page reviews what users let the model learn from. It sums the
+feedback up, lists what waits for a decision with the animal each image would
+be trained as, and downloads the accepted images, in a folder per animal, for
+retraining the model; the backend's README describes that. An animal the model
+does not know is marked "New animal", since learning one takes many more
+images than a few.
+
 ## 🌗 Themes
 
 The site has a light and a dark theme. It is light until the user picks dark
@@ -218,26 +247,30 @@ public/                   Static files served from the root, e.g. /logo.png
 src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
   api/recognitions.js     Uploads, the history, the search and the statistics
-  api/admin.js            The admin page's users and audit log
+  api/admin.js            The admin page's users, feedback review and audit log
+  api/feedback.js         Giving, listing and withdrawing feedback, and the animals the model knows
   auth/session.js         Token storage and the page guard
   auth/authentication.js  Registering, signing in and resetting a password
   auth/passkeys.js        WebAuthn ceremonies, one function each
   auth/account.js         Account changes that keep this session going
   account/setting.js      A settings row that opens in place
   account/                The account page's header and one module per setting
+  admin/                  The admin page's table pieces and its feedback review
   dashboard/              The dashboard's upload forms, result card and video breakdown
+  feedback/               The panel that asks whether the model was right, and its wording
   statistics/             The statistics page's activity chart
   shared/page.js          initPage, which every page starts with
-  shared/account-menu.js  The settings menu: account, admin, theme and sign out
+  shared/account-menu.js  The settings menu: account, feedback, admin, theme and sign out
   shared/confirm.js       The modal confirmation, built in script
   shared/disclosure.js    Open and close handling shared by the bar's menus
-  shared/dom.js           Builds an element with its class and its text
+  shared/dom.js           Builds an element with its class and its text, and a ghost button
   shared/feedback.js      Inline error, progress and success messages
   shared/format.js        Dates, counts and file sizes, as the user's locale writes them
-  shared/history.js       A history entry's card, on the dashboard and the admin page
+  shared/history.js       A history entry's card, with its feedback, on the dashboard and the admin page
   shared/icons.js         The outline icons the menus draw
   shared/image-viewer.js  Shows an image as large as the window allows
   shared/nav.js           Session-aware navigation
+  shared/pager.js         The Previous and Next controls under a list the backend sends a page at a time
   shared/pages.js         The path of each page, for links and redirects
   shared/password-toggle.js  Showing, masking and emptying password fields
   shared/save-file.js     Saves a file the page holds as a download

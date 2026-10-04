@@ -1,7 +1,8 @@
-import { apiFetch } from "./client.js";
+import { apiDownload, apiFetch } from "./client.js";
 
 const USERS_PATH = "/api/admin/users";
 const AUDIT_PATH = "/api/admin/audit";
+const FEEDBACK_PATH = "/api/admin/feedback";
 
 /**
  * One page of the users whose name or email contains the search term, newest
@@ -51,6 +52,56 @@ export function revokeAdmin(userId) {
  */
 export function getAuditLog(page) {
   return apiFetch(`${AUDIT_PATH}?${new URLSearchParams({ page })}`);
+}
+
+/**
+ * What the feedback says of the model, counting all of it.
+ *
+ * @returns `{ totalCount, correctCount, wrongAnimalCount, unlistedAnimalCount,
+ *   pendingCount, acceptedCount, rejectedCount, commonMistakes,
+ *   requestedAnimals }`, where the review's counts are of the feedback that
+ *   allows training, each of the `commonMistakes` is `{ recognizedAnimal,
+ *   actualAnimal, count }` and each of the `requestedAnimals` is
+ *   `{ animal, count }`, most first.
+ */
+export function getFeedbackSummary() {
+  return apiFetch(`${FEEDBACK_PATH}/summary`);
+}
+
+/**
+ * One page of the feedback offered for training in one state of review, in
+ * the order it was given.
+ *
+ * @param status one of REVIEW_STATUS in api/feedback.js.
+ * @param page counted from 1.
+ * @returns `{ items, page, pageSize, totalCount }`, where each of the items is
+ *   `{ id, imagePath, recognizedAnimal, predictionScore, verdict, label,
+ *   isKnownAnimal, comment, reviewStatus, dateSubmitted, dateReviewed }`, and
+ *   `label` is the animal the image would be trained as.
+ */
+export function getFeedbackForReview(status, page) {
+  return apiFetch(`${FEEDBACK_PATH}?${new URLSearchParams({ status, page })}`);
+}
+
+export function acceptFeedback(feedbackId) {
+  return reviewFeedback(feedbackId, "accept");
+}
+
+export function rejectFeedback(feedbackId) {
+  return reviewFeedback(feedbackId, "reject");
+}
+
+/**
+ * The accepted images, in a folder per animal, to retrain the model on.
+ *
+ * @returns the ZIP archive the backend builds, as a Blob.
+ */
+export function exportTrainingData() {
+  return apiDownload(`${FEEDBACK_PATH}/export`);
+}
+
+function reviewFeedback(feedbackId, decision) {
+  return apiFetch(`${FEEDBACK_PATH}/${encodeURIComponent(feedbackId)}/${decision}`, { method: "POST" });
 }
 
 function changeUser(userId, change) {

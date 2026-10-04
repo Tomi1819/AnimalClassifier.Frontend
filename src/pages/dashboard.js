@@ -7,7 +7,9 @@ import { initPage, PAGE_ACCESS } from "../shared/page.js";
 
 if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   const page = collectPageElements();
-  const resultCard = initResultCard();
+  const resultCard = initResultCard({
+    onFeedbackChange: (recognition) => replaceHistoryCard(page, resultCard, recognition),
+  });
 
   initUploadForms({
     status: page.uploadStatus,
@@ -20,6 +22,7 @@ if (initPage(PAGE_ACCESS.SIGNED_IN)) {
 function collectPageElements() {
   return {
     uploadStatus: document.getElementById("uploadStatus"),
+    resultSection: document.getElementById("resultSection"),
     historyList: document.getElementById("historyList"),
     historyEmpty: document.getElementById("historyEmpty"),
     clearHistory: document.getElementById("clearHistory"),
@@ -55,14 +58,33 @@ async function showHistory(page, resultCard) {
   // A stored result is not new, so it appears settled rather than counting and
   // filling as though it had just been recognised.
   resultCard.show(latest, { animate: false });
-  page.historyList.replaceChildren(...recognitions.map(createHistoryCard));
+  page.historyList.replaceChildren(
+    ...recognitions.map((recognition) => createEntry(page, resultCard, recognition)),
+  );
   showHistoryControls(page);
 }
 
 function addRecognition(page, resultCard, recognition) {
   resultCard.show(recognition, { animate: true });
-  page.historyList.prepend(createHistoryCard(recognition));
+  page.historyList.prepend(createEntry(page, resultCard, recognition));
   showHistoryControls(page);
+}
+
+// Choosing an entry shows it in the result card, which is where the user says
+// whether the model was right about it.
+function createEntry(page, resultCard, recognition) {
+  return createHistoryCard(recognition, {
+    onSelect: () => {
+      resultCard.show(recognition, { animate: false });
+      page.resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+  });
+}
+
+function replaceHistoryCard(page, resultCard, recognition) {
+  page.historyList
+    .querySelector(`[data-recognition-id="${recognition.id}"]`)
+    ?.replaceWith(createEntry(page, resultCard, recognition));
 }
 
 function showHistoryControls(page) {
