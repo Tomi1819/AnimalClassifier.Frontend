@@ -46,5 +46,6 @@
 @import "./pages/home.css";
 @import "./pages/auth.css";
 @import "./pages/admin.css";
+@import "./pages/feedback.css";
 
 @import "./utilities/visually-hidden.css";

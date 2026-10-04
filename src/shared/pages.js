@@ -13,3 +13,4 @@ export const SEARCH_PAGE = "/pages/search.html";
 export const STATISTICS_PAGE = "/pages/statistics.html";
 export const ACCOUNT_PAGE = "/pages/account.html";
 export const ADMIN_PAGE = "/pages/admin.html";
+export const FEEDBACK_PAGE = "/pages/feedback.html";

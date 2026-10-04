@@ -1,9 +1,10 @@
-/* The wide pages, the dashboard, statistics and admin, and the header and
-   cards they share. */
+/* The wide pages, the dashboard, statistics, admin and feedback, and the
+   header and cards they share. */
 
 .dashboard-page,
 .admin-page,
-.statistics-page {
+.statistics-page,
+.feedback-page {
   background-color: var(--canvas);
   background-image: radial-gradient(
     900px 420px at 50% -120px,
@@ -15,7 +16,8 @@
 /* Overrides the card treatment `main` carries for the narrow auth pages. */
 .dashboard,
 .admin,
-.statistics {
+.statistics,
+.feedback {
   background: none;
   border-radius: 0;
   box-shadow: none;

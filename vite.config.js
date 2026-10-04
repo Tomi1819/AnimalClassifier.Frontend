@@ -24,6 +24,7 @@ export default defineConfig({
         statistics: resolve(import.meta.dirname, "pages/statistics.html"),
         admin: resolve(import.meta.dirname, "pages/admin.html"),
         account: resolve(import.meta.dirname, "pages/account.html"),
+        feedback: resolve(import.meta.dirname, "pages/feedback.html"),
       },
     },
   },
