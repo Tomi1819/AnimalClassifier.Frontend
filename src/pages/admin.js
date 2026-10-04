@@ -7,6 +7,7 @@ import {
   revokeAdmin,
   unlockUser,
 } from "../api/admin.js";
+import { initFeedbackReview } from "../admin/feedback-review.js";
 import { createBadge, createCell, createEmptyRow } from "../admin/table.js";
 import { askToConfirm } from "../shared/confirm.js";
 import { createGhostButton } from "../shared/dom.js";
@@ -63,7 +64,7 @@ if (initPage(PAGE_ACCESS.ADMIN)) {
     page.historySection.hidden = true;
   });
 
-  await Promise.all([showUsers(page, 1), showAuditLog(page, 1)]);
+  await Promise.all([showUsers(page, 1), showAuditLog(page, 1), initFeedbackReview()]);
 }
 
 function collectPageElements() {
