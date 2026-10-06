@@ -219,7 +219,8 @@ if (initPage(PAGE_ACCESS.SIGNED_IN)) {
 ```
 
 1. Add the HTML file to `pages/`, with the `theme-init.js` script in its
-   `<head>`, `/src/styles/main.css` as its only stylesheet, and its module.
+   `<head>`, `/src/styles/main.css` as its only stylesheet, the two icon
+   links the other pages have, and its module.
 2. List it as an entry point in `vite.config.js`, and its path in
    `src/shared/pages.js` if anything links or redirects to it.
 3. Give it a module in `src/pages/` that calls `initPage` with
@@ -244,6 +245,8 @@ index.html                Home page
 pages/                    One HTML file per page (each is a build entry point)
 public/                   Static files served from the root, e.g. /logo.png
   theme-init.js           Sets the theme before the first paint
+  favicon.svg             The tab's icon, a paw, lighter on a dark browser theme
+  phone-icon.png          The same paw on white, for a phone's home screen
 src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
   api/recognitions.js     Uploads, the history, the search and the statistics
