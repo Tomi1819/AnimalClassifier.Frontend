@@ -7,7 +7,7 @@ import { initPage, PAGE_ACCESS } from "../shared/page.js";
 const NOT_FOUND_STATUS = 404;
 const SEARCH_DEBOUNCE_MS = 500;
 const MIN_QUERY_LENGTH = 2;
-// Two full rows at the widest gallery layout; "Show all" reveals the rest.
+// Two full rows at the widest gallery layout; "Show more" reveals the rest.
 const INITIAL_IMAGES_PER_ANIMAL = 8;
 const MAX_SUGGESTIONS = 8;
 // Lets other pages link straight to an animal's images, as the statistics page does.
@@ -151,7 +151,11 @@ function createAnimalGallery({ animalName, count = 0, imagePaths = [] }) {
 
   const counter = document.createElement("span");
   counter.className = "gallery__count";
-  counter.textContent = pluralize(count, "image");
+  // The search links to only the most recent images, but counts every one.
+  counter.textContent =
+    count > imagePaths.length
+      ? `${pluralize(count, "image")} · latest ${imagePaths.length} shown`
+      : pluralize(count, "image");
 
   const head = document.createElement("div");
   head.className = "gallery__head";
@@ -176,17 +180,17 @@ function createAnimalGallery({ animalName, count = 0, imagePaths = [] }) {
   appendTiles(0, INITIAL_IMAGES_PER_ANIMAL);
 
   if (imagePaths.length > INITIAL_IMAGES_PER_ANIMAL) {
-    const showAll = document.createElement("button");
-    showAll.type = "button";
-    showAll.className = "btn-ghost gallery__more";
-    showAll.textContent = `Show all ${pluralize(imagePaths.length, "image")}`;
-    showAll.addEventListener("click", () => {
+    const showMore = document.createElement("button");
+    showMore.type = "button";
+    showMore.className = "btn-ghost gallery__more";
+    showMore.textContent = `Show ${imagePaths.length - INITIAL_IMAGES_PER_ANIMAL} more`;
+    showMore.addEventListener("click", () => {
       const [firstRevealed] = appendTiles(INITIAL_IMAGES_PER_ANIMAL);
-      showAll.remove();
+      showMore.remove();
       // The focused button is gone, so keyboard users continue from the first new image.
       firstRevealed.querySelector("button").focus();
     });
-    section.append(showAll);
+    section.append(showMore);
   }
 
   return section;

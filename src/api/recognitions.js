@@ -43,13 +43,15 @@ export function uploadVideo(file) {
 }
 
 /**
- * The signed-in user's recognitions, most recent first.
+ * One page of the signed-in user's recognitions, most recent first.
  *
- * @returns a list of `{ id, mediaPath, recognizedAnimal, dateRecognized,
- *   predictionScore, framesProcessed, isVideo }`.
+ * @param page counted from 1.
+ * @returns `{ items, page, pageSize, totalCount }`, where each of the items is
+ *   `{ id, mediaPath, recognizedAnimal, dateRecognized, predictionScore,
+ *   framesProcessed, isVideo, feedback }`.
  */
-export function getHistory() {
-  return apiFetch(HISTORY_PATH);
+export function getHistory(page) {
+  return apiFetch(`${HISTORY_PATH}?${new URLSearchParams({ page })}`);
 }
 
 /**
@@ -65,7 +67,9 @@ export function clearHistory() {
  * has had recognised.
  *
  * @param signal calls the search off, such as one a newer search replaces.
- * @returns a list of `{ animalName, count, accuracy, imagePaths }`.
+ * @returns a list of `{ animalName, count, accuracy, imagePaths }`, where
+ *   `count` is how many images the animal was recognised in, and
+ *   `imagePaths` links to only the most recent of them, at most 12.
  * @throws {ApiError} with status 404 when no animal matches.
  */
 export function searchAnimals(term, signal) {
