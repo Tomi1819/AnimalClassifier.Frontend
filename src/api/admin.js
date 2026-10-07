@@ -18,10 +18,14 @@ export function getUsers(search, page) {
 }
 
 /**
- * One user's recognitions, as their own history lists them.
+ * One page of one user's recognitions, as their own history lists them.
+ *
+ * @param page counted from 1.
+ * @returns `{ items, page, pageSize, totalCount }`, as `getHistory` in
+ *   api/recognitions.js does.
  */
-export function getUserHistory(userId) {
-  return apiFetch(`${userPath(userId)}/history`);
+export function getUserHistory(userId, page) {
+  return apiFetch(`${userPath(userId)}/history?${new URLSearchParams({ page })}`);
 }
 
 // Each of the changes below ends the user's sessions, is recorded in the audit

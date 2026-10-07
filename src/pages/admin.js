@@ -80,6 +80,7 @@ function collectPageElements() {
     historyTitle: document.getElementById("historyTitle"),
     historyEmpty: document.getElementById("historyEmpty"),
     historyList: document.getElementById("historyList"),
+    historyPager: document.getElementById("historyPager"),
     closeHistory: document.getElementById("closeHistory"),
   };
 }
@@ -130,7 +131,7 @@ function createUserRow(page, user) {
   }
 
   const actions = createCell(
-    createGhostButton("History", () => showHistory(page, user)),
+    createGhostButton("History", () => showHistory(page, user, 1)),
     createChangeButton(page, user, user.isLocked ? "unlock" : "lock"),
     createChangeButton(page, user, user.isAdmin ? "revokeAdmin" : "grantAdmin"),
   );
@@ -171,15 +172,17 @@ async function changeUser(page, user, change) {
 }
 
 
-async function showHistory(page, user) {
+async function showHistory(page, user, pageNumber) {
   try {
-    const history = await getUserHistory(user.id);
+    const result = await getUserHistory(user.id, pageNumber);
 
     page.historyTitle.textContent = `History of ${user.email}`;
     page.historyList.replaceChildren(
-      ...history.map((item) => createHistoryCard(fromHistoryItem(item))),
+      ...result.items.map((item) => createHistoryCard(fromHistoryItem(item))),
     );
-    page.historyEmpty.hidden = history.length > 0;
+    page.historyEmpty.hidden = result.totalCount > 0;
+    page.historyPager.hidden = result.totalCount <= result.pageSize;
+    renderPager(page.historyPager, result, (next) => showHistory(page, user, next));
     page.historySection.hidden = false;
     page.historySection.scrollIntoView({ behavior: "smooth" });
   } catch (error) {

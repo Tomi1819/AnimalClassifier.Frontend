@@ -4,6 +4,12 @@ import { initUploadForms } from "../dashboard/upload-form.js";
 import { hideMessage, showError } from "../shared/feedback.js";
 import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
 import { initPage, PAGE_ACCESS } from "../shared/page.js";
+import { renderPager } from "../shared/pager.js";
+
+// The page of the history on screen, and how long the whole history is, which
+// an upload adds to. Until the history loads nothing is known of its pages,
+// so an upload is only added to the top.
+let shownHistory = { page: 1, pageSize: Infinity, totalCount: 0 };
 
 if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   const page = collectPageElements();
@@ -16,7 +22,13 @@ if (initPage(PAGE_ACCESS.SIGNED_IN)) {
     onRecognised: (recognition) => addRecognition(page, resultCard, recognition),
   });
   initClearButton(page, resultCard);
-  await showHistory(page, resultCard);
+
+  const [latest] = await showHistory(page, resultCard, 1);
+  // A stored result is not new, so it appears settled rather than counting and
+  // filling as though it had just been recognised.
+  if (latest) {
+    resultCard.show(latest, { animate: false });
+  }
 }
 
 function collectPageElements() {
@@ -25,6 +37,7 @@ function collectPageElements() {
     resultSection: document.getElementById("resultSection"),
     historyList: document.getElementById("historyList"),
     historyEmpty: document.getElementById("historyEmpty"),
+    historyPager: document.getElementById("historyPager"),
     clearHistory: document.getElementById("clearHistory"),
   };
 }
@@ -38,36 +51,53 @@ function collectPageElements() {
    Only the animations differ.
    ------------------------------------------------------------------------- */
 
-async function showHistory(page, resultCard) {
-  let recognitions;
+// Answers with the recognitions it shows, most recent first, which are none
+// when the history could not be loaded.
+async function showHistory(page, resultCard, pageNumber) {
+  let result;
 
   try {
-    const history = await getHistory();
-    recognitions = history.map(fromHistoryItem);
+    result = await getHistory(pageNumber);
   } catch (error) {
     console.error("Could not load the history:", error);
     page.historyEmpty.textContent = error.message;
-    return;
+    page.historyEmpty.hidden = false;
+    return [];
   }
 
-  if (recognitions.length === 0) {
-    return;
-  }
+  const recognitions = result.items.map(fromHistoryItem);
 
-  const [latest] = recognitions;
-  // A stored result is not new, so it appears settled rather than counting and
-  // filling as though it had just been recognised.
-  resultCard.show(latest, { animate: false });
+  shownHistory = { page: result.page, pageSize: result.pageSize, totalCount: result.totalCount };
   page.historyList.replaceChildren(
     ...recognitions.map((recognition) => createEntry(page, resultCard, recognition)),
   );
+  renderHistoryPager(page, resultCard);
+
+  if (result.totalCount > 0) {
+    showHistoryControls(page);
+  }
+
+  return recognitions;
+}
+
+// The newest entry tops the first page, pushing its last one onto the next.
+// Another page keeps its entries until it is turned.
+function addRecognition(page, resultCard, recognition) {
+  resultCard.show(recognition, { animate: true });
+
+  shownHistory.totalCount += 1;
+  if (shownHistory.page === 1) {
+    page.historyList.prepend(createEntry(page, resultCard, recognition));
+    page.historyList.children[shownHistory.pageSize]?.remove();
+  }
+
+  renderHistoryPager(page, resultCard);
   showHistoryControls(page);
 }
 
-function addRecognition(page, resultCard, recognition) {
-  resultCard.show(recognition, { animate: true });
-  page.historyList.prepend(createEntry(page, resultCard, recognition));
-  showHistoryControls(page);
+function renderHistoryPager(page, resultCard) {
+  page.historyPager.hidden = shownHistory.totalCount <= shownHistory.pageSize;
+  renderPager(page.historyPager, shownHistory, (next) => showHistory(page, resultCard, next));
 }
 
 // Choosing an entry shows it in the result card, which is where the user says
@@ -108,7 +138,9 @@ function initClearButton(page, resultCard) {
       page.clearHistory.disabled = false;
     }
 
+    shownHistory = { ...shownHistory, page: 1, totalCount: 0 };
     page.historyList.replaceChildren();
+    renderHistoryPager(page, resultCard);
     page.historyEmpty.hidden = false;
     page.clearHistory.hidden = true;
     resultCard.hide();

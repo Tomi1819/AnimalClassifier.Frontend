@@ -173,7 +173,7 @@ async function showReview(section, review) {
   );
   renderPager(section.pager, result, (next) => {
     review.page = next;
-    showReview(section, review);
+    return showReview(section, review);
   });
 }
 
