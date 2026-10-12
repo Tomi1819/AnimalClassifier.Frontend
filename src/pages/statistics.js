@@ -1,9 +1,4 @@
-import {
-  getActivity,
-  getMostCommonAnimals,
-  getTotalRecognitions,
-  getUserCount,
-} from "../api/recognitions.js";
+import { getActivity, getMostCommonAnimals, getTotalRecognitions } from "../api/recognitions.js";
 import { createElement } from "../shared/dom.js";
 import { showError } from "../shared/feedback.js";
 import { formatCount, formatDay, pluralize } from "../shared/format.js";
@@ -11,14 +6,12 @@ import { initPage, PAGE_ACCESS } from "../shared/page.js";
 import { SEARCH_PAGE } from "../shared/pages.js";
 import { drawActivityChart } from "../statistics/activity-chart.js";
 
-const NO_VALUE = "—";
 const ACTIVITY_DAYS = 30;
 
 // Below this a share keeps a decimal, so small animals do not all read as 0%.
 const PRECISE_SHARE_BELOW = 0.1;
 
 const count = new Intl.NumberFormat();
-const average = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
 const share = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
 const preciseShare = new Intl.NumberFormat(undefined, {
   style: "percent",
@@ -33,15 +26,11 @@ async function showStatistics() {
   const content = document.getElementById("statsContent");
 
   try {
-    // Every figure on the page is derived from all three, so they are shown
-    // together or not at all.
-    const [total, users, topAnimals] = await Promise.all([
-      getTotalRecognitions(),
-      getUserCount(),
-      getMostCommonAnimals(),
-    ]);
+    // The ranking's shares are of the total, so the two are shown together or
+    // not at all.
+    const [total, topAnimals] = await Promise.all([getTotalRecognitions(), getMostCommonAnimals()]);
 
-    renderFigures(total, users);
+    renderFigures(total);
     renderRanking(total, topAnimals);
     content.removeAttribute("aria-busy");
   } catch (error) {
@@ -51,10 +40,8 @@ async function showStatistics() {
   }
 }
 
-function renderFigures(total, users) {
+function renderFigures(total) {
   setText("totalRecognitions", formatCount(total));
-  setText("activeUsers", formatCount(users));
-  setText("perUser", users > 0 ? average.format(total / users) : NO_VALUE);
 }
 
 /* -------------------------------------------------------------------------

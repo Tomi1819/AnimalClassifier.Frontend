@@ -78,29 +78,22 @@ export function searchAnimals(term, signal) {
 }
 
 /**
- * @returns how many recognitions every user has made, as a number.
+ * @returns how many recognitions the signed-in user has made, as a number.
  */
 export function getTotalRecognitions() {
   return apiFetch(`${STATISTICS_PATH}/total`);
 }
 
 /**
- * @returns how many users have made a recognition, as a number.
- */
-export function getUserCount() {
-  return apiFetch(`${STATISTICS_PATH}/users`);
-}
-
-/**
- * @returns the animals recognised most, as a list of `{ animalName, count }`,
- *   most first. Only the leaders are listed.
+ * @returns the animals the signed-in user recognised most, as a list of
+ *   `{ animalName, count }`, most first. Only the leaders are listed.
  */
 export function getMostCommonAnimals() {
   return apiFetch(`${STATISTICS_PATH}/top-animal`);
 }
 
 /**
- * How many recognitions were made on each of the last days.
+ * How many recognitions the signed-in user made on each of the last days.
  *
  * @param timeZone the IANA time zone the days start and end in.
  * @returns a list of `{ date, count }`, oldest first and ending today, where
