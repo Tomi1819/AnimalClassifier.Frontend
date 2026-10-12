@@ -55,20 +55,21 @@ export function getHistory(page) {
 }
 
 /**
- * Clears the signed-in user's history. The recognitions are kept, so the
- * search and statistics pages still count them.
+ * Clears the signed-in user's history, which takes its images out of the
+ * search as well. The recognitions are kept, so the statistics page still
+ * counts them.
  */
 export function clearHistory() {
   return apiFetch(HISTORY_PATH, { method: "DELETE" });
 }
 
 /**
- * Finds the animals whose name contains the term, among the images every user
- * has had recognised.
+ * Finds the animals whose name contains the term, among the signed-in user's
+ * own images. No other user's images are ever found.
  *
  * @param signal calls the search off, such as one a newer search replaces.
  * @returns a list of `{ animalName, count, accuracy, imagePaths }`, where
- *   `count` is how many images the animal was recognised in, and
+ *   `count` is how many of the user's images the animal was recognised in, and
  *   `imagePaths` links to only the most recent of them, at most 12.
  * @throws {ApiError} with status 404 when no animal matches.
  */

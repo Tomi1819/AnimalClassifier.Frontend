@@ -111,7 +111,10 @@ async function search(query) {
 
     // The backend answers 404 when nothing matches, which is not an error here.
     if (error.status === NOT_FOUND_STATUS) {
-      showEmptyState("No animals found", "Try a different search term or check your spelling");
+      showEmptyState(
+        "No animals found",
+        "None of your images matches that yet. Try a different search term or check your spelling",
+      );
       return;
     }
 
