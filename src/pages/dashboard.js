@@ -127,8 +127,8 @@ function initClearButton(page, resultCard) {
     page.clearHistory.disabled = true;
 
     try {
-      // The recognitions are kept on the server, where the search and
-      // statistics pages still count them; only this history is cleared.
+      // The recognitions are kept on the server, where the statistics page
+      // still counts them; this history and the search leave them out.
       await clearHistory();
     } catch (error) {
       console.error("Could not clear the history:", error);
