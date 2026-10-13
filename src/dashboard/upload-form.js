@@ -25,7 +25,7 @@ const IMAGE_UPLOAD = {
   thumbnail: "imageThumb",
   upload: uploadImage,
   missingFile: "Please select an image file.",
-  wrongType: "That file is not a JPG or PNG image.",
+  wrongType: "That file is not a JPG, PNG, WebP or GIF image.",
   progress: "Uploading image...",
   success: "Image upload successful!",
   toRecognition: toImageRecognition,

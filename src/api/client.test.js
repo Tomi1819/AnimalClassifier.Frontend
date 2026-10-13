@@ -18,12 +18,12 @@ describe("apiFetch", () => {
   });
 
   it("throws the backend's message for a failure", async () => {
-    respondWith(new Response(JSON.stringify({ message: "Only JPEG and PNG images can be uploaded." }), { status: 400 }));
+    respondWith(new Response(JSON.stringify({ message: "Only JPEG, PNG, WebP and GIF images can be uploaded." }), { status: 400 }));
 
     const error = await apiFetch("/api/upload/image").catch((caught) => caught);
 
     expect(error).toBeInstanceOf(ApiError);
-    expect(error.message).toBe("Only JPEG and PNG images can be uploaded.");
+    expect(error.message).toBe("Only JPEG, PNG, WebP and GIF images can be uploaded.");
     expect(error.status).toBe(400);
   });
 
