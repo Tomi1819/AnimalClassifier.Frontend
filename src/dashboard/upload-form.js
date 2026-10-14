@@ -86,6 +86,7 @@ function initTabs(tabs) {
    ------------------------------------------------------------------------- */
 
 function initUpload(config, status, onRecognised) {
+  const panel = document.getElementById(config.panel);
   const elements = {
     dropzone: document.getElementById(config.dropzone),
     input: document.getElementById(config.input),
@@ -98,11 +99,12 @@ function initUpload(config, status, onRecognised) {
   };
 
   initDropzone(config, elements, status);
+  initPaste(config, elements, status, panel);
   initSubmit(config, elements, status, onRecognised);
 
   return {
     button: document.getElementById(config.tab),
-    panel: document.getElementById(config.panel),
+    panel,
   };
 }
 
@@ -147,9 +149,30 @@ function initDropzone(config, elements, status) {
   });
 }
 
-// A file that did not come through the input, such as a dropped one, has to
-// be handed to it, since the input is what the form reads from. Assigning
-// `files` does not raise a change event, so it is shown here instead.
+// A file pasted anywhere on the page, such as a screenshot, goes to the tab on
+// show. What is pasted into a text field, such as a feedback comment, is left
+// to the field.
+function initPaste(config, elements, status, panel) {
+  document.addEventListener("paste", (event) => {
+    if (panel.hidden || isTextField(event.target)) {
+      return;
+    }
+
+    const [file] = event.clipboardData.files;
+    if (file) {
+      event.preventDefault();
+      selectFile(config, elements, status, file);
+    }
+  });
+}
+
+function isTextField(element) {
+  return element.isContentEditable || element.matches("textarea, input:not([type='file'])");
+}
+
+// A file dropped or pasted rather than chosen through the input has to be
+// handed to it, since the input is what the form reads from. Assigning `files`
+// does not raise a change event, so it is shown here instead.
 function selectFile(config, elements, status, file) {
   const problem = findProblem(config, file, elements.input.accept);
   if (problem) {
