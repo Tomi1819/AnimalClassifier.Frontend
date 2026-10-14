@@ -141,23 +141,27 @@ function initDropzone(config, elements, status) {
     dropzone.classList.remove("is-dragging");
 
     const [file] = event.dataTransfer.files;
-    if (!file) {
-      return;
+    if (file) {
+      selectFile(config, elements, status, file);
     }
-
-    const problem = findProblem(config, file, input.accept);
-    if (problem) {
-      showError(status, problem);
-      return;
-    }
-
-    // A dropped file has to be handed to the input, which is what the form
-    // reads from; assigning `files` does not raise a change event.
-    const transfer = new DataTransfer();
-    transfer.items.add(file);
-    input.files = transfer.files;
-    showSelectedFile(elements, file);
   });
+}
+
+// A file that did not come through the input, such as a dropped one, has to
+// be handed to it, since the input is what the form reads from. Assigning
+// `files` does not raise a change event, so it is shown here instead.
+function selectFile(config, elements, status, file) {
+  const problem = findProblem(config, file, elements.input.accept);
+  if (problem) {
+    showError(status, problem);
+    return;
+  }
+
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  elements.input.files = transfer.files;
+  showSelectedFile(elements, file);
+  hideMessage(status);
 }
 
 // Checked here as well as by the backend, so that a file it would refuse is
