@@ -23,6 +23,8 @@ const IMAGE_UPLOAD = {
   fileName: "imageFileName",
   fileSize: "imageFileSize",
   thumbnail: "imageThumb",
+  cameraButton: "imageCameraButton",
+  cameraInput: "imageCameraInput",
   upload: uploadImage,
   missingFile: "Please select an image file.",
   wrongType: "That file is not a JPG, PNG, WebP or GIF image.",
@@ -100,6 +102,9 @@ function initUpload(config, status, onRecognised) {
 
   initDropzone(config, elements, status);
   initPaste(config, elements, status, panel);
+  if (config.cameraButton) {
+    initCamera(config, elements, status);
+  }
   initSubmit(config, elements, status, onRecognised);
 
   return {
@@ -170,9 +175,32 @@ function isTextField(element) {
   return element.isContentEditable || element.matches("textarea, input:not([type='file'])");
 }
 
-// A file dropped or pasted rather than chosen through the input has to be
-// handed to it, since the input is what the form reads from. Assigning `files`
-// does not raise a change event, so it is shown here instead.
+// A phone opens its camera straight away for the camera input, where the
+// dropzone's input asks first whether to take a photo or pick one. No browser
+// tells whether it honours that, and one on a computer would only open the
+// same file picker as the dropzone, so the button is offered on a touch screen
+// alone. The photo then waits for the upload button, as a chosen file does.
+function initCamera(config, elements, status) {
+  const button = document.getElementById(config.cameraButton);
+  const camera = document.getElementById(config.cameraInput);
+
+  button.hidden = !matchMedia("(pointer: coarse)").matches;
+  button.addEventListener("click", () => camera.click());
+
+  camera.addEventListener("change", () => {
+    const [photo] = camera.files;
+    // Cleared, so that the dropzone's input is the one place the photo is kept.
+    camera.value = "";
+    if (photo) {
+      selectFile(config, elements, status, photo);
+    }
+  });
+}
+
+// A file dropped, pasted or taken with the camera, rather than chosen through
+// the input, has to be handed to it, since the input is what the form reads
+// from. Assigning `files` does not raise a change event, so it is shown here
+// instead.
 function selectFile(config, elements, status, file) {
   const problem = findProblem(config, file, elements.input.accept);
   if (problem) {

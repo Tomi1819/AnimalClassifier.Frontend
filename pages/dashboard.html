@@ -78,6 +78,31 @@
                 <span class="dropzone__swap">Choose another</span>
               </span>
             </label>
+            <!-- Shown only on a touch screen, which is where a phone's camera
+                 is; see upload-form.js. -->
+            <button
+              id="imageCameraButton"
+              class="btn-ghost btn-ghost--block camera-button"
+              type="button"
+              hidden
+            >
+              <svg class="btn-ghost__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              Take a photo
+            </button>
+            <!-- Any image type, as a phone opens its camera only for that;
+                 the photo is checked against the dropzone's types once taken. -->
+            <input
+              type="file"
+              id="imageCameraInput"
+              accept="image/*"
+              capture="environment"
+              hidden
+            />
             <button id="imageUploadButton" class="btn" type="submit">
               Upload image
             </button>
