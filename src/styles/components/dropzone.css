@@ -131,3 +131,9 @@
   font-weight: 600;
   margin-left: auto;
 }
+
+/* The button that opens a phone's camera, between the dropzone and the upload
+   button. */
+.camera-button {
+  margin-top: 12px;
+}

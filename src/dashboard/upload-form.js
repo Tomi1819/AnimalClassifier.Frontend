@@ -23,6 +23,8 @@ const IMAGE_UPLOAD = {
   fileName: "imageFileName",
   fileSize: "imageFileSize",
   thumbnail: "imageThumb",
+  cameraButton: "imageCameraButton",
+  cameraInput: "imageCameraInput",
   upload: uploadImage,
   missingFile: "Please select an image file.",
   wrongType: "That file is not a JPG, PNG, WebP or GIF image.",
@@ -86,6 +88,7 @@ function initTabs(tabs) {
    ------------------------------------------------------------------------- */
 
 function initUpload(config, status, onRecognised) {
+  const panel = document.getElementById(config.panel);
   const elements = {
     dropzone: document.getElementById(config.dropzone),
     input: document.getElementById(config.input),
@@ -98,11 +101,15 @@ function initUpload(config, status, onRecognised) {
   };
 
   initDropzone(config, elements, status);
+  initPaste(config, elements, status, panel);
+  if (config.cameraButton) {
+    initCamera(config, elements, status);
+  }
   initSubmit(config, elements, status, onRecognised);
 
   return {
     button: document.getElementById(config.tab),
-    panel: document.getElementById(config.panel),
+    panel,
   };
 }
 
@@ -141,23 +148,71 @@ function initDropzone(config, elements, status) {
     dropzone.classList.remove("is-dragging");
 
     const [file] = event.dataTransfer.files;
-    if (!file) {
-      return;
+    if (file) {
+      selectFile(config, elements, status, file);
     }
-
-    const problem = findProblem(config, file, input.accept);
-    if (problem) {
-      showError(status, problem);
-      return;
-    }
-
-    // A dropped file has to be handed to the input, which is what the form
-    // reads from; assigning `files` does not raise a change event.
-    const transfer = new DataTransfer();
-    transfer.items.add(file);
-    input.files = transfer.files;
-    showSelectedFile(elements, file);
   });
+}
+
+// A file pasted anywhere on the page, such as a screenshot, goes to the tab on
+// show. What is pasted into a text field, such as a feedback comment, is left
+// to the field.
+function initPaste(config, elements, status, panel) {
+  document.addEventListener("paste", (event) => {
+    if (panel.hidden || isTextField(event.target)) {
+      return;
+    }
+
+    const [file] = event.clipboardData.files;
+    if (file) {
+      event.preventDefault();
+      selectFile(config, elements, status, file);
+    }
+  });
+}
+
+function isTextField(element) {
+  return element.isContentEditable || element.matches("textarea, input:not([type='file'])");
+}
+
+// A phone opens its camera straight away for the camera input, where the
+// dropzone's input asks first whether to take a photo or pick one. No browser
+// tells whether it honours that, and one on a computer would only open the
+// same file picker as the dropzone, so the button is offered on a touch screen
+// alone. The photo then waits for the upload button, as a chosen file does.
+function initCamera(config, elements, status) {
+  const button = document.getElementById(config.cameraButton);
+  const camera = document.getElementById(config.cameraInput);
+
+  button.hidden = !matchMedia("(pointer: coarse)").matches;
+  button.addEventListener("click", () => camera.click());
+
+  camera.addEventListener("change", () => {
+    const [photo] = camera.files;
+    // Cleared, so that the dropzone's input is the one place the photo is kept.
+    camera.value = "";
+    if (photo) {
+      selectFile(config, elements, status, photo);
+    }
+  });
+}
+
+// A file dropped, pasted or taken with the camera, rather than chosen through
+// the input, has to be handed to it, since the input is what the form reads
+// from. Assigning `files` does not raise a change event, so it is shown here
+// instead.
+function selectFile(config, elements, status, file) {
+  const problem = findProblem(config, file, elements.input.accept);
+  if (problem) {
+    showError(status, problem);
+    return;
+  }
+
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  elements.input.files = transfer.files;
+  showSelectedFile(elements, file);
+  hideMessage(status);
 }
 
 // Checked here as well as by the backend, so that a file it would refuse is
