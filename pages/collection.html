@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Blocking on purpose: it sets the theme before the first paint. -->
+    <script src="/theme-init.js"></script>
+    <title>Collection - Animal Classifier</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/phone-icon.png" />
+  </head>
+  <body class="collection-page">
+    <header>
+      <nav>
+        <div class="logo">
+          <img src="/logo.png" alt="Logo" />
+        </div>
+        <!-- Populated by src/shared/nav.js, which varies the links by session. -->
+        <ul id="navLinks"></ul>
+      </nav>
+    </header>
+
+    <main class="collection">
+      <section class="page-header">
+        <p class="eyebrow">Collection</p>
+        <h1>Every animal there is to find</h1>
+        <p class="page-header__subtitle">
+          Recognise an animal once, in an image or a video, and it joins your
+          collection for good.
+        </p>
+      </section>
+
+      <p id="collectionStatus" class="message" hidden></p>
+
+      <!-- Placeholders hold the progress and the cards' places until
+           src/pages/collection.js fills them in, so the layout does not jump
+           when they arrive. -->
+      <div id="collectionContent" aria-busy="true">
+        <section class="card collection-progress">
+          <div class="collection-progress__head">
+            <h2>Found so far</h2>
+            <p class="collection-progress__figure" id="collectionFigure">
+              <span class="skeleton"></span>
+            </p>
+          </div>
+          <!-- The figure beside it says the same in words. -->
+          <div class="collection-progress__track" aria-hidden="true">
+            <div class="collection-progress__fill" id="collectionFill"></div>
+          </div>
+        </section>
+
+        <div class="segmented collection-filter" role="group" aria-label="Which animals to show">
+          <button class="segmented__btn is-active" type="button" aria-pressed="true" data-collection-filter="all">
+            All <span class="collection-filter__count" data-filter-count></span>
+          </button>
+          <button class="segmented__btn" type="button" aria-pressed="false" data-collection-filter="found">
+            Found <span class="collection-filter__count" data-filter-count></span>
+          </button>
+          <button class="segmented__btn" type="button" aria-pressed="false" data-collection-filter="not-found">
+            Not yet <span class="collection-filter__count" data-filter-count></span>
+          </button>
+        </div>
+
+        <ul class="collection-grid" id="collectionGrid">
+          <li class="collection-card--placeholder"><span class="skeleton"></span></li>
+          <li class="collection-card--placeholder"><span class="skeleton"></span></li>
+          <li class="collection-card--placeholder"><span class="skeleton"></span></li>
+          <li class="collection-card--placeholder"><span class="skeleton"></span></li>
+        </ul>
+
+        <p class="history__empty" id="collectionEmpty" hidden></p>
+      </div>
+    </main>
+
+    <script type="module" src="/src/pages/collection.js"></script>
+  </body>
+</html>
