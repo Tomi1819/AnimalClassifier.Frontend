@@ -134,11 +134,6 @@ a.ranking__name:focus-visible {
   font-size: 0.85rem;
 }
 
-.history__empty a {
-  color: var(--brand-strong);
-  font-weight: 600;
-}
-
 /* --- Activity ------------------------------------------------------------- */
 
 /* The left padding is the gutter the gridline values sit in. */
