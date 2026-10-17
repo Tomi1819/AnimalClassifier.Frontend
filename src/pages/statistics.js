@@ -1,4 +1,9 @@
-import { getActivity, getMostCommonAnimals, getTotalRecognitions } from "../api/recognitions.js";
+import {
+  getActivity,
+  getCollection,
+  getMostCommonAnimals,
+  getTotalRecognitions,
+} from "../api/recognitions.js";
 import { createElement } from "../shared/dom.js";
 import { showError } from "../shared/feedback.js";
 import { formatCount, formatDay, pluralize } from "../shared/format.js";
@@ -19,7 +24,7 @@ const preciseShare = new Intl.NumberFormat(undefined, {
 });
 
 if (initPage(PAGE_ACCESS.SIGNED_IN)) {
-  await Promise.all([showStatistics(), showActivity()]);
+  await Promise.all([showStatistics(), showActivity(), showCollectionProgress()]);
 }
 
 async function showStatistics() {
@@ -42,6 +47,20 @@ async function showStatistics() {
 
 function renderFigures(total) {
   setText("totalRecognitions", formatCount(total));
+}
+
+// Loaded apart from the other figures, as the activity is, so a failure here
+// takes away only its own tile.
+async function showCollectionProgress() {
+  try {
+    const { foundCount, knownCount } = await getCollection();
+
+    setText("foundAnimals", formatCount(foundCount));
+    setText("knownAnimals", `Of the ${formatCount(knownCount)} the model knows`);
+  } catch (error) {
+    console.error("Failed to load the collection:", error);
+    document.getElementById("collectionTile").hidden = true;
+  }
 }
 
 /* -------------------------------------------------------------------------

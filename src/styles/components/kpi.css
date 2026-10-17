@@ -41,6 +41,11 @@
   margin: 0;
 }
 
+.kpi__note a {
+  color: var(--brand-strong);
+  font-weight: 600;
+}
+
 /* Stacked full-size, the tiles would push what follows below the fold, so
    each becomes a single row with its figure at the end. */
 @media (max-width: 560px) {
