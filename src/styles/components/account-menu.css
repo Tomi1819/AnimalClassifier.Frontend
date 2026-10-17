@@ -277,7 +277,8 @@
   }
 }
 
-@media (max-width: 560px) {
+/* The width at which the bar's links fold into its menu; see layout/nav.css. */
+@media (max-width: 720px) {
   /* The bar is tight, so the hairline goes and the button matches the size of
      the menu toggle beside it. */
   .account-menu {

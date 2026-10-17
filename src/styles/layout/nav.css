@@ -90,9 +90,9 @@ nav > ul > li > a.active {
   width: 22px;
 }
 
-/* The bar has no room for a row of pills on a phone, so the links move into a
-   panel below it. */
-@media (max-width: 560px) {
+/* Below this width the row of pills no longer fits the bar beside the logo and
+   the account menu, so the links move into a panel below it. */
+@media (max-width: 720px) {
   nav {
     padding: 12px 16px;
   }

@@ -13,7 +13,7 @@ import {
 const NAV_LINKS_ID = "navLinks";
 
 // Matches the width at which the stylesheet drops the links out of the bar.
-const COMPACT_NAV_QUERY = "(max-width: 560px)";
+const COMPACT_NAV_QUERY = "(max-width: 720px)";
 
 const MENU_LABEL = "Menu";
 const ICON_SELECTOR = "[data-icon]";
