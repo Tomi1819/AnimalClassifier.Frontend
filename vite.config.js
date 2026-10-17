@@ -22,6 +22,7 @@ export default defineConfig({
         dashboard: resolve(import.meta.dirname, "pages/dashboard.html"),
         search: resolve(import.meta.dirname, "pages/search.html"),
         statistics: resolve(import.meta.dirname, "pages/statistics.html"),
+        collection: resolve(import.meta.dirname, "pages/collection.html"),
         admin: resolve(import.meta.dirname, "pages/admin.html"),
         account: resolve(import.meta.dirname, "pages/account.html"),
         feedback: resolve(import.meta.dirname, "pages/feedback.html"),

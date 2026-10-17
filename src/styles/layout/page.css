@@ -1,9 +1,10 @@
-/* The wide pages, the dashboard, statistics, admin and feedback, and the
-   header and cards they share. */
+/* The wide pages, the dashboard, statistics, collection, admin and feedback,
+   and the header and cards they share. */
 
 .dashboard-page,
 .admin-page,
 .statistics-page,
+.collection-page,
 .feedback-page {
   background-color: var(--canvas);
   background-image: radial-gradient(
@@ -17,6 +18,7 @@
 .dashboard,
 .admin,
 .statistics,
+.collection,
 .feedback {
   background: none;
   border-radius: 0;

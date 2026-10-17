@@ -28,6 +28,7 @@
 @import "./components/button.css";
 @import "./components/result-card.css";
 @import "./components/section-head.css";
+@import "./components/skeleton.css";
 @import "./components/kpi.css";
 @import "./components/pager.css";
 @import "./components/button-ghost.css";
@@ -42,6 +43,7 @@
 
 @import "./pages/account.css";
 @import "./pages/statistics.css";
+@import "./pages/collection.css";
 @import "./pages/search.css";
 @import "./pages/home.css";
 @import "./pages/auth.css";

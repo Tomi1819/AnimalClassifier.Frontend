@@ -1,0 +1,232 @@
+/* The collection page: how far the user is, the filter, and a card for each
+   animal the model knows. */
+
+/* --- Progress ------------------------------------------------------------- */
+
+.collection-progress {
+  padding: 22px 26px;
+}
+
+.collection-progress__head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.collection-progress__head h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.collection-progress__figure {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.collection-progress__figure strong {
+  color: var(--ink);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.collection-progress__figure .skeleton {
+  height: 1.9rem;
+  width: 12ch;
+}
+
+/* The track is every animal the model knows, so the fill is the share found. */
+.collection-progress__track {
+  background: var(--brand-wash);
+  border-radius: 999px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.collection-progress__fill {
+  animation: grow-bar 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: var(--chart-bar);
+  border-radius: inherit;
+  height: 100%;
+  transform-origin: left;
+  width: 0;
+}
+
+/* --- Filter --------------------------------------------------------------- */
+
+/* Each option keeps its label and count on one line, sharing a phone's width
+   with less padding rather than wrapping. */
+.collection-filter .segmented__btn {
+  white-space: nowrap;
+}
+
+.collection-filter__count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+/* --- Cards ---------------------------------------------------------------- */
+
+.collection-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.collection-card--placeholder .skeleton {
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+}
+
+.collection-card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* What is still to find recedes, so the found cards stand out among them. */
+.collection-card:not(.is-found) {
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border-style: dashed;
+  border-color: var(--hairline-strong);
+  box-shadow: none;
+}
+
+.collection-card__photo {
+  align-items: center;
+  aspect-ratio: 1;
+  background: var(--surface-muted);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+/* Overrides the lift and the ring every button has. */
+button.collection-card__photo:hover {
+  background: var(--surface-muted);
+  box-shadow: none;
+  transform: none;
+}
+
+button.collection-card__photo:focus {
+  box-shadow: none;
+}
+
+button.collection-card__photo:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: -3px;
+}
+
+.collection-card__photo img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  width: 100%;
+}
+
+button.collection-card__photo:hover img {
+  transform: scale(1.04);
+}
+
+.collection-card__photo--empty {
+  color: var(--brand-strong);
+}
+
+.collection-card:not(.is-found) .collection-card__photo--empty {
+  background: none;
+  color: var(--ink-muted);
+}
+
+.collection-card__icon {
+  fill: none;
+  height: 40px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+  width: 40px;
+}
+
+.collection-card__body {
+  padding: 12px 14px 14px;
+}
+
+.collection-card__name {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+  text-transform: capitalize;
+}
+
+.collection-card__name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.collection-card__name a:hover {
+  color: var(--brand-strong);
+  text-decoration: underline;
+}
+
+.collection-card__name a:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.collection-card:not(.is-found) .collection-card__name {
+  color: var(--ink-muted);
+}
+
+.collection-card__meta {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Two to a row on a phone, so the whole collection is a short scroll. */
+@media (max-width: 560px) {
+  .collection-filter .segmented__btn {
+    padding-inline: 12px;
+  }
+
+  .collection-grid {
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .collection-card__body {
+    padding: 10px 12px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-progress__fill {
+    animation: none;
+  }
+
+  .collection-card__photo img {
+    transition: none;
+  }
+}

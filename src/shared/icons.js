@@ -31,6 +31,14 @@ const ICONS = {
   close: `
     <path d="m6 6 12 12M18 6 6 18" />
   `,
+  found: `
+    <circle cx="12" cy="12" r="9" />
+    <path d="m8.5 12 2.5 2.5 4.5-5" />
+  `,
+  locked: `
+    <rect x="5" y="11" width="14" height="10" rx="2" />
+    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+  `,
 };
 
 /**

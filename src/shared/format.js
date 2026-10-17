@@ -9,6 +9,11 @@ const day = new Intl.DateTimeFormat(undefined, {
   day: "numeric",
   month: "short",
 });
+const calendarDate = new Intl.DateTimeFormat(undefined, {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
 
 // Past this a count is shortened, so 128,450 reads as 128.5K and still fits
 // where a short figure does.
@@ -27,6 +32,16 @@ const PRECISE_SIZE_BELOW = 10;
  */
 export function formatDate(date) {
   return new Date(date).toLocaleString();
+}
+
+/**
+ * The day of a date and time as the user's own locale writes it, in their
+ * time zone, such as "3 Oct 2026".
+ *
+ * @param date anything `Date` reads, such as the ISO string the backend sends.
+ */
+export function formatCalendarDate(date) {
+  return calendarDate.format(new Date(date));
 }
 
 /**

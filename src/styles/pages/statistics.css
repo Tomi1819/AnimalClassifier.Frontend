@@ -134,11 +134,6 @@ a.ranking__name:focus-visible {
   font-size: 0.85rem;
 }
 
-.history__empty a {
-  color: var(--brand-strong);
-  font-weight: 600;
-}
-
 /* --- Activity ------------------------------------------------------------- */
 
 /* The left padding is the gutter the gridline values sit in. */
@@ -265,45 +260,15 @@ a.ranking__name:focus-visible {
   white-space: nowrap;
 }
 
-/* Holds a figure's place while it loads. */
-.skeleton {
-  animation: shimmer 1.4s ease-in-out infinite;
-  background: linear-gradient(
-    90deg,
-    var(--surface-muted) 25%,
-    var(--hairline) 50%,
-    var(--surface-muted) 75%
-  );
-  background-size: 200% 100%;
-  border-radius: 8px;
-  display: block;
-}
-
-@keyframes grow-bar {
-  from {
-    transform: scaleX(0);
-  }
-}
-
 @keyframes grow-column {
   from {
     transform: scaleY(0);
   }
 }
 
-@keyframes shimmer {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .activity__bar,
-  .ranking__fill,
-  .skeleton {
+  .ranking__fill {
     animation: none;
   }
 }

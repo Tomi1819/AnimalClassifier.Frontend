@@ -5,6 +5,7 @@ const VIDEO_UPLOAD_PATH = "/api/upload/video";
 const HISTORY_PATH = "/api/upload/history";
 const SEARCH_PATH = "/api/animal/search";
 const STATISTICS_PATH = "/api/statistics";
+const COLLECTION_PATH = "/api/collection";
 
 // The form fields the backend reads each upload from.
 const IMAGE_FIELD = "formFile";
@@ -101,6 +102,21 @@ export function getMostCommonAnimals() {
  */
 export function getActivity(days, timeZone) {
   return apiFetch(`${STATISTICS_PATH}/activity?${new URLSearchParams({ days, timeZone })}`);
+}
+
+/**
+ * Every animal the model knows, and which of them the signed-in user has
+ * found. An animal is found once it is recognised, in an image or a video,
+ * and stays found when the history is cleared.
+ *
+ * @returns `{ knownCount, foundCount, animals }`, where each of the animals,
+ *   in alphabetical order, is `{ animalName, count, dateFirstRecognized,
+ *   imagePath }`. One not found yet has a `count` of 0 and no date, and
+ *   `imagePath` links to the image of it the model was surest of, or is null
+ *   when the history holds none, as for one found only in videos.
+ */
+export function getCollection() {
+  return apiFetch(COLLECTION_PATH);
 }
 
 function upload(path, field, file) {

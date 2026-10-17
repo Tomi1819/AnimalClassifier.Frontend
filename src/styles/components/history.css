@@ -11,6 +11,11 @@
   text-align: center;
 }
 
+.history__empty a {
+  color: var(--brand-strong);
+  font-weight: 600;
+}
+
 .history__list {
   display: grid;
   gap: 16px;

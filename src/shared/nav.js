@@ -2,6 +2,7 @@ import { isAuthenticated } from "../auth/session.js";
 import { createAccountMenu } from "./account-menu.js";
 import { initDisclosure } from "./disclosure.js";
 import {
+  COLLECTION_PAGE,
   DASHBOARD_PAGE,
   HOME_PAGE,
   LOGIN_PAGE,
@@ -13,7 +14,7 @@ import {
 const NAV_LINKS_ID = "navLinks";
 
 // Matches the width at which the stylesheet drops the links out of the bar.
-const COMPACT_NAV_QUERY = "(max-width: 560px)";
+const COMPACT_NAV_QUERY = "(max-width: 720px)";
 
 const MENU_LABEL = "Menu";
 const ICON_SELECTOR = "[data-icon]";
@@ -23,6 +24,7 @@ const AUTHENTICATED_LINKS = [
   { href: DASHBOARD_PAGE, label: "Dashboard" },
   { href: SEARCH_PAGE, label: "Search" },
   { href: STATISTICS_PAGE, label: "Statistics" },
+  { href: COLLECTION_PAGE, label: "Collection" },
 ];
 
 const ANONYMOUS_LINKS = [
