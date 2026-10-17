@@ -191,6 +191,25 @@ retraining the model; the backend's README describes that. An animal the model
 does not know is marked "New animal", since learning one takes many more
 images than a few.
 
+## 🏆 Collection
+
+The collection page, linked from the bar, has a card for every animal the
+model knows, and the user fills it in by recognising them. A bar at the top
+says how many are found out of how many, and the cards can be narrowed to the
+found ones or those still to find.
+
+A found card shows the image of the animal the model was surest of, which opens
+as large as the window allows, how many times it was found and when first. Its
+name links to the animal's images on the search page. An animal found only in
+videos, or in images since cleared from the history, has no image to show, so
+its card shows a tick instead, and one still to find a lock.
+
+`getCollection` in `src/api/recognitions.js` reads every animal in one call,
+and the filter, `filterAnimals` in `src/collection/filter.js`, only redraws the
+cards from what the page holds. The backend decides what counts as found; see
+its README. The statistics page reads the same call for its "Animals found"
+tile, which leaves the rest of the page in place if it fails.
+
 ## 🌗 Themes
 
 The site has a light and a dark theme. It is light until the user picks dark
@@ -249,7 +268,7 @@ public/                   Static files served from the root, e.g. /logo.png
   phone-icon.png          The same paw on white, for a phone's home screen
 src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
-  api/recognitions.js     Uploads, the history, the search and the statistics
+  api/recognitions.js     Uploads, the history, the search, the statistics and the collection
   api/admin.js            The admin page's users, feedback review and audit log
   api/feedback.js         Giving, listing and withdrawing feedback, and the animals the model knows
   auth/session.js         Token storage and the page guard
@@ -261,6 +280,7 @@ src/
   admin/                  The admin page's table pieces and its feedback review
   dashboard/              The dashboard's upload forms, result card and video breakdown
   feedback/               The panel that asks whether the model was right, and its wording
+  collection/             Which of the collection's animals its filter shows
   statistics/             The statistics page's activity chart
   shared/page.js          initPage, which every page starts with
   shared/account-menu.js  The settings menu: account, feedback, admin, theme and sign out
