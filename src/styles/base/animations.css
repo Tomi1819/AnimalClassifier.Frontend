@@ -13,6 +13,14 @@
   }
 }
 
+/* Grows a bar out from its start, such as a share of a whole. The bar sets
+   `transform-origin: left` for it. */
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+}
+
 /* Turns a spinner for as long as something is waiting. */
 @keyframes spin {
   0% {

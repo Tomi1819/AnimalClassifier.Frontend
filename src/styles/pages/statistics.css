@@ -260,12 +260,6 @@ a.ranking__name:focus-visible {
   white-space: nowrap;
 }
 
-@keyframes grow-bar {
-  from {
-    transform: scaleX(0);
-  }
-}
-
 @keyframes grow-column {
   from {
     transform: scaleY(0);
