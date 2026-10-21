@@ -43,6 +43,10 @@ The app is served at <http://localhost:3000>.
 A test sits beside the module it tests, as `name.test.js`. Tests run in Node;
 one that needs a document starts with `// @vitest-environment jsdom`.
 
+GitHub Actions runs `npm ci`, `npm run lint`, `npm test` and `npm run build`
+on every pull request, and on main after each merge
+(`.github/workflows/ci.yml`), on the Node version `.nvmrc` names.
+
 ## 🔌 Backend Connection
 
 In development, Vite proxies `/api` and `/uploads` to the backend (see `vite.config.js`). Requests therefore stay same-origin, so **CORS does not apply and the self-signed development certificate is accepted automatically**.
