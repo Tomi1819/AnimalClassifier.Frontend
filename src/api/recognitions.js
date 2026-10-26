@@ -35,9 +35,9 @@ export function uploadImage(file) {
  * Recognises the animals in a video, a frame at a time, and adds it to the
  * signed-in user's history.
  *
- * @returns `{ framesProcessed, topAnimals, videoPath }`, where each of the
- *   `topAnimals` is `{ animal, averageScore }`, strongest first, and the score
- *   is written as text, such as "0.87".
+ * @returns `{ videoId, framesProcessed, topAnimals, videoPath }`, where each
+ *   of the `topAnimals` is `{ animal, averageScore }`, strongest first, and
+ *   the score is written as text, such as "0.87".
  */
 export function uploadVideo(file) {
   return upload(VIDEO_UPLOAD_PATH, VIDEO_FIELD, file);
