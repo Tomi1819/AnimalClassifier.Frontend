@@ -198,15 +198,29 @@ images than a few.
 ## 🏆 Collection
 
 The collection page, linked from the bar, has a card for every animal the
-model knows, and the user fills it in by recognising them. A bar at the top
-says how many are found out of how many, and the cards can be narrowed to the
-found ones or those still to find.
+model knows, and the user fills it in by finding them. A recognition finds an
+animal when the model was sure enough of it, or when the user says, through
+the feedback above, that the image shows it: the animal the model named when
+it was right, or the one they named instead. A bar at the top says how many are
+found out of how many, and the cards can be narrowed to the found ones or those
+still to find.
 
-A found card shows the image of the animal the model was surest of, which opens
-as large as the window allows, how many times it was found and when first. Its
-name links to the animal's images on the search page. An animal found only in
-videos, or in images since cleared from the history, has no image to show, so
-its card shows a tick instead, and one still to find a lock.
+A found card shows the image that shows the animal best, one the user
+confirmed before one the model was only sure of, which opens as large as the
+window allows, how many times it was found and when first. Its name links to
+the animal's images on the search page. An animal found only in videos, or in
+images since cleared from the history, has no image to show, so its card shows
+a tick instead, and one still to find a lock.
+
+Under each result the dashboard says what the recognition did for the
+collection: a first find, with how far the collection is and a link to it, an
+animal found already, or one the model was not sure enough of, which saying it
+was right adds. A video's result can only say that the model was not sure
+enough, as a video takes no feedback. `initCollectionNote` in
+`src/dashboard/collection-note.js` asks `GET /api/collection/recognitions/{id}`
+each time a result is shown and again once its feedback changes, and
+`describeFind` in `src/collection/find-text.js` words the answer. If the call
+fails, the result is shown without the line.
 
 `getCollection` in `src/api/recognitions.js` reads every animal in one call,
 and the filter, `filterAnimals` in `src/collection/filter.js`, only redraws the
@@ -282,9 +296,9 @@ src/
   account/setting.js      A settings row that opens in place
   account/                The account page's header and one module per setting
   admin/                  The admin page's table pieces and its feedback review
-  dashboard/              The dashboard's upload forms, result card and video breakdown
+  dashboard/              The dashboard's upload forms, result card, collection line and video breakdown
   feedback/               The panel that asks whether the model was right, and its wording
-  collection/             Which of the collection's animals its filter shows
+  collection/             Which of the collection's animals its filter shows, and what a find says
   statistics/             The statistics page's activity chart
   shared/page.js          initPage, which every page starts with
   shared/account-menu.js  The settings menu: account, feedback, admin, theme and sign out
