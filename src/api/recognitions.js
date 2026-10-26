@@ -105,18 +105,47 @@ export function getActivity(days, timeZone) {
 }
 
 /**
+ * What one recognition did for the signed-in user's collection, as the
+ * backend names it.
+ */
+export const FIND_STATUS = Object.freeze({
+  // The first of their recognitions to find its animal.
+  FIRST_FIND: "FirstFind",
+  // Another of their recognitions found the animal already.
+  ALREADY_FOUND: "AlreadyFound",
+  // The model was not sure enough of the animal, which saying it was right
+  // finds.
+  UNCONFIRMED: "Unconfirmed",
+  // It finds no animal the model knows.
+  NONE: "None",
+});
+
+/**
  * Every animal the model knows, and which of them the signed-in user has
- * found. An animal is found once it is recognised, in an image or a video,
- * and stays found when the history is cleared.
+ * found. A recognition, of an image or a video, finds an animal when the
+ * model was sure enough of it or the user says it shows that animal, and an
+ * animal stays found when the history is cleared.
  *
  * @returns `{ knownCount, foundCount, animals }`, where each of the animals,
  *   in alphabetical order, is `{ animalName, count, dateFirstRecognized,
  *   imagePath }`. One not found yet has a `count` of 0 and no date, and
- *   `imagePath` links to the image of it the model was surest of, or is null
- *   when the history holds none, as for one found only in videos.
+ *   `imagePath` links to the image that shows it best, or is null when the
+ *   history holds none, as for one found only in videos.
  */
 export function getCollection() {
   return apiFetch(COLLECTION_PATH);
+}
+
+/**
+ * What one of the signed-in user's recognitions did for their collection, as
+ * it stands now: saying whether the model was right changes it.
+ *
+ * @returns `{ status, animalName, foundCount, knownCount }`, where `status` is
+ *   one of FIND_STATUS, and `animalName` the animal it finds, or would once
+ *   confirmed, which is null for FIND_STATUS.NONE.
+ */
+export function getCollectionFind(recognitionId) {
+  return apiFetch(`${COLLECTION_PATH}/recognitions/${encodeURIComponent(recognitionId)}`);
 }
 
 function upload(path, field, file) {

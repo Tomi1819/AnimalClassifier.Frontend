@@ -1,5 +1,6 @@
 import { createFeedbackPanel } from "../feedback/feedback-panel.js";
 import { formatDate } from "../shared/format.js";
+import { initCollectionNote } from "./collection-note.js";
 import { renderVideoBreakdown } from "./video-breakdown.js";
 
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
@@ -7,8 +8,8 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
 
 /**
  * The card at the top of the dashboard that shows a recognition: the image or
- * video, what the model made of it, and for an image, what the user says of
- * that.
+ * video, what the model made of it, what it did for the user's collection,
+ * and for an image, what the user says of that.
  *
  * @param onFeedbackChange called with the recognition once the user gives,
  *   changes or withdraws their feedback on it, which is then its `feedback`.
@@ -18,13 +19,25 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
  */
 export function initResultCard({ onFeedbackChange = () => {} } = {}) {
   const card = collectCardElements();
+  const collectionNote = initCollectionNote(card.collectionSlot);
+
+  // What the user says of the animal decides whether it is found, so the
+  // collection's line is asked for again.
+  const onChange = (recognition) => {
+    onFeedbackChange(recognition);
+    collectionNote.show(recognition);
+  };
 
   return {
-    show: (recognition, options) => render(card, recognition, { ...options, onFeedbackChange }),
+    show: (recognition, options) => {
+      render(card, recognition, { ...options, onFeedbackChange: onChange });
+      collectionNote.show(recognition);
+    },
     hide: () => {
       card.section.hidden = true;
       card.videoStatsSlot.replaceChildren();
       card.feedbackSlot.replaceChildren();
+      collectionNote.hide();
     },
   };
 }
@@ -41,6 +54,7 @@ function collectCardElements() {
     confidenceFill: document.getElementById("confidenceFill"),
     lowConfidenceMessage: document.getElementById("lowConfidenceMessage"),
     videoStatsSlot: document.getElementById("videoStatsSlot"),
+    collectionSlot: document.getElementById("collectionSlot"),
     feedbackSlot: document.getElementById("feedbackSlot"),
   };
 }

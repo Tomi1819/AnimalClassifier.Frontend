@@ -1,0 +1,43 @@
+/* What a recognition did for the user's collection, under its result on the
+   dashboard. A first find stands out, an animal the model was not sure enough
+   of asks to be confirmed, and one found already is only mentioned. */
+
+.collection-note {
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  margin: 18px 0 0;
+  padding: 12px 14px;
+}
+
+.collection-note a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.collection-note--first {
+  animation: rise 0.4s ease-out both;
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-color);
+  font-weight: 500;
+}
+
+.collection-note--unconfirmed {
+  background: var(--brand-wash);
+  border-color: var(--hairline-strong);
+  color: var(--ink);
+}
+
+/* Said in passing, so it does not draw the eye from the result. */
+.collection-note--found {
+  border: none;
+  color: var(--ink-muted);
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-note--first {
+    animation: none;
+  }
+}
