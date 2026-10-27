@@ -310,6 +310,7 @@ function toImageRecognition(result) {
 
 function toVideoRecognition(result) {
   return {
+    id: result.videoId,
     type: "video",
     url: resolveUrl(result.videoPath),
     // A video has no single prediction, so its strongest match stands in for
