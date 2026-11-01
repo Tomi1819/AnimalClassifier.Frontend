@@ -1,0 +1,37 @@
+{
+	# HTTPS is handled in front of Caddy, and nothing changes its settings while
+	# it runs.
+	admin off
+	auto_https off
+	persist_config off
+
+	# Only what runs on this machine can reach Caddy, so it may say who the caller
+	# is. Read from the right, so that an address the caller added is not believed.
+	servers {
+		trusted_proxies static private_ranges
+		trusted_proxies_strict
+	}
+}
+
+:8080 {
+	encode zstd gzip
+
+	handle /api/* {
+		reverse_proxy api:8080 {
+			# The caller alone: the API believes one address, the last, and every
+			# user would otherwise share a rate limit as one caller.
+			header_up X-Forwarded-For {client_ip}
+		}
+	}
+
+	handle {
+		root * /srv
+		file_server
+
+		header {
+			X-Content-Type-Options nosniff
+			Referrer-Policy strict-origin-when-cross-origin
+			X-Frame-Options DENY
+		}
+	}
+}
