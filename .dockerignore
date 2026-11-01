@@ -1,0 +1,12 @@
+# What the image's build never needs, which keeps it fast and keeps anything
+# local out of the image.
+.git
+.github
+.vscode
+node_modules
+dist
+Dockerfile
+.dockerignore
+*.md
+.env.local
+.env.*.local
