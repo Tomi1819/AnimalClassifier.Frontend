@@ -5,8 +5,10 @@
 	auto_https off
 	persist_config off
 
-	# Only what runs on this machine can reach Caddy, so it may say who the caller
-	# is. Read from the right, so that an address the caller added is not believed.
+	# Only what runs on this machine can reach Caddy, the Cloudflare tunnel
+	# among it, so it may say who the caller is: the tunnel passes on the address
+	# Cloudflare saw. Read from the right, so that an address the caller added is
+	# not believed.
 	servers {
 		trusted_proxies static private_ranges
 		trusted_proxies_strict
