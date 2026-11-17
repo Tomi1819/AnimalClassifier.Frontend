@@ -1,11 +1,10 @@
-# Lints, tests and builds every pull request, and main after each merge, so
-# that a change is known to work before it is merged rather than after.
+# Lints, tests and builds every pull request, so that a change is known to work
+# before it is merged rather than after. Nothing runs after a merge: the pull
+# request's run has already tested the merged result.
 name: CI
 
 on:
   pull_request:
-  push:
-    branches: [main]
 
 # Reading the code is all this workflow does.
 permissions:
