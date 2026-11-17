@@ -1,6 +1,6 @@
 {
-	# HTTPS is handled in front of Caddy, and nothing changes its settings while
-	# it runs.
+	# Cloudflare handles HTTPS in front of Caddy, and nothing changes Caddy's
+	# settings while it runs.
 	admin off
 	auto_https off
 	persist_config off
