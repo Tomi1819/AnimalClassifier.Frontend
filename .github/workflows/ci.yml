@@ -1,6 +1,7 @@
 # Lints, tests and builds every pull request, so that a change is known to work
 # before it is merged rather than after. Nothing runs after a merge: the pull
-# request's run has already tested the merged result.
+# request's run has already tested the merged result, and the ruleset on main
+# makes a pull request test again whenever main has moved on.
 name: CI
 
 on:
