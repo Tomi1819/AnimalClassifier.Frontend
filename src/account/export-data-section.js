@@ -25,8 +25,8 @@ function collectSectionElements() {
 }
 
 async function download(section) {
-  // The backend allows only a few exports in a while, and a second click
-  // would spend one on a copy the user is already getting.
+  // The backend allows only a few exports in a short window, and a second
+  // click would spend one on a copy the user is already getting.
   if (isBusy(section)) {
     return;
   }
