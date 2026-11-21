@@ -21,9 +21,10 @@
   <body class="home-page">
     <header>
       <nav>
-        <div class="logo">
-          <img src="/logo.png" alt="Logo" />
-        </div>
+        <a class="logo" href="/">
+          <span class="logo__mark"><img src="/logo-mark.svg" alt="" /></span>
+          <span class="logo__name">Animal <span class="logo__accent">Classifier</span></span>
+        </a>
         <!-- Populated by src/shared/nav.js, which varies the links by session. -->
         <ul id="navLinks"></ul>
       </nav>
@@ -70,7 +71,7 @@
             </div>
             <div class="preview-card__body">
               <span class="badge">Image</span>
-              <h2 class="preview-card__animal">Elephant</h2>
+              <h2 class="preview-card__animal">Hippopotamus</h2>
               <div class="confidence confidence--high">
                 <div class="confidence__head">
                   <span class="confidence__label">Prediction accuracy</span>
@@ -87,7 +88,7 @@
             <i class="fas fa-crow"></i> Crow &middot; 91%
           </p>
           <p class="preview-chip preview-chip--right">
-            <i class="fas fa-fish"></i> Salmon &middot; 88%
+            <i class="fas fa-fish"></i> Goldfish &middot; 88%
           </p>
         </div>
       </section>
