@@ -153,8 +153,19 @@ function renderHistoryControls(page) {
   page.clearHistory.hidden = isEmpty;
 }
 
+// Asked first, as it takes in the whole history rather than the page shown,
+// and says how it differs from deleting.
 function initClearButton(page, resultCard) {
   page.clearHistory.addEventListener("click", async () => {
+    const agreed = await askToConfirm(
+      "Clear your whole history?",
+      "Your recognitions leave this list and the search, but your statistics and collection still count them. To remove one for good, delete it instead.",
+    );
+
+    if (!agreed) {
+      return;
+    }
+
     page.clearHistory.disabled = true;
 
     try {
