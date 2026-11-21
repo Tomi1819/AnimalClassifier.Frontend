@@ -18,25 +18,72 @@ nav {
   z-index: 1000;
 }
 
-/* The margin pushes everything after the logo to the far end of the bar, where
-   the links and the account menu sit together. */
+/* The paw on a tile in the brand's colours, then the site's name as text, so
+   that the name stays sharp and readable at the bar's size and takes the
+   theme's colours. A link home, as visitors expect of it. The margin pushes
+   everything after it to the far end of the bar, where the links and the
+   account menu sit together. */
 nav .logo {
-  display: flex;
   align-items: center;
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  display: flex;
+  gap: 12px;
   margin-right: auto;
+  text-decoration: none;
 }
 
-nav .logo img {
-  height: 50px;
-  margin-right: 10px;
+nav .logo:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 4px;
 }
 
-/* The logo is an opaque image with a light background, so on a dark bar it
-   sits on a tile of that colour rather than showing as a stray box. */
-:root[data-theme="dark"] nav .logo img {
-  background: #fff;
-  border-radius: 10px;
-  padding: 3px;
+/* The same fill as the current page's pill, so the two read as one brand. */
+.logo__mark {
+  background-image: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  display: grid;
+  flex-shrink: 0;
+  height: 40px;
+  place-items: center;
+  transition: transform 0.2s ease;
+  width: 40px;
+}
+
+.logo__mark img {
+  display: block;
+  height: 26px;
+  width: 26px;
+}
+
+nav .logo:hover .logo__mark {
+  transform: rotate(-8deg);
+}
+
+.logo__name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* The landing page's headline colours its second half the same way. */
+.logo__accent {
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(120deg, var(--brand), var(--brand-strong));
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo__mark {
+    transition: none;
+  }
+
+  nav .logo:hover .logo__mark {
+    transform: none;
+  }
 }
 
 nav > ul {
@@ -97,8 +144,23 @@ nav > ul > li > a.active {
     padding: 12px 16px;
   }
 
-  nav .logo img {
-    height: 38px;
+  nav .logo {
+    gap: 10px;
+  }
+
+  .logo__mark {
+    border-radius: 10px;
+    height: 36px;
+    width: 36px;
+  }
+
+  .logo__mark img {
+    height: 23px;
+    width: 23px;
+  }
+
+  .logo__name {
+    font-size: 1.05rem;
   }
 
   .nav-toggle {
@@ -162,6 +224,19 @@ nav > ul > li > a.active {
   nav > ul > li > a {
     display: block;
     padding: 13px 16px;
+  }
+}
+
+/* On the narrowest phones the name would crowd the account menu and the menu
+   button, so only the paw shows. Screen readers still read the name, which is
+   what the link is called. */
+@media (max-width: 340px) {
+  .logo__name {
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
   }
 }
 
