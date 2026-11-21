@@ -1,5 +1,6 @@
 import { apiFetch } from "./client.js";
 
+const RECOGNITION_PATH = "/api/upload";
 const IMAGE_UPLOAD_PATH = "/api/upload/image";
 const VIDEO_UPLOAD_PATH = "/api/upload/video";
 const HISTORY_PATH = "/api/upload/history";
@@ -62,6 +63,15 @@ export function getHistory(page) {
  */
 export function clearHistory() {
   return apiFetch(HISTORY_PATH, { method: "DELETE" });
+}
+
+/**
+ * Deletes one of the signed-in user's recognitions for good, image or video.
+ * Unlike clearing the history, its file and any feedback on it go too, and
+ * the statistics and the collection no longer count it.
+ */
+export function deleteRecognition(recognitionId) {
+  return apiFetch(`${RECOGNITION_PATH}/${encodeURIComponent(recognitionId)}`, { method: "DELETE" });
 }
 
 /**

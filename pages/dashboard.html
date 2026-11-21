@@ -161,7 +161,12 @@
         </div>
 
         <div class="result-card__details">
-          <p class="eyebrow">Recognition result</p>
+          <div class="result-card__head">
+            <p class="eyebrow">Recognition result</p>
+            <button id="deleteRecognition" class="btn-ghost btn-ghost--danger" type="button">
+              Delete
+            </button>
+          </div>
           <h2 class="result-card__animal" id="predictedLabel"></h2>
 
           <div class="confidence" id="confidenceBlock">

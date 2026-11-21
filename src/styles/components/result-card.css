@@ -19,6 +19,18 @@
   width: 100%;
 }
 
+/* The heading, with the way to delete the recognition beside it. */
+.result-card__head {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.result-card__head .eyebrow {
+  margin: 0;
+}
+
 .result-card__animal {
   font-size: clamp(1.6rem, 3vw, 2.1rem);
   letter-spacing: -0.01em;

@@ -2,6 +2,7 @@ import { resolveUrl } from "../api/client.js";
 import { describeVerdict } from "../feedback/feedback-text.js";
 import { createElement } from "./dom.js";
 import { formatDate } from "./format.js";
+import { svgIcon } from "./icons.js";
 
 /**
  * A recognition built from an entry in a user's history, as the dashboard and
@@ -26,8 +27,10 @@ export function fromHistoryItem(item) {
  *
  * @param onSelect called when the user chooses the entry, which makes its
  *   title a button. Left out, the entry is only shown.
+ * @param onDelete called when the user asks to delete the entry, which adds a
+ *   button for it. Left out, the entry cannot be deleted from the list.
  */
-export function createHistoryCard(recognition, { onSelect } = {}) {
+export function createHistoryCard(recognition, { onSelect, onDelete } = {}) {
   const { id, type, url, animal, date, framesProcessed, topAnimals, feedback } = recognition;
   const isVideo = type === "video";
 
@@ -70,6 +73,10 @@ export function createHistoryCard(recognition, { onSelect } = {}) {
   card.className = "history-card";
   card.append(media, body);
 
+  if (onDelete) {
+    card.append(createDeleteButton(animal, date, onDelete));
+  }
+
   // Found by it when the recognition changes, such as when feedback is given.
   if (id !== undefined) {
     card.dataset.recognitionId = id;
@@ -85,5 +92,17 @@ function createSelectButton(animal, date, onSelect) {
   button.type = "button";
   button.setAttribute("aria-label", `Show the ${animal} recognised ${formatDate(date)}`);
   button.addEventListener("click", onSelect);
+  return button;
+}
+
+// An icon alone, as there is little room beside the entry, so its label says
+// which entry it deletes.
+function createDeleteButton(animal, date, onDelete) {
+  const button = createElement("button", "history-card__delete");
+  button.type = "button";
+  button.title = "Delete";
+  button.setAttribute("aria-label", `Delete the ${animal} recognised ${formatDate(date)}`);
+  button.innerHTML = svgIcon("trash", "history-card__delete-icon");
+  button.addEventListener("click", onDelete);
   return button;
 }
