@@ -13,13 +13,17 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
  *
  * @param onFeedbackChange called with the recognition once the user gives,
  *   changes or withdraws their feedback on it, which is then its `feedback`.
- * @returns `show(recognition, { animate })` and `hide()`. A result that has
- *   just arrived is shown animated; one loaded back from the history appears
- *   settled, as it is not new.
+ * @param onDelete called with the recognition shown when the user asks to
+ *   delete it. Deleting it is the caller's to do, as is hiding the card after.
+ * @returns `show(recognition, { animate })`, `hide()` and
+ *   `isShowing(recognitionId)`. A result that has just arrived is shown
+ *   animated; one loaded back from the history appears settled, as it is not
+ *   new.
  */
-export function initResultCard({ onFeedbackChange = () => {} } = {}) {
+export function initResultCard({ onFeedbackChange = () => {}, onDelete = () => {} } = {}) {
   const card = collectCardElements();
   const collectionNote = initCollectionNote(card.collectionSlot);
+  let shown = null;
 
   // What the user says of the animal decides whether it is found, so the
   // collection's line is asked for again.
@@ -28,12 +32,17 @@ export function initResultCard({ onFeedbackChange = () => {} } = {}) {
     collectionNote.show(recognition);
   };
 
+  card.deleteButton.addEventListener("click", () => onDelete(shown));
+
   return {
     show: (recognition, options) => {
+      shown = recognition;
       render(card, recognition, { ...options, onFeedbackChange: onChange });
       collectionNote.show(recognition);
     },
+    isShowing: (recognitionId) => shown?.id === recognitionId,
     hide: () => {
+      shown = null;
       card.section.hidden = true;
       card.videoStatsSlot.replaceChildren();
       card.feedbackSlot.replaceChildren();
@@ -56,6 +65,7 @@ function collectCardElements() {
     videoStatsSlot: document.getElementById("videoStatsSlot"),
     collectionSlot: document.getElementById("collectionSlot"),
     feedbackSlot: document.getElementById("feedbackSlot"),
+    deleteButton: document.getElementById("deleteRecognition"),
   };
 }
 

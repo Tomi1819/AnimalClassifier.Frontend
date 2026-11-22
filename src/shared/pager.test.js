@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
-import { renderPager } from "./pager.js";
+import { pageAfterRemovingOne, renderPager } from "./pager.js";
 
 describe("renderPager", () => {
   it("disables Previous on the first page and Next on the last", () => {
@@ -46,6 +46,22 @@ describe("renderPager", () => {
 
     expect(onPage).toHaveBeenCalledTimes(2);
     expect(previous.disabled).toBe(true);
+  });
+});
+
+describe("pageAfterRemovingOne", () => {
+  // The next page's first entry moves up into the gap.
+  it("stays on a page that still has entries", () => {
+    expect(pageAfterRemovingOne({ page: 2, pageSize: 20, totalCount: 41 })).toBe(2);
+    expect(pageAfterRemovingOne({ page: 1, pageSize: 20, totalCount: 21 })).toBe(1);
+  });
+
+  it("goes back a page when the last page's only entry goes", () => {
+    expect(pageAfterRemovingOne({ page: 3, pageSize: 20, totalCount: 41 })).toBe(2);
+  });
+
+  it("stays on the first page when the only entry goes", () => {
+    expect(pageAfterRemovingOne({ page: 1, pageSize: 20, totalCount: 1 })).toBe(1);
   });
 });
 

@@ -1,10 +1,11 @@
-import { clearHistory, getHistory } from "../api/recognitions.js";
+import { clearHistory, deleteRecognition, getHistory } from "../api/recognitions.js";
 import { initResultCard } from "../dashboard/result-card.js";
 import { initUploadForms } from "../dashboard/upload-form.js";
+import { askToConfirm } from "../shared/confirm.js";
 import { hideMessage, showError } from "../shared/feedback.js";
 import { createHistoryCard, fromHistoryItem } from "../shared/history.js";
 import { initPage, PAGE_ACCESS } from "../shared/page.js";
-import { renderPager } from "../shared/pager.js";
+import { pageAfterRemovingOne, renderPager } from "../shared/pager.js";
 
 // The page of the history on screen, and how long the whole history is, which
 // an upload adds to. Until the history loads nothing is known of its pages,
@@ -15,6 +16,7 @@ if (initPage(PAGE_ACCESS.SIGNED_IN)) {
   const page = collectPageElements();
   const resultCard = initResultCard({
     onFeedbackChange: (recognition) => replaceHistoryCard(page, resultCard, recognition),
+    onDelete: (recognition) => deleteEntry(page, resultCard, recognition),
   });
 
   initUploadForms({
@@ -72,10 +74,7 @@ async function showHistory(page, resultCard, pageNumber) {
     ...recognitions.map((recognition) => createEntry(page, resultCard, recognition)),
   );
   renderHistoryPager(page, resultCard);
-
-  if (result.totalCount > 0) {
-    showHistoryControls(page);
-  }
+  renderHistoryControls(page);
 
   return recognitions;
 }
@@ -92,7 +91,7 @@ function addRecognition(page, resultCard, recognition) {
   }
 
   renderHistoryPager(page, resultCard);
-  showHistoryControls(page);
+  renderHistoryControls(page);
 }
 
 function renderHistoryPager(page, resultCard) {
@@ -108,7 +107,37 @@ function createEntry(page, resultCard, recognition) {
       resultCard.show(recognition, { animate: false });
       page.resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
     },
+    onDelete: () => deleteEntry(page, resultCard, recognition),
   });
+}
+
+// Asked first, as it cannot be taken back. The page is then read again, so
+// that an entry from the next page moves up into the gap.
+async function deleteEntry(page, resultCard, recognition) {
+  const agreed = await askToConfirm(
+    `Delete this ${recognition.type}?`,
+    "It goes for good, with anything you said of it, and your statistics and collection no longer count it.",
+  );
+
+  if (!agreed) {
+    return;
+  }
+
+  try {
+    await deleteRecognition(recognition.id);
+  } catch (error) {
+    console.error("Could not delete the recognition:", error);
+    showError(page.uploadStatus, error.message);
+    return;
+  }
+
+  // The upload's message, if any, was about the result shown.
+  if (resultCard.isShowing(recognition.id)) {
+    resultCard.hide();
+    hideMessage(page.uploadStatus);
+  }
+
+  await showHistory(page, resultCard, pageAfterRemovingOne(shownHistory));
 }
 
 function replaceHistoryCard(page, resultCard, recognition) {
@@ -117,13 +146,26 @@ function replaceHistoryCard(page, resultCard, recognition) {
     ?.replaceWith(createEntry(page, resultCard, recognition));
 }
 
-function showHistoryControls(page) {
-  page.historyEmpty.hidden = true;
-  page.clearHistory.hidden = false;
+// The note in place of an empty history, or the button that empties it.
+function renderHistoryControls(page) {
+  const isEmpty = shownHistory.totalCount === 0;
+  page.historyEmpty.hidden = !isEmpty;
+  page.clearHistory.hidden = isEmpty;
 }
 
+// Asked first, as it takes in the whole history rather than the page shown,
+// and says how it differs from deleting.
 function initClearButton(page, resultCard) {
   page.clearHistory.addEventListener("click", async () => {
+    const agreed = await askToConfirm(
+      "Clear your whole history?",
+      "Your recognitions leave this list and the search, but your statistics and collection still count them. To remove one for good, delete it instead.",
+    );
+
+    if (!agreed) {
+      return;
+    }
+
     page.clearHistory.disabled = true;
 
     try {
@@ -141,8 +183,7 @@ function initClearButton(page, resultCard) {
     shownHistory = { ...shownHistory, page: 1, totalCount: 0 };
     page.historyList.replaceChildren();
     renderHistoryPager(page, resultCard);
-    page.historyEmpty.hidden = false;
-    page.clearHistory.hidden = true;
+    renderHistoryControls(page);
     resultCard.hide();
     hideMessage(page.uploadStatus);
   });
