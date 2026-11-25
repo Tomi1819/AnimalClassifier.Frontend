@@ -35,9 +35,9 @@
 
       <p id="collectionStatus" class="message" hidden></p>
 
-      <!-- Placeholders hold the progress and the cards' places until
-           src/pages/collection.js fills them in, so the layout does not jump
-           when they arrive. -->
+      <!-- Placeholders hold the progress, the level, the badges and the
+           cards' places until src/pages/collection.js fills them in, so the
+           layout does not jump when they arrive. -->
       <div id="collectionContent" aria-busy="true">
         <section class="card collection-progress">
           <div class="collection-progress__head">
@@ -46,11 +46,36 @@
               <span class="skeleton"></span>
             </p>
           </div>
-          <!-- The figure beside it says the same in words. -->
-          <div class="collection-progress__track" aria-hidden="true">
+          <!-- The figure beside it and the level under it say the same in
+               words, including where the levels fall. -->
+          <div class="collection-progress__track" id="collectionTrack" aria-hidden="true">
             <div class="collection-progress__fill" id="collectionFill"></div>
           </div>
+          <div class="level-summary" id="levelSummary">
+            <span class="skeleton"></span>
+          </div>
         </section>
+
+        <!-- The dashboard links here once a recognition earns a badge. -->
+        <section class="collection-section" id="badges" aria-labelledby="badgesTitle" aria-busy="true">
+          <div class="collection-section__head">
+            <h2 id="badgesTitle">Badges</h2>
+            <p class="collection-section__summary" id="badgesSummary"></p>
+          </div>
+
+          <p id="badgesStatus" class="message" hidden></p>
+
+          <ul class="badge-grid" id="badgeGrid">
+            <li class="badge-card--placeholder"><span class="skeleton"></span></li>
+            <li class="badge-card--placeholder"><span class="skeleton"></span></li>
+            <li class="badge-card--placeholder"><span class="skeleton"></span></li>
+            <li class="badge-card--placeholder"><span class="skeleton"></span></li>
+          </ul>
+        </section>
+
+        <div class="collection-section__head">
+          <h2>Animals</h2>
+        </div>
 
         <div class="segmented collection-filter" role="group" aria-label="Which animals to show">
           <button class="segmented__btn is-active" type="button" aria-pressed="true" data-collection-filter="all">

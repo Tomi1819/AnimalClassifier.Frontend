@@ -1,5 +1,5 @@
-/* The collection page: how far the user is, the filter, and a card for each
-   animal the model knows. */
+/* The collection page: how far the user is and the level that makes them, the
+   badges, the filter, and a card for each animal the model knows. */
 
 /* --- Progress ------------------------------------------------------------- */
 
@@ -45,6 +45,7 @@
   border-radius: 999px;
   height: 12px;
   overflow: hidden;
+  position: relative;
 }
 
 .collection-progress__fill {
@@ -54,6 +55,195 @@
   height: 100%;
   transform-origin: left;
   width: 0;
+}
+
+/* Where each level falls, cut through the bar in the card's own colour, so
+   the levels read as its segments whether they are filled or not. */
+.collection-progress__mark {
+  background: var(--surface);
+  height: 100%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  width: 3px;
+}
+
+/* --- Level ---------------------------------------------------------------- */
+
+.level-summary {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.level-summary .skeleton {
+  height: 1.4rem;
+  width: 22ch;
+}
+
+.level-summary p {
+  margin: 0;
+}
+
+.level-summary__number {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.level-summary__name {
+  color: var(--brand-strong);
+  font-size: 1.05rem;
+}
+
+.level-summary__next {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+/* --- Sections ------------------------------------------------------------- */
+
+/* Clear of the fixed bar when the dashboard links straight to one. */
+.collection-section {
+  margin-bottom: 30px;
+  scroll-margin-top: 100px;
+}
+
+.collection-section__head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.collection-section__head h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.collection-section__summary {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+/* --- Badges --------------------------------------------------------------- */
+
+.badge-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.badge-card--placeholder .skeleton {
+  border-radius: var(--radius-lg);
+  height: 120px;
+}
+
+.badge-card {
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+}
+
+/* As with the animals, what is still to earn recedes. */
+.badge-card:not(.is-earned) {
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border-color: var(--hairline-strong);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.badge-card__icon {
+  background: var(--surface-muted);
+  border-radius: 50%;
+  color: var(--ink-muted);
+  display: grid;
+  flex-shrink: 0;
+  height: 48px;
+  place-items: center;
+  width: 48px;
+}
+
+/* An earned badge takes the logo's colours. */
+.badge-card.is-earned .badge-card__icon {
+  background-image: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  color: #fff;
+}
+
+.badge-card__svg {
+  fill: none;
+  height: 24px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 24px;
+}
+
+.badge-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.badge-card__name {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 2px 0 4px;
+}
+
+.badge-card:not(.is-earned) .badge-card__name {
+  color: var(--ink-muted);
+}
+
+.badge-card__description {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  margin: 0 0 10px;
+}
+
+.badge-card__track {
+  background: var(--brand-wash);
+  border-radius: 999px;
+  height: 6px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.badge-card__fill {
+  background: var(--chart-bar);
+  border-radius: inherit;
+  height: 100%;
+}
+
+.badge-card__status {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  margin: 0;
+}
+
+.badge-card.is-earned .badge-card__status {
+  color: var(--success-color);
 }
 
 /* --- Filter --------------------------------------------------------------- */
@@ -218,6 +408,14 @@ button.collection-card__photo:hover img {
 
   .collection-card__body {
     padding: 10px 12px 12px;
+  }
+
+  .badge-grid {
+    gap: 10px;
+  }
+
+  .badge-card {
+    padding: 14px;
   }
 }
 
