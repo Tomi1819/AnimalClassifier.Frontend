@@ -7,21 +7,16 @@ const nameList = new Intl.ListFormat("en-GB", { type: "conjunction" });
 /**
  * Where the levels between the first and the last fall along the
  * collection's bar, which runs from no animals found to every one. The first
- * needs none and the last every one, so the bar's ends already mark them.
+ * needs none and the last every one, so the bar's ends already mark them. A
+ * model that knows no animals has only the first, so nothing is divided by
+ * nothing.
  *
  * @param achievements as `getAchievements` gives them.
- * @returns a list of `{ fraction, isReached }`, from the first level marked,
- *   where `fraction` is from 0 to 1.
+ * @returns how far along the bar each falls, from 0 to 1, from the first
+ *   level marked.
  */
 export function levelMarks({ levels, knownCount }) {
-  if (knownCount <= 0) {
-    return [];
-  }
-
-  return levels.slice(1, -1).map(({ animalsNeeded, isReached }) => ({
-    fraction: Math.min(animalsNeeded / knownCount, 1),
-    isReached,
-  }));
+  return levels.slice(1, -1).map((level) => level.animalsNeeded / knownCount);
 }
 
 /**
@@ -44,7 +39,7 @@ export function describeNextLevel({ nextLevel, foundCount }) {
     return "The highest level there is";
   }
 
-  return `${pluralize(Math.max(nextLevel.animalsNeeded - foundCount, 0), "more animal")} to ${nextLevel.name}`;
+  return `${pluralize(nextLevel.animalsNeeded - foundCount, "more animal")} to ${nextLevel.name}`;
 }
 
 /**
@@ -62,13 +57,13 @@ export function describeBadgeCount(badges) {
  *
  * @param badge one of the badges `getAchievements` gives.
  */
-export function describeBadgeProgress({ isEarned, dateEarned, goal, progress }) {
-  if (isEarned) {
-    return dateEarned ? `Earned on ${formatCalendarDate(dateEarned)}` : "Earned";
+export function describeBadgeProgress(badge) {
+  if (badge.isEarned) {
+    return `Earned on ${formatCalendarDate(badge.dateEarned)}`;
   }
 
-  return hasProgressToShow({ isEarned, goal })
-    ? `${formatCount(progress)} of ${formatCount(goal)}`
+  return hasProgressToShow(badge)
+    ? `${formatCount(badge.progress)} of ${formatCount(badge.goal)}`
     : "Not earned yet";
 }
 

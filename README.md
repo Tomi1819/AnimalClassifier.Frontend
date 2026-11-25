@@ -247,7 +247,7 @@ leaves the collection in place.
 
 Under each result, below the collection's line, the dashboard says what the
 recognition earned: a level it took the user up to, and the badges it earned
-them, with a link to the badges. As with the collection's line, it is asked
+them, with a link to the collection page. As with the collection's line, it is asked
 for each time a result is shown and again once its feedback changes, and left
 out if the call fails. Both lines share `initRecognitionNote` in
 `src/dashboard/recognition-note.js`, which draws only the answer for the

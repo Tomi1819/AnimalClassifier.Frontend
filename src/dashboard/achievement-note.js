@@ -6,9 +6,6 @@ import { COLLECTION_PAGE } from "../shared/pages.js";
 import { userTimeZone } from "../shared/time-zone.js";
 import { initRecognitionNote } from "./recognition-note.js";
 
-// The collection page's badges, where every badge is shown.
-const BADGES_LINK = `${COLLECTION_PAGE}#badges`;
-
 /**
  * The line under a recognition's result that says what it earned the user: a
  * level they went up to, the badges it earned them, or nothing at all.
@@ -33,8 +30,9 @@ function createNote(earned) {
   const icon = createElement("span", "achievement-note__icon");
   icon.innerHTML = svgIcon("award", "achievement-note__svg");
 
-  const link = createElement("a", "", "See your badges");
-  link.href = BADGES_LINK;
+  // The collection page shows the level at its top, and the badges under it.
+  const link = createElement("a", "", "See your achievements");
+  link.href = COLLECTION_PAGE;
 
   const text = createElement("p", "achievement-note__text", sentences.join(" "));
   text.append(" ", link);

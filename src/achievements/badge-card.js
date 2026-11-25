@@ -50,7 +50,7 @@ function createProgressBar({ goal, progress }) {
   track.setAttribute("aria-hidden", "true");
 
   const fill = createElement("div", "badge-card__fill");
-  fill.style.width = `${Math.min(progress / goal, 1) * 100}%`;
+  fill.style.width = `${(progress / goal) * 100}%`;
 
   track.append(fill);
   return track;

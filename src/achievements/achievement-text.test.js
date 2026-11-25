@@ -37,10 +37,7 @@ const badge = (overrides) => ({
 
 describe("levelMarks", () => {
   it("places the levels between the first and the last along the bar", () => {
-    expect(levelMarks({ levels, knownCount: 20 })).toEqual([
-      { fraction: 0.15, isReached: true },
-      { fraction: 0.5, isReached: false },
-    ]);
+    expect(levelMarks({ levels, knownCount: 20 })).toEqual([0.15, 0.5]);
   });
 
   it("marks nothing when the first and the last are the only levels", () => {
@@ -84,10 +81,6 @@ describe("describeBadgeProgress", () => {
     expect(describeBadgeProgress(badge({ isEarned: true, dateEarned: "2026-10-03T12:00:00Z" }))).toMatch(
       /^Earned on .*2026/,
     );
-  });
-
-  it("still says an earned badge without a date is earned", () => {
-    expect(describeBadgeProgress(badge({ isEarned: true }))).toBe("Earned");
   });
 
   it("counts how far the user is towards a badge done more than once", () => {

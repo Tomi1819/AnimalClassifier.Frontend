@@ -108,10 +108,8 @@
 
 /* --- Sections ------------------------------------------------------------- */
 
-/* Clear of the fixed bar when the dashboard links straight to one. */
 .collection-section {
   margin-bottom: 30px;
-  scroll-margin-top: 100px;
 }
 
 .collection-section__head {
@@ -408,14 +406,6 @@ button.collection-card__photo:hover img {
 
   .collection-card__body {
     padding: 10px 12px 12px;
-  }
-
-  .badge-grid {
-    gap: 10px;
-  }
-
-  .badge-card {
-    padding: 14px;
   }
 }
 

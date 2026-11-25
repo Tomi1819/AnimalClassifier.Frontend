@@ -6,7 +6,12 @@ import { initRecognitionNote } from "./recognition-note.js";
 function deferredLoad() {
   const pending = new Map();
   const load = vi.fn((id) => new Promise((resolve, reject) => pending.set(id, { resolve, reject })));
-  return { load, answer: (id, value) => pending.get(id).resolve(value), fail: (id) => pending.get(id).reject(new Error("down")) };
+
+  return {
+    load,
+    answer: (id, value) => pending.get(id).resolve(value),
+    fail: (id) => pending.get(id).reject(new Error("down")),
+  };
 }
 
 const build = (answer) => [Object.assign(document.createElement("p"), { textContent: answer })];

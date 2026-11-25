@@ -11,10 +11,9 @@ import { describeLevelNumber, describeNextLevel, levelMarks } from "./achievemen
  * @param achievements as `getAchievements` gives them.
  */
 export function renderLevelSummary(slot, track, achievements) {
-  track.querySelectorAll(".collection-progress__mark").forEach((mark) => mark.remove());
   track.append(...levelMarks(achievements).map(createMark));
 
-  const current = createElement("p", "level-summary__current");
+  const current = createElement("p");
   current.append(
     createElement("span", "level-summary__number", describeLevelNumber(achievements)),
     " ",
@@ -24,11 +23,8 @@ export function renderLevelSummary(slot, track, achievements) {
   slot.replaceChildren(current, createElement("p", "level-summary__next", describeNextLevel(achievements)));
 }
 
-function createMark({ fraction, isReached }) {
-  const mark = createElement(
-    "span",
-    isReached ? "collection-progress__mark is-reached" : "collection-progress__mark",
-  );
+function createMark(fraction) {
+  const mark = createElement("span", "collection-progress__mark");
   mark.style.left = `${fraction * 100}%`;
   return mark;
 }
