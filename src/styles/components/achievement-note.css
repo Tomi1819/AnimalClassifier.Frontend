@@ -1,0 +1,50 @@
+/* What a recognition earned the user, under its result on the dashboard. It
+   takes violet rather than the collection's green, so the two lines read as
+   two things when both are there. */
+
+.achievement-note {
+  align-items: center;
+  animation: rise 0.4s ease-out both;
+  background: var(--violet-wash);
+  border: 1px solid color-mix(in srgb, var(--violet) 30%, transparent);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  display: flex;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 12px 14px;
+}
+
+.achievement-note__icon {
+  color: var(--violet);
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+}
+
+.achievement-note__svg {
+  fill: none;
+  height: 24px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 24px;
+}
+
+.achievement-note__text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.achievement-note a {
+  color: var(--violet);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievement-note {
+    animation: none;
+  }
+}
