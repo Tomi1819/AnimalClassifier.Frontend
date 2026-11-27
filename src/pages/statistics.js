@@ -9,6 +9,7 @@ import { showError } from "../shared/feedback.js";
 import { formatCount, formatDay, pluralize } from "../shared/format.js";
 import { initPage, PAGE_ACCESS } from "../shared/page.js";
 import { SEARCH_PAGE } from "../shared/pages.js";
+import { userTimeZone } from "../shared/time-zone.js";
 import { drawActivityChart } from "../statistics/activity-chart.js";
 
 const ACTIVITY_DAYS = 30;
@@ -144,11 +145,9 @@ function formatShare(fraction) {
 // here leaves the rest of the page in place.
 async function showActivity() {
   const chart = document.getElementById("activityChart");
-  // Days are counted in the viewer's own time zone, so "today" ends at their midnight.
-  const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
 
   try {
-    const days = await getActivity(ACTIVITY_DAYS, timeZone);
+    const days = await getActivity(ACTIVITY_DAYS, userTimeZone());
     renderActivity(chart, days);
     chart.removeAttribute("aria-busy");
   } catch (error) {

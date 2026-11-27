@@ -228,6 +228,39 @@ cards from what the page holds. The backend decides what counts as found; see
 its README. The statistics page reads the same call for its "Animals found"
 tile, which leaves the rest of the page in place if it fails.
 
+## 🏅 Achievements
+
+The user goes up through levels by finding animals, and earns badges for what
+they do, such as finding an animal in a video or saying whether the model was
+right ten times. The backend decides both from the user's recognitions each
+time it is asked, so what the user says of a recognition, or deleting one, can
+change them; see its README for the levels and badges there are.
+
+The collection page shows the level along its bar, as the levels count the
+same animals: a mark cut through the bar where each level falls, and under it
+the level the user is at and how many more animals the next one needs. Below
+the bar, under Badges, each badge has a card with its picture, what earns it,
+and when it was earned, or how far the user is towards it. `getAchievements`
+in `src/api/achievements.js` reads them in one call, alongside the collection
+rather than after it, and if it fails the page says so under Badges and
+leaves the collection in place.
+
+Under each result, below the collection's line, the dashboard says what the
+recognition earned: a level it took the user up to, and the badges it earned
+them, with a link to the collection page. As with the collection's line, it is asked
+for each time a result is shown and again once its feedback changes, and left
+out if the call fails. Both lines share `initRecognitionNote` in
+`src/dashboard/recognition-note.js`, which draws only the answer for the
+recognition still shown.
+
+- `src/achievements/achievement-text.js` words the level, the badges and what a
+  recognition earned, and places the level marks.
+- `src/achievements/badge-card.js` gives each badge its picture by its `id`. A
+  badge the backend adds before the frontend knows it gets a plain one, so it
+  can be added in the backend alone, and given a picture here later.
+- The days in a row are counted in the viewer's time zone, which
+  `userTimeZone` in `src/shared/time-zone.js` sends with both calls.
+
 ## 🌗 Themes
 
 The site has a light and a dark theme. It is light until the user picks dark
@@ -287,6 +320,7 @@ public/                   Static files served from the root, e.g. /logo.png
 src/
   api/client.js           fetch wrapper: base URL, bearer token, error handling
   api/recognitions.js     Uploads, the history, the search, the statistics and the collection
+  api/achievements.js     The user's level and badges, and what one recognition earned
   api/admin.js            The admin page's users, feedback review and audit log
   api/feedback.js         Giving, listing and withdrawing feedback, and the animals the model knows
   auth/session.js         Token storage and the page guard
@@ -296,9 +330,10 @@ src/
   account/setting.js      A settings row that opens in place
   account/                The account page's header and one module per setting
   admin/                  The admin page's table pieces and its feedback review
-  dashboard/              The dashboard's upload forms, result card, collection line and video breakdown
+  dashboard/              The dashboard's upload forms, result card, collection and achievement lines, and video breakdown
   feedback/               The panel that asks whether the model was right, and its wording
   collection/             Which of the collection's animals its filter shows, and what a find says
+  achievements/           The level along the collection's bar, the badge cards, and their wording
   statistics/             The statistics page's activity chart
   shared/page.js          initPage, which every page starts with
   shared/account-menu.js  The settings menu: account, feedback, admin, theme and sign out
@@ -308,7 +343,7 @@ src/
   shared/feedback.js      Inline error, progress and success messages
   shared/format.js        Dates, counts and file sizes, as the user's locale writes them
   shared/history.js       A history entry's card, with its feedback, on the dashboard and the admin page
-  shared/icons.js         The outline icons the menus draw
+  shared/icons.js         The outline icons the menus, the cards and the badges draw
   shared/image-viewer.js  Shows an image as large as the window allows
   shared/nav.js           Session-aware navigation
   shared/pager.js         The Previous and Next controls under a list the backend sends a page at a time
@@ -318,6 +353,7 @@ src/
   shared/signed-in-user.js  Who is signed in, as the menu and account page show it
   shared/theme.js         The theme choice, stored and applied
   shared/theme-switch.js  The light and dark control
+  shared/time-zone.js     The viewer's time zone, which the backend counts days in
   pages/                  One module per page
   styles/main.css         The one stylesheet, which imports the folders below
   styles/base/            The palette, the bare elements and the shared animations

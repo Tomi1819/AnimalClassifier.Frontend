@@ -1,5 +1,6 @@
 import { createFeedbackPanel } from "../feedback/feedback-panel.js";
 import { formatDate } from "../shared/format.js";
+import { initAchievementNote } from "./achievement-note.js";
 import { initCollectionNote } from "./collection-note.js";
 import { renderVideoBreakdown } from "./video-breakdown.js";
 
@@ -8,8 +9,8 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
 
 /**
  * The card at the top of the dashboard that shows a recognition: the image or
- * video, what the model made of it, what it did for the user's collection,
- * and for an image, what the user says of that.
+ * video, what the model made of it, what it did for the user's collection and
+ * what it earned them, and for an image, what the user says of that.
  *
  * @param onFeedbackChange called with the recognition once the user gives,
  *   changes or withdraws their feedback on it, which is then its `feedback`.
@@ -22,14 +23,16 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.75;
  */
 export function initResultCard({ onFeedbackChange = () => {}, onDelete = () => {} } = {}) {
   const card = collectCardElements();
-  const collectionNote = initCollectionNote(card.collectionSlot);
+  const notes = [initCollectionNote(card.collectionSlot), initAchievementNote(card.achievementSlot)];
   let shown = null;
 
-  // What the user says of the animal decides whether it is found, so the
-  // collection's line is asked for again.
+  const showNotes = (recognition) => notes.forEach((note) => note.show(recognition));
+
+  // What the user says of the animal decides whether it is found, and so what
+  // it earns them, so the lines are asked for again.
   const onChange = (recognition) => {
     onFeedbackChange(recognition);
-    collectionNote.show(recognition);
+    showNotes(recognition);
   };
 
   card.deleteButton.addEventListener("click", () => onDelete(shown));
@@ -38,7 +41,7 @@ export function initResultCard({ onFeedbackChange = () => {}, onDelete = () => {
     show: (recognition, options) => {
       shown = recognition;
       render(card, recognition, { ...options, onFeedbackChange: onChange });
-      collectionNote.show(recognition);
+      showNotes(recognition);
     },
     isShowing: (recognitionId) => shown?.id === recognitionId,
     hide: () => {
@@ -46,7 +49,7 @@ export function initResultCard({ onFeedbackChange = () => {}, onDelete = () => {
       card.section.hidden = true;
       card.videoStatsSlot.replaceChildren();
       card.feedbackSlot.replaceChildren();
-      collectionNote.hide();
+      notes.forEach((note) => note.hide());
     },
   };
 }
@@ -64,6 +67,7 @@ function collectCardElements() {
     lowConfidenceMessage: document.getElementById("lowConfidenceMessage"),
     videoStatsSlot: document.getElementById("videoStatsSlot"),
     collectionSlot: document.getElementById("collectionSlot"),
+    achievementSlot: document.getElementById("achievementSlot"),
     feedbackSlot: document.getElementById("feedbackSlot"),
     deleteButton: document.getElementById("deleteRecognition"),
   };

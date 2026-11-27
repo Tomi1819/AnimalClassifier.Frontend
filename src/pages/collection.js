@@ -1,3 +1,7 @@
+import { describeBadgeCount } from "../achievements/achievement-text.js";
+import { createBadgeCard } from "../achievements/badge-card.js";
+import { renderLevelSummary } from "../achievements/level-summary.js";
+import { getAchievements } from "../api/achievements.js";
 import { resolveUrl } from "../api/client.js";
 import { getCollection } from "../api/recognitions.js";
 import { COLLECTION_FILTER, filterAnimals, isFound } from "../collection/filter.js";
@@ -8,12 +12,17 @@ import { svgIcon } from "../shared/icons.js";
 import { showImage } from "../shared/image-viewer.js";
 import { initPage, PAGE_ACCESS } from "../shared/page.js";
 import { DASHBOARD_PAGE, SEARCH_PAGE } from "../shared/pages.js";
+import { userTimeZone } from "../shared/time-zone.js";
 
 const count = new Intl.NumberFormat();
 const share = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
 
 if (initPage(PAGE_ACCESS.SIGNED_IN)) {
-  await showCollection(collectPageElements());
+  const page = collectPageElements();
+
+  // Neither waits for the other, and a failure of the achievements leaves the
+  // collection in place.
+  await Promise.all([showCollection(page), showAchievements(page)]);
 }
 
 function collectPageElements() {
@@ -21,7 +30,13 @@ function collectPageElements() {
     content: document.getElementById("collectionContent"),
     status: document.getElementById("collectionStatus"),
     figure: document.getElementById("collectionFigure"),
+    track: document.getElementById("collectionTrack"),
     fill: document.getElementById("collectionFill"),
+    levelSummary: document.getElementById("levelSummary"),
+    badges: document.getElementById("badges"),
+    badgesSummary: document.getElementById("badgesSummary"),
+    badgesStatus: document.getElementById("badgesStatus"),
+    badgeGrid: document.getElementById("badgeGrid"),
     filters: [...document.querySelectorAll("[data-collection-filter]")],
     grid: document.getElementById("collectionGrid"),
     empty: document.getElementById("collectionEmpty"),
@@ -55,6 +70,33 @@ function renderProgress(page, { foundCount, knownCount }) {
     ` of ${count.format(knownCount)} · ${share.format(fraction)}`,
   );
   page.fill.style.width = `${fraction * 100}%`;
+}
+
+/* -------------------------------------------------------------------------
+   Achievements
+
+   The level counts the same animals as the bar, so it is shown along it; the
+   badges have a section of their own.
+   ------------------------------------------------------------------------- */
+
+async function showAchievements(page) {
+  let achievements;
+
+  try {
+    achievements = await getAchievements(userTimeZone());
+  } catch (error) {
+    console.error("Failed to load the achievements:", error);
+    page.levelSummary.hidden = true;
+    page.badgeGrid.hidden = true;
+    showError(page.badgesStatus, error.message);
+    page.badges.removeAttribute("aria-busy");
+    return;
+  }
+
+  renderLevelSummary(page.levelSummary, page.track, achievements);
+  page.badgesSummary.textContent = describeBadgeCount(achievements.badges);
+  page.badgeGrid.replaceChildren(...achievements.badges.map(createBadgeCard));
+  page.badges.removeAttribute("aria-busy");
 }
 
 /* -------------------------------------------------------------------------
